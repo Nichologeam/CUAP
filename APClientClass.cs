@@ -18,6 +18,7 @@ public class APClientClass
     public static ConcurrentQueue<long> ChecksToSendQueue = [];
     public static ApClient? Client;
     public static List<string> LayerUnlockDictionary = new List<string>();
+    public static List<string> RecipeUnlockDictionary = new List<string>();
     private static double NextSend = 4;
 
     public static string[]? TryConnect(int port, string slot, string address, string password, bool deathlink)
@@ -66,7 +67,6 @@ public class APClientClass
     {
         Client?.TryDisconnect();
         Client = null;
-        Startup.Logger.LogMessage("Disconnected from Archipelago");
     }
 
     public static void HasConnected()
@@ -112,6 +112,10 @@ public class APClientClass
                     {
                         Startup.Logger.LogWarning("Trap dodged. Probably collected offline.");
                     }
+                }
+                if ((bool)(item!.ItemName.EndsWith(" Recipe"))) // Recipe item. Add it to the list of unlocked recipes.
+                {
+                    RecipeUnlockDictionary.Add(item.ItemName);
                 }
                 if (item.ItemName == "Victory") // self explanatory
                 {

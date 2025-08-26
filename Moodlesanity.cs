@@ -14,7 +14,7 @@ public class Moodlesanity : MonoBehaviour
     public static ApClient Client;
     private MoodleManager Moodles;
     private List<string> AlreadySentChecks = new List<string>();
-    public static ConcurrentQueue<long> CheckHandler;
+    private WorldGeneration worldgen;
     private static Dictionary<string, int> MoodleNametoCheckID = new Dictionary<string, int>()
     {   // In the same order as in locations.py
         {"Comatose",-966813079},
@@ -126,8 +126,8 @@ public class Moodlesanity : MonoBehaviour
         {"Excited",-966812973},
         {"Happy",-966812972},
         {"Gleeful",-966812971},
-        {"Impared speech",-966812970},
-        {"Impared hearing",-966812969},
+        {"Impaired speech",-966812970},
+        {"Impaired hearing",-966812969},
         {"Hearing loss",-966812968},
         {"Severe hearing loss",-966812967},
         {"Life support",-966812966},
@@ -155,13 +155,13 @@ public class Moodlesanity : MonoBehaviour
     {
         Client = APClientClass.Client;
         Moodles = this.gameObject.GetComponent<MoodleManager>();
-        CheckHandler = APClientClass.ChecksToSendQueue;
+        worldgen = GameObject.Find("World").GetComponent<WorldGeneration>();
         var options = Client.SlotData["options"] as JObject;
         if (options.TryGetValue("Moodlesanity", out var moodlesanityoption)) // check if moodlesanity is enabled.
         {
             if (!Convert.ToBoolean(moodlesanityoption))
             {
-                Startup.Logger.LogMessage("Moodlesanity is disabled, destroying script.");
+                Startup.Logger.LogWarning("Moodlesanity is disabled, destroying script.");
                 Destroy(this);
             }
         }
@@ -174,10 +174,14 @@ public class Moodlesanity : MonoBehaviour
         {
             if (AlreadySentChecks.Contains(mood.moodleName))
             {
-                continue; // Avoid spamming the server by not even attempting to a check we already have sent.
+                continue; // Avoid spamming the server by not even attempting to send a check we already have sent.
+            }
+            if (mood.moodleName == "Immunocompromised" && worldgen.loadingObject.activeSelf)
+            {
+                continue; // There's a bug where Experiment is Immunocompromised for the first few frames during worldgen. This if statement makes the check not send in that case.
             }
             MoodleNametoCheckID.TryGetValue(mood.moodleName, out int CheckID);
-            CheckHandler.Enqueue(CheckID);
+            APClientClass.ChecksToSendQueue.Enqueue(CheckID);
             AlreadySentChecks.Add(mood.moodleName);
         }
     }

@@ -8,7 +8,7 @@ using UnityEngine.UIElements.StyleSheets;
 
 namespace CUAP;
 
-[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "1.0.0.0")]
+[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.1.0.0")]
 public class Startup : BaseUnityPlugin
 {
     public static new ManualLogSource Logger;
@@ -50,7 +50,16 @@ public class Startup : BaseUnityPlugin
             }
             catch
             {
-                return; // Scene isn't fully loaded properly. Wait a bit.
+                return; // Scene isn't fully loaded yet. Wait a bit.
+            }
+        }
+        else if (SceneManager.GetActiveScene().name == "SampleScene")
+        {
+            if (Client is null || !(Client?.IsConnected ?? false))
+            {
+                Startup.Logger.LogError("Archipelago disconnected mid run! Saving and quitting to main menu to prevent breaking the client!");
+                SaveSystem.SaveGame();
+                PlayerCamera.main.ToMainMenu();
             }
         }
     }
@@ -75,6 +84,7 @@ public class Startup : BaseUnityPlugin
                 WorldGen.AddComponent<LayerLocker>();
                 Moodles = GameObject.Find("Main Camera/Canvas/Moodles");
                 Moodles.AddComponent<Moodlesanity>();
+                Handler.AddComponent<CraftingChecks>();
             }
         }
         else if (scene.name == "PreGen") // Scene loaded was PreGen, let's clear these objects to avoid errors.
@@ -82,6 +92,7 @@ public class Startup : BaseUnityPlugin
             Console = null;
             Body = null;
             WorldGen = null;
+            Moodles = null;
         }
     }
 }

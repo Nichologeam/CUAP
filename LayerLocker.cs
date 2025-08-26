@@ -36,13 +36,13 @@ public class LayerLocker : MonoBehaviour
     private void OnEnable()
     {
         Client = APClientClass.Client;
-        LayerHandler = APClientClass.LayerUnlockDictionary;
         worldgen = this.gameObject.GetComponent<WorldGeneration>();
         Startup.Logger.LogMessage("LayerLocker Enabled!");
         LayerId = -1;
     }
     private void Update()
     {
+        LayerHandler = APClientClass.LayerUnlockDictionary;
         if (worldgen.loadingObject.activeSelf)
         {
             if (LayerHandler.Count <= 1) // Minimum is 1, since you always have your starting location. Placed a less than as a failsafe.

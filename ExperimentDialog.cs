@@ -33,7 +33,7 @@ public class ExperimentDialog : MonoBehaviour
         {1,item.Player + ", this " + item.ItemName + " is the best thing I've seen down here!"},
         {2,"Finally! My " + item.ItemName + "! Thanks, " + item.Player + "!"},
     };
-        Dictionary<int, string> UsefulItemDialog = new Dictionary<int, string>() // currently Progression and Useful have the same dialog. Change that?
+        Dictionary<int, string> UsefulItemDialog = new Dictionary<int, string>() // todo: currently Progression and Useful have the same dialog. Change that?
     {
         {0,"Huh? My " + item.ItemName + " from " + item.Player + "? How thoughtful!"},
         {1,item.Player + ", this " + item.ItemName + " is the best thing I've seen down here!"},
@@ -54,7 +54,7 @@ public class ExperimentDialog : MonoBehaviour
             PlayerTalker.Talk(TrapItemDialog[UnityEngine.Random.Range(0, TrapItemDialog.Count + 1)], null, true, false);
             return;
         }
-        if (item.ItemName.EndsWith("Recipe")) // useful item
+        if (item.ItemName.EndsWith("Recipe")) // useful item, currently none exist
         {
             PlayerTalker.Talk(UsefulItemDialog[UnityEngine.Random.Range(0, UsefulItemDialog.Count + 1)], null, true, false);
             return;

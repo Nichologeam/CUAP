@@ -7,11 +7,11 @@ using static CUAP.APClientClass;
 
 namespace CUAP;
 
-// stolen from: https://github.com/SWCreeperKing/PowerwashSimAP/blob/master/src/APGui.cs
+// modified version of: https://github.com/SWCreeperKing/PowerwashSimAP/blob/master/src/APGui.cs
 public class APGui : MonoBehaviour
 {
     public static bool ShowGUI = true;
-    public static string Ipporttext = "localhost:38281";
+    public static string Ipporttext = "archipelago.gg:38281";
     public static string Password = "";
     public static string Slot = "Experiment";
     public static string State = "";
@@ -47,7 +47,7 @@ public class APGui : MonoBehaviour
 
     private void Awake()
     {
-        if (!File.Exists("ApConnection.txt")) return;
+        if (!File.Exists("ApConnection.txt")) return; // Read saved slot information from file
         var fileText = File.ReadAllText("ApConnection.txt").Replace("\r", "").Split('\n');
         Ipporttext = fileText[0];
         Password = fileText[1];
@@ -57,13 +57,10 @@ public class APGui : MonoBehaviour
     void OnGUI()
     {
         if (!ShowGUI) return;
-
-        // Create a GUI window
-
         if (!IsConnected())
         {
             Offset = new(1700, 0);
-            GUI.Box(new Rect(10 + Offset.x, 10 + Offset.y, 200, 300), "Archipelago Client");
+            GUI.Box(new Rect(10 + Offset.x, 10 + Offset.y, 200, 300), "C:U Archipelago Client");
 
             GUI.Label(new Rect(20 + Offset.x, 40 + Offset.y, 300, 30), "Address:Port", TextStyle);
             Ipporttext = GUI.TextField(new Rect(20 + Offset.x, 60 + Offset.y, 180, 25), Ipporttext, 25);
@@ -119,7 +116,7 @@ public class APGui : MonoBehaviour
             }
         }
 
-        if (IsConnected() && GUI.Button(new Rect(20 + Offset.x, 210 + Offset.y, 180, 30), "Disconnect (Main menu only)"))
+        if (IsConnected() && GUI.Button(new Rect(20 + Offset.x, 210 + Offset.y, 180, 30), "Disconnect(Main menu only!)"))
         {
             Disconnect();
         }
