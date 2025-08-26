@@ -20,7 +20,7 @@ public class TrapHandler : MonoBehaviour
     }
     public void ProcessTraps(string TrapName)
     {
-        if (TrapName == "Depressed Trap")
+        if (TrapName == "Depression Trap")
         {
             Startup.Logger.LogMessage("Happiness lowered.");
             Vitals.happiness =- 20;
