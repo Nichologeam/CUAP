@@ -33,7 +33,7 @@ public class DepthChecks : MonoBehaviour
     private void Update()
     {
         RoundedMeters = Mathf.RoundToInt(worldgen.PlayerTotalDepthMeters());
-        if (RoundedMeters > 1500)
+        if (RoundedMeters > 1500 && !worldgen.loadingObject.activeSelf) // fixes a bug with the order the game loads new layers internally
         {
             CheckHandler.Enqueue(-966813081); // goal location
             DisplayText.text = "You have reached your goal!";
