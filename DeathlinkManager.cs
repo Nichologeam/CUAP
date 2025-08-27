@@ -65,14 +65,14 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
             }
             else if (Convert.ToInt32(deathlinkoption) == 2) // Nearly exact replica of SelfHarmer.SelfHarm because we can't actually call it
             {
-                DeathLinkText.autoSizeTextContainer = true; // fixes linewrapping off the screen
                 Limb limb = Vitals.limbs[UnityEngine.Random.Range(1, Vitals.limbs.Length)]; // starting at 1 means the head can never be selected. prevents sudden comatose moodle.
                 limb.muscleHealth -= 30f;
                 limb.skinHealth -= 70f;
-                limb.bleedAmount += UnityEngine.Random.Range(25f, 40f);
-                limb.pain += UnityEngine.Random.Range(20f, 30f);
+                limb.bleedAmount += 40f;
+                limb.pain += 30f;
                 Sound.Play("harmSting", Vector2.zero, true, false, null, 0.7f, 1f, false, false);
                 DeathLinkText.text = "DeathLink recieved. Damage done to " + limb.name + ".";
+                DeathLinkText.autoSizeTextContainer = true; // fixes linewrapping off the screen
             }
         }
     }

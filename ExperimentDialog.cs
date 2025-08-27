@@ -54,7 +54,7 @@ public class ExperimentDialog : MonoBehaviour
             PlayerTalker.Talk(TrapItemDialog[UnityEngine.Random.Range(0, TrapItemDialog.Count + 1)], null, true, false);
             return;
         }
-        if (item.ItemName.EndsWith("Recipe")) // useful item, currently none exist
+        if (item.ItemName.EndsWith("Recipe")) // useful item
         {
             PlayerTalker.Talk(UsefulItemDialog[UnityEngine.Random.Range(0, UsefulItemDialog.Count + 1)], null, true, false);
             return;
