@@ -18,7 +18,6 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
 
     private void OnEnable()
     {
-        // todo: check if client has deathlink enabled and destroy this script if they dont.
         Vitals = this.gameObject.GetComponent<Body>();
         DeathLinkText = GameObject.Find("Main Camera/Canvas/TimeScaleShow/Text (TMP)").GetComponent<TextMeshProUGUI>();
         GameObject.Find("Main Camera/Canvas/TimeScaleShow/Image").SetActive(false);
@@ -26,6 +25,15 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
         DeathLinkText.text = ""; // remove the 1x in there, as this is actually an unused version of the speedup overlay.
         GameObject.Find("Main Camera/Canvas/TimeScaleShow").transform.SetAsLastSibling(); // overlay over top of everything else by moving to bottom of heirarchy
         DeathLinkText.transform.localPosition = Vector3.zero; // by default this is pushed to the left slightly for a sprite. i removed said sprite and the text is better centered.
+        var options = Client.SlotData["options"] as JObject;
+        if (options.TryGetValue("DeathLink", out var dloption)) // check if deathlink is enabled.
+        {
+            if (!Convert.ToBoolean(dloption))
+            {
+                Startup.Logger.LogWarning("Deathlink is disabled, destroying script.");
+                Destroy(this); // we destroy the script this late so the text is set up for DepthChecks, which uses it regardless of deathlink being on
+            }
+        }
         Startup.Logger.LogMessage("DeathlinkManager is monitoring Vitals...");
     }
     private void Update()

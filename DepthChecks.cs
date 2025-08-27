@@ -19,6 +19,7 @@ public class DepthChecks : MonoBehaviour
     private WorldGeneration worldgen;
     private int RoundedMeters;
     private int CheckID;
+    private TextMeshProUGUI DisplayText;
     private List<int> AlreadySentChecks = new List<int>();
 
     private void OnEnable()
@@ -26,6 +27,7 @@ public class DepthChecks : MonoBehaviour
         Client = APClientClass.Client;
         CheckHandler = APClientClass.ChecksToSendQueue;
         worldgen = this.gameObject.GetComponent<WorldGeneration>();
+        DisplayText = GameObject.Find("Main Camera/Canvas/TimeScaleShow/Text (TMP)").GetComponent<TextMeshProUGUI>();
         Startup.Logger.LogMessage("Depth is being read by Archipelago!");
     }
     private void Update()
@@ -34,6 +36,8 @@ public class DepthChecks : MonoBehaviour
         if (RoundedMeters > 1500)
         {
             CheckHandler.Enqueue(-966813081); // goal location
+            DisplayText.text = "You have reached your goal!";
+            DisplayText.autoSizeTextContainer = true;
             Destroy(this); // no need for this script after the player goals, it would just spam goal every frame.
         }
         if (RoundedMeters % 100 == 0)
