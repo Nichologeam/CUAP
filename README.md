@@ -1,4 +1,4 @@
-### Casualties: Unknown/Scav Prototype Archipelago v0.1.0
+### Casualties: Unknown/Scav Prototype Archipelago
 
 This mod is made for the 4.0.1 version of Casualties: Unknown, which is currently the latest version on the game's [Itch page](https://orsonik.itch.io/scav-prototype). Make sure this is the version of the game you have before continuing.
 
