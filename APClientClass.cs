@@ -123,8 +123,7 @@ public class APClientClass
                 }
                 try
                 {
-                    ExperimentDialog Dialog = GameObject.Find("Experiment/Body").GetComponent<ExperimentDialog>();
-                    Dialog.ProcessDialog(item);
+                    ExperimentDialog.ProcessDialog(item);
                 }
                 catch
                 {

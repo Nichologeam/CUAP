@@ -10,7 +10,7 @@ namespace CUAP;
 public class ExperimentDialog : MonoBehaviour
 {
     public static ApClient Client;
-    private Talker PlayerTalker;
+    private static Talker PlayerTalker;
 
     private void OnEnable()
     {
@@ -18,7 +18,7 @@ public class ExperimentDialog : MonoBehaviour
         PlayerTalker = GameObject.Find("Experiment/Body").GetComponent<Talker>();
         Startup.Logger.LogMessage("Dialog patches applied!");
     }
-    public void ProcessDialog(Archipelago.MultiClient.Net.Models.ItemInfo item)
+    public static void ProcessDialog(Archipelago.MultiClient.Net.Models.ItemInfo item)
     {
         // sticking all the dictionaries up here
         Dictionary<int, string> NormalItemDialog = new Dictionary<int, string>()
@@ -44,6 +44,14 @@ public class ExperimentDialog : MonoBehaviour
         {0,"Oh... my " + item.ItemName + "... Thanks, " + item.Player + "... I guess..."},
         {1,"A " + item.ItemName + ". Not sure what I'll use it for, but thanks anyways, " + item.Player + "."},
     };  // annoyingly ItemInfo does not contain a definition for ItemClassification, so I can't check it directly. This is a decent workaround.
+        try
+        {
+            PlayerTalker = GameObject.Find("Experiment/Body").GetComponent<Talker>();
+        }
+        catch
+        {
+            Startup.Logger.LogWarning("Can't find Experiment to say Archipealgo dialog! If you aren't in the main menu, this is a bug!");
+        }
         if (item.ItemName.EndsWith("Unlock")) // progression item
         {
             PlayerTalker.Talk(ProgressionItemDialog[UnityEngine.Random.Range(0, ProgressionItemDialog.Count + 1)], null, true, false);
