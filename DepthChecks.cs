@@ -38,17 +38,18 @@ public class DepthChecks : MonoBehaviour
             CheckHandler.Enqueue(-966813081); // goal location
             DisplayText.text = "You have reached your goal!";
             DisplayText.autoSizeTextContainer = true;
+            Client.Goal();
             Destroy(this); // no need for this script after the player goals, it would just spam goal every frame.
         }
         if (RoundedMeters % 100 == 0)
         {
             CheckID = RoundedMeters / 100;
+            Startup.Logger.LogMessage("Depth read as " + RoundedMeters + "m, which SHOULD be the same as " + CheckID + "00.");
             CheckID = -966813096 + CheckID - 1; // don't ask me why the check id is a random negative number, best guess is an integer over/underflow
             if (AlreadySentChecks.Contains(CheckID)) // whatever, just adds to the jank of this implimentation. for the immersion, for the love of the game!
             {
                 return; // Avoid spamming the server by not even attempting to send a check we already have sent.
             }
-            Startup.Logger.LogMessage("Queueing check for " + RoundedMeters + "m");
             CheckHandler.Enqueue(CheckID);
             AlreadySentChecks.Add(CheckID);
         }

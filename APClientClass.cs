@@ -127,7 +127,7 @@ public class APClientClass
                 }
                 catch
                 {
-                    Startup.Logger.LogWarning("Client can't find Experiment to say dialog. Player probably in main menu.");
+                    continue;
                 }
             }
             var newItems = rawNewItems // not entierly sure what this does but i dont want to delete it. it seems important.

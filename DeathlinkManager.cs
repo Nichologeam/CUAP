@@ -47,9 +47,10 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
             Destroy(this); // This is in the update loop, so we should kill the script to not spam deathlinks. No damage will be done, because the player is forced back to main menu.
         }
         DeathlinkCooldown -= Time.deltaTime;
-        if (DeathlinkCooldown <= 0)
+        if (DeathlinkCooldown <= 0 && DeathlinkCooldown >= -1)
         {
             DeathLinkText.text = "";
+            DeathlinkCooldown = -2; // This makes it only empty the text once. There's probably a much better way to do this, but I don't really care.
         }
         Client.OnDeathLinkPacketReceived += ProcessDeathLink;
     }
@@ -79,7 +80,7 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
                 limb.bleedAmount += 40f;
                 limb.pain += 30f;
                 Sound.Play("harmSting", Vector2.zero, true, false, null, 0.7f, 1f, false, false);
-                DeathLinkText.text = "DeathLink recieved. Damage done to " + limb.name + ".";
+                DeathLinkText.text = "DeathLink recieved. Damage done to " + limb.fullName + ".";
                 DeathLinkText.autoSizeTextContainer = true; // fixes linewrapping off the screen
             }
         }
