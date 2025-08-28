@@ -20,6 +20,7 @@ public class APClientClass
     public static List<string> LayerUnlockDictionary = new List<string>();
     public static List<string> RecipeUnlockDictionary = new List<string>();
     private static double NextSend = 4;
+    public static int DepthExtendersRecieved = 0;
 
     public static string[]? TryConnect(int port, string slot, string address, string password, bool deathlink)
     {
@@ -117,9 +118,9 @@ public class APClientClass
                 {
                     RecipeUnlockDictionary.Add(item.ItemName);
                 }
-                if (item.ItemName == "Victory") // self explanatory
+                if (item.ItemName == "Depth Extender")
                 {
-                    Client.Goal();
+                    DepthExtendersRecieved++;
                 }
                 try
                 {
