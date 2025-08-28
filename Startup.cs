@@ -8,7 +8,7 @@ using UnityEngine.UIElements.StyleSheets;
 
 namespace CUAP;
 
-[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.1.0.0")]
+[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.2.0.0")]
 public class Startup : BaseUnityPlugin
 {
     public static new ManualLogSource Logger;
