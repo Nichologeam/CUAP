@@ -194,7 +194,6 @@ public class CraftingChecks : MonoBehaviour
         }
         foreach (Recipe recipe in Recipes.recipes)
         {
-            Startup.Logger.LogMessage("Setting " + recipe.result + " recipe to unlearned.");
             recipe.alwaysShow = false; // Unlearn every recipe upon first connecting. We will recieve them with items later.
         }
     }
