@@ -17,6 +17,7 @@ public class APGui : MonoBehaviour
     public static string State = "";
     public static Vector2 Offset;
     public static bool WasPressed;
+    public static bool DeathlinkEnabled;
 
     public static GUIStyle TextStyle = new()
     {
@@ -82,6 +83,7 @@ public class APGui : MonoBehaviour
         if (!IsConnected() && GUI.Button(new Rect(15 + Offset.x, 210 + Offset.y, 90, 30), "Connect"))
         {
             Startup.Logger.LogMessage("Connecting without Deathlink");
+            DeathlinkEnabled = false;
             var ipPortSplit = Ipporttext.Split(':');
             if (!int.TryParse(ipPortSplit[1], out var port))
             {
@@ -102,6 +104,7 @@ public class APGui : MonoBehaviour
         if (!IsConnected() && GUI.Button(new Rect(115 + Offset.x, 210 + Offset.y, 90, 30), "DeathLink"))
         {
             Startup.Logger.LogMessage("Connecting with Deathlink");
+            DeathlinkEnabled = true;
             var ipPortSplit = Ipporttext.Split(':');
             if (!int.TryParse(ipPortSplit[1], out var port))
             {
