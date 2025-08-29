@@ -19,7 +19,3 @@ This mod is made for the 4.0.1 version of Casualties: Unknown, which is currentl
 # **Sending Chat Messages**
 
 Despite its limited functionality, you can send chat messages and chat commands. Open the in-game debug console with ` and start your command with 'talk '. Everything after the space will be sent as a chat message, including any commands like '!hint'. Note that there is no way to see incoming chat messages, so you will need a text client or another player to tell you.
-
-# **Known issues**
-
-Currently, there is no logic applied to the randomization, but this also cannot generate impossible seeds, as there is nothing ever blocking you from goaling. I plan to add minimal forms of logic in v0.2.0 at the latest.
