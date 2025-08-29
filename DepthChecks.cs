@@ -65,13 +65,15 @@ public class DepthChecks : MonoBehaviour
     }
     IEnumerator CheckForDepthExtenders()
     {
-        if (APClientClass.DepthExtendersRecieved < (RoundedMeters - 300) / 300) // passes if we don't have enough depth extenders
+        if (worldgen.doPod && (APClientClass.DepthExtendersRecieved < (RoundedMeters) / 300)) // true if we are using a drillpod and can't afford 2 layers
+        {
+                worldgen.totalTraveled -= (int)(worldgen.height * 0.3f); // do it a second time
+                Startup.Logger.LogMessage("In drillpod, can't go deeper twice over");
+        }
+        else if (APClientClass.DepthExtendersRecieved < (RoundedMeters - 300) / 300)
         {
             worldgen.totalTraveled -= (int)(worldgen.height * 0.3f); // reversing WorldGeneration.IncreaseDepthByLayer
-            if (worldgen.doPod) // true if we are using a drillpod
-            {
-                worldgen.totalTraveled -= (int)(worldgen.height * 0.3f); // do it a second time
-            }
+            Startup.Logger.LogMessage("Can't afford to go deeper");
         }
         yield return new WaitUntil(() => !worldgen.loadingObject.activeSelf); // wait until loading is done to not trigger this every frame
     }
