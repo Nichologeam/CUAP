@@ -77,7 +77,7 @@ public class APGui : MonoBehaviour
             Offset = new(1700,-100);
             GUI.Box(new Rect(10 + Offset.x, 10 + Offset.y + 100, 200, 150), "Archipelago Client");
             GUI.Label(new Rect(20 + Offset.x, Offset.y + 155, 150, 35),
-                    $"Connected Sucessfully!");
+                    $"Depth Extenders: " + APClientClass.DepthExtendersRecieved + "          Max Depth: " + ((300 * APClientClass.DepthExtendersRecieved) + 300));
         }
 
         if (!IsConnected() && GUI.Button(new Rect(15 + Offset.x, 210 + Offset.y, 90, 30), "Connect"))
