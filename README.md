@@ -1,6 +1,6 @@
 ### Casualties: Unknown/Scav Prototype Archipelago
 
-This mod is made for the 4.0.1 version of Casualties: Unknown, which can be downloaded from the game's [Itch page](https://orsonik.itch.io/scav-prototype). Make sure this is the version of the game you have before continuing.
+This mod is made for the 4.1 version of Casualties: Unknown, which can be downloaded from the game's [Itch page](https://orsonik.itch.io/scav-prototype). Make sure you download V4.1 and not V5PreTesting4. V5 will only get support when it exits testing.
 
 # **Setup Guide**
 1. Download and install the client mod by extracting the CUAPClientModx.x.x.zip folder into the game's directory.
