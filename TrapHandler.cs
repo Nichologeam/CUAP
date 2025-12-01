@@ -29,9 +29,9 @@ public class TrapHandler : MonoBehaviour
         {
             Vitals.happiness =- 20;
         }
-        if (TrapName == "Hearing Loss Trap" && Vitals.hearingLoss < 50) // It's a trap item, so let's not lower the player's hearing loss.
+        if (TrapName == "Hearing Loss Trap")
         {
-            Vitals.hearingLoss = 50;
+            Vitals.hearingLoss =+ 50;
         }
         if (TrapName == "Earthquake Trap")
         {
