@@ -1972,13 +1972,13 @@ public class CraftingChecks : MonoBehaviour
     {
         if (RecievedRecipes.Count > lastFrameRecipeCount)
         {
+            Recipes.recipes.Clear();
             foreach (string gotrecipe in RecievedRecipes)
             {
-                Recipes.recipes.Clear();
                 CheckNameToRecipe.TryGetValue(gotrecipe, out Recipe recipeToLearn);
                 Recipes.recipes.Add(recipeToLearn); // Add the recipe to the list
                 Debug.Log("Learned Recipe " + gotrecipe + " from Archipelago!");
-                foreach (Recipe learnedRecipe in Recipes.recipes)
+                /*foreach (Recipe learnedRecipe in Recipes.recipes)
                 {
                     foreach (RecipeItem item in learnedRecipe.items)
                     {
@@ -1994,7 +1994,7 @@ public class CraftingChecks : MonoBehaviour
                             Item.GetItem(item.id).craftable = true;
                         }
                     }
-                }
+                }*/ // This line of code is in the basegame, and I'm not entierly sure what it does. Including it here causes a NullReferenceException.
             }
         }
         lastFrameRecipeCount = RecievedRecipes.Count;
