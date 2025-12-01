@@ -63,6 +63,10 @@ public class TrapHandler : MonoBehaviour
             }
             plrcam.threatMusicTime = 3000; // for 3000 frames (50 seconds)
         }
+        if (TrapName == "Cave Ticks Trap")
+        {
+            Instantiate(Resources.Load<GameObject>("caveticks"), gameObject.transform.position, Quaternion.identity);
+        }
     }
     IEnumerator ReverseControls()
     {
