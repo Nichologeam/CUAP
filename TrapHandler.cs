@@ -100,6 +100,10 @@ public class TrapHandler : MonoBehaviour
             Item chosenItem = heldItems.ElementAt(UnityEngine.Random.Range(0, heldItems.Count));
             chosenItem.condition = 0.01f;
         }
+        if (TrapName == "Mindwipe Trap")
+        {
+            StartCoroutine(Mindwipe());
+        }
     }
     IEnumerator ReverseControls()
     {
@@ -118,5 +122,12 @@ public class TrapHandler : MonoBehaviour
         Vitals.disfigured = true;
         yield return new WaitForSecondsRealtime(180);
         Vitals.disfigured = false;
+    }
+    IEnumerator Mindwipe()
+    {
+        MindwipeScript mw = Vitals.gameObject.AddComponent<MindwipeScript>();
+        yield return new WaitForSecondsRealtime(70);
+        Destroy(mw);
+        Destroy(GameObject.Find("Main Camera/Canvas/MindwipeViginette(Clone)"));
     }
 }
