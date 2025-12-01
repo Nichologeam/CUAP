@@ -8,7 +8,7 @@ using UnityEngine.UIElements.StyleSheets;
 
 namespace CUAP;
 
-[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.2.1.0")]
+[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.3.0.0")]
 public class Startup : BaseUnityPlugin
 {
     public static new ManualLogSource Logger;
@@ -22,7 +22,7 @@ public class Startup : BaseUnityPlugin
     private void Awake()
     {
         Logger = base.Logger;
-        Logger.LogMessage($"Casualties: Unknown/Scav Prototype Archipelago Plugin v{MyPluginInfo.PLUGIN_VERSION} loaded!");
+        Logger.LogMessage($"Casualties: Unknown/Scav Prototype Archipelago Plugin v0.3.0 loaded!");
         Handler = new GameObject("Archipelago GUI Hander");
         Handler.AddComponent<APGui>();
         DontDestroyOnLoad(Handler);
@@ -57,8 +57,8 @@ public class Startup : BaseUnityPlugin
         {
             if (Client is null || !(Client?.IsConnected ?? false))
             {
-                Startup.Logger.LogError("Archipelago disconnected mid run! Saving and quitting to main menu to prevent breaking the client!");
-                SaveSystem.SaveGame();
+                Startup.Logger.LogError("Archipelago disconnected mid run! Quitting to main menu to prevent breaking the client!");
+                //SaveSystem.SaveGame(); Something in this is throwing NRE, not sure what.
                 PlayerCamera.main.ToMainMenu();
             }
         }
