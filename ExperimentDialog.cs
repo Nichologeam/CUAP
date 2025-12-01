@@ -48,14 +48,15 @@ public class ExperimentDialog : MonoBehaviour
         try
         {
             Body body = GameObject.Find("Experiment/Body").GetComponent<Body>();
+            PlayerTalker = body.GetComponent<Talker>();
             if (body.gameObject.GetComponent<MindwipeScript>() || // Are we Mindwiped?
                 !body.conscious || // Unconsious, Sleeping, or dying?
-                GameObject.Find("Main Camera/Canvas/Moodles/Moodleimpairedspeech") || // Speech Impaired?
+                PlayerTalker.impairedSpeech || // Speech Impaired?
+                PlayerTalker.brainDamaged || // Brain Damaged?
                 body.inWater) // Underwater?
             {
                 BackupTextbox(item); // Then don't bother having Experiment speak
             }
-            PlayerTalker = body.GetComponent<Talker>();
         }
         catch
         {
