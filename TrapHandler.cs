@@ -74,6 +74,10 @@ public class TrapHandler : MonoBehaviour
                 trader.hostility = 500;
             }
         }
+        if (TrapName == "Disfigured Trap" && !Vitals.disfigured)
+        {
+            StartCoroutine(Disfigurement());
+        }
     }
     IEnumerator ReverseControls()
     {
@@ -86,5 +90,11 @@ public class TrapHandler : MonoBehaviour
         worldgen.unchippedMode = true;
         yield return new WaitForSecondsRealtime(90);
         worldgen.unchippedMode = false;
+    }
+    IEnumerator Disfigurement()
+    {
+        Vitals.disfigured = true;
+        yield return new WaitForSecondsRealtime(180);
+        Vitals.disfigured = false;
     }
 }
