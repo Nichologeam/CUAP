@@ -11,6 +11,7 @@ public class ExperimentDialog : MonoBehaviour
 {
     public static ApClient Client;
     private static Talker PlayerTalker;
+    private static PlayerCamera playercam;
 
     private void OnEnable()
     {
@@ -46,11 +47,19 @@ public class ExperimentDialog : MonoBehaviour
     };  // annoyingly ItemInfo does not contain a definition for ItemClassification, so I can't check it directly. This is a decent workaround.
         try
         {
-            PlayerTalker = GameObject.Find("Experiment/Body").GetComponent<Talker>();
+            Body body = GameObject.Find("Experiment/Body").GetComponent<Body>();
+            if (body.gameObject.GetComponent<MindwipeScript>() || // Are we Mindwiped?
+                !body.conscious || // Unconsious, Sleeping, or dying?
+                GameObject.Find("Main Camera/Canvas/Moodles/Moodleimpairedspeech") || // Speech Impaired?
+                body.inWater) // Underwater?
+            {
+                BackupTextbox(item); // Then don't bother having Experiment speak
+            }
+            PlayerTalker = body.GetComponent<Talker>();
         }
         catch
         {
-            Startup.Logger.LogWarning("Can't find Experiment to say Archipealgo dialog! If you aren't in the main menu, this is a bug!");
+            BackupTextbox(item); // One of those calls failed? Assume Experiment can't talk
         }
         if (item.ItemName.EndsWith("Unlock")) // progression item
         {
@@ -70,6 +79,18 @@ public class ExperimentDialog : MonoBehaviour
         else // something else... probably filler
         {
             PlayerTalker.Talk(NormalItemDialog[UnityEngine.Random.Range(0, NormalItemDialog.Count + 1)], null, true, false);
+        }
+    }
+    private static void BackupTextbox(Archipelago.MultiClient.Net.Models.ItemInfo info)
+    {
+        try
+        {
+            playercam = GameObject.Find("Main Camera").GetComponent<PlayerCamera>();
+            playercam.DoAlert("Received " + info.ItemName + " from " + info.Player, false);
+        }
+        catch
+        { 
+            // we're probably on the main menu, so don't bother.
         }
     }
 }
