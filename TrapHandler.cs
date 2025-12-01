@@ -67,6 +67,13 @@ public class TrapHandler : MonoBehaviour
         {
             Instantiate(Resources.Load<GameObject>("caveticks"), gameObject.transform.position, Quaternion.identity);
         }
+        if (TrapName == "Bad Rep Trap")
+        {
+            foreach (var trader in FindObjectsOfType<TraderScript>())
+            {
+                trader.hostility = 500;
+            }
+        }
     }
     IEnumerator ReverseControls()
     {
