@@ -14,6 +14,7 @@ public class TrapHandler : MonoBehaviour
     private Body Vitals;
     private WorldGeneration worldgen;
     private PlayerCamera plrcam;
+    private List<Item> heldItems = new List<Item>();
 
     private void OnEnable()
     {
@@ -81,6 +82,23 @@ public class TrapHandler : MonoBehaviour
         if (TrapName == "Fellow Experiment")
         {
             Instantiate(Resources.Load<GameObject>("corpse"), gameObject.transform.position, Quaternion.identity);
+        }
+        if (TrapName == "Fragile Items Trap")
+        {
+            heldItems.Clear();
+            foreach (var slot in FindObjectsOfType<InventorySlot>())
+            {
+                try
+                {
+                    heldItems.Add(slot.gameObject.GetComponentInChildren<Item>());
+                }
+                catch
+                { 
+                    continue;
+                }
+            }
+            Item chosenItem = heldItems.ElementAt(UnityEngine.Random.Range(0, heldItems.Count));
+            chosenItem.condition = 0.01f;
         }
     }
     IEnumerator ReverseControls()
