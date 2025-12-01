@@ -78,6 +78,10 @@ public class TrapHandler : MonoBehaviour
         {
             StartCoroutine(Disfigurement());
         }
+        if (TrapName == "Fellow Experiment")
+        {
+            Instantiate(Resources.Load<GameObject>("corpse"), gameObject.transform.position, Quaternion.identity);
+        }
     }
     IEnumerator ReverseControls()
     {

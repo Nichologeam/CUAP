@@ -102,7 +102,7 @@ public class APClientClass
                 {
                     LayerUnlockDictionary.Add(item.ItemName);
                 }
-                if ((bool)(item!.ItemName.EndsWith(" Trap"))) // Trap item. Send off to the TrapHandler to deal with.
+                if ((bool)(item!.ItemName.EndsWith(" Trap")) || item!.ItemName == "Fellow Experiment") // Trap item. Send off to the TrapHandler to deal with.
                 {
                     try
                     {
