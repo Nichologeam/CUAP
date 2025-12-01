@@ -67,8 +67,8 @@ public class DepthChecks : MonoBehaviour
     {
         if (worldgen.doPod && (APClientClass.DepthExtendersRecieved < (RoundedMeters) / 300)) // true if we are using a drillpod and can't afford 2 layers
         {
-                worldgen.totalTraveled -= (int)(worldgen.height * 0.3f); // do it a second time
-                Startup.Logger.LogMessage("In drillpod, can't go deeper twice over");
+            worldgen.totalTraveled -= (int)(worldgen.height * 0.3f); // do it a second time
+            Startup.Logger.LogMessage("In drillpod, can't go deeper twice over");
         }
         else if (APClientClass.DepthExtendersRecieved < (RoundedMeters - 300) / 300)
         {
