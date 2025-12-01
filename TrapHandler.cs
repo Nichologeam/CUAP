@@ -13,12 +13,14 @@ public class TrapHandler : MonoBehaviour
     public static ApClient Client;
     private Body Vitals;
     private WorldGeneration worldgen;
+    private PlayerCamera plrcam;
 
     private void OnEnable()
     {
         Client = APClientClass.Client;
         Vitals = this.gameObject.GetComponent<Body>();
         worldgen = GameObject.Find("World").GetComponent<WorldGeneration>();
+        plrcam = GameObject.Find("Main Camera").GetComponent<PlayerCamera>();
         Startup.Logger.LogMessage("TrapHandler Ready!");
     }
     public void ProcessTraps(string TrapName)
@@ -45,11 +47,33 @@ public class TrapHandler : MonoBehaviour
         {
             Vitals.sleeping = true;
         }
+        if (TrapName == "Unchipped Trap")
+        {
+            StartCoroutine(UnchippedToggle());
+        }
+        if (TrapName == "Elder Thornback Trap")
+        {
+            if (UnityEngine.Random.Range(0, 1) == 0)
+            {
+                plrcam.currentThreatTheme = 15; // play the Elder Thornback first phase theme
+            }
+            else
+            {
+                plrcam.currentThreatTheme = 10; // play the Elder Thornback second phase theme
+            }
+            plrcam.threatMusicTime = 3000; // for 3000 frames (50 seconds)
+        }
     }
     IEnumerator ReverseControls()
     {
         Vitals.reversedControls = true;
         yield return new WaitForSecondsRealtime(10);
         Vitals.reversedControls = false;
+    }
+    IEnumerator UnchippedToggle()
+    {
+        worldgen.unchippedMode = true;
+        yield return new WaitForSecondsRealtime(90);
+        worldgen.unchippedMode = false;
     }
 }
