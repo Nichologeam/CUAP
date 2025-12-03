@@ -1,6 +1,6 @@
 ### Casualties: Unknown/Scav Prototype Archipelago
 
-This mod is made for the 4.1 version of Casualties: Unknown, which can be downloaded from the game's [Itch page](https://orsonik.itch.io/scav-prototype). Make sure you download V4.1 and not V5PreTesting4. V5 will only get support when it exits testing.
+This mod is made for the 4.1 version of Casualties: Unknown, which can be downloaded from the game's [Itch page](https://orsonik.itch.io/scav-prototype). Make sure you download V4.1 and not V5PreTesting4.
 
 # **Setup Guide**
 1. Download BepInEx v5.4 from its [Github Page](https://github.com/BepInEx/BepInEx/releases/tag/v5.4.23.4).
@@ -18,7 +18,6 @@ This mod is made for the 4.1 version of Casualties: Unknown, which can be downlo
 	- If you want to run with Deathlink, click the 'Deathlink' button.
 	- If you don't, click 'connect'.
 7. I recommend also connecting a text client, as Experiment is known to skip out on saying the item receive dialogue sometimes.
-	- Item receive dialogues are also limited to the same rules as normal dialogue, where having impaired speech, brain damage, or being Hollow can change how text looks or remove it altogether.
 8. If anything goes wrong while playing, please let me know. This is still in very early development and isn't anywhere near stable.
 
 # **Sending Chat Messages**
