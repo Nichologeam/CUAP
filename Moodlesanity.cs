@@ -148,7 +148,15 @@ public class Moodlesanity : MonoBehaviour
         {"Blind",-966812951},
         {"Immunocompromised",-966812950},
         {"Immunocompetent",-966812949},
-        {"Amputated",-966812948}
+        {"Amputated",-966812948},
+        {"Heavy load",-966813096},
+        {"Encumbered",-966813095},
+        {"Very encumbered",-966813094},
+        {"Hampered",-966813093},
+        {"Last stand",-966813092},
+        {"Drug overdose",-966813091},
+        {"Tachycardia",-966813090},
+        {"Bradycardia",-966813089}
     };
 
     private void OnEnable()
