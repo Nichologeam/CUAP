@@ -87,7 +87,7 @@ public class ExperimentDialog : MonoBehaviour
         try
         {
             playercam = GameObject.Find("Main Camera").GetComponent<PlayerCamera>();
-            playercam.DoAlert("Received " + info.ItemName + " from " + info.Player + " (" + info.LocationGame + ")", false);
+            playercam.DoAlert("Received " + info.ItemName + " from " + info.Player + " (" + info.LocationDisplayName + ")", false);
         }
         catch
         { 
