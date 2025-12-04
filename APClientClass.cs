@@ -3,8 +3,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using BepInEx.Logging;
-using BepInEx;
 using CreepyUtil.Archipelago;
 using UnityEngine;
 using static Archipelago.MultiClient.Net.Enums.ItemsHandlingFlags;

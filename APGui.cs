@@ -1,7 +1,4 @@
-﻿using BepInEx;
-using BepInEx.Logging;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using UnityEngine;
 using static CUAP.APClientClass;
 
