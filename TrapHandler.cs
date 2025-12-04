@@ -135,7 +135,7 @@ public class TrapHandler : MonoBehaviour
         Destroy(mw);
         Destroy(GameObject.Find("Main Camera/Canvas/MindwipeViginette(Clone)"));
         skills.INT = INTSkillPreWipe;
-        skills.expINT = INTExpPreWipe;
+        skills.expINT =+ INTExpPreWipe;
         skills.maxINT = INTMaxPreWipe;
         skills.minINT = INTMinPreWipe;
     }
