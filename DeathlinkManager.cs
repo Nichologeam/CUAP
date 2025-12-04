@@ -31,11 +31,11 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
             Startup.Logger.LogWarning("Deathlink is disabled, destroying script.");
             Destroy(this); // we destroy the script this late so the text is set up for DepthChecks, which uses it regardless of deathlink being on
         }
+        Client = APClientClass.Client;
         Startup.Logger.LogMessage("DeathlinkManager is monitoring Vitals...");
     }
     private void Update()
     {
-        Client = APClientClass.Client;
         if (!Vitals.alive && Vitals.brainHealth == 0) // Experiment is dead! Send Deathlink!
         {
             Startup.Logger.LogWarning("DeathlinkManager noticed that Experiment died! Sending Deathlink...");
@@ -71,6 +71,7 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
             }
             else if (Convert.ToInt32(deathlinkoption) == 2) // Nearly exact replica of SelfHarmer.SelfHarm because we can't actually call it
             {
+                DeathLinkText.autoSizeTextContainer = false;
                 Limb limb = Vitals.limbs[UnityEngine.Random.Range(1, Vitals.limbs.Length)]; // starting at 1 means the head can never be selected. prevents sudden comatose moodle.
                 limb.muscleHealth -= 30f;
                 limb.skinHealth -= 70f;
