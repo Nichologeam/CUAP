@@ -30,7 +30,7 @@ public class DepthChecks : MonoBehaviour
         if (options.TryGetValue("GoalDepth", out var goaldepthoption)) // fetch and store the goal depth.
         {
             GoalDepth = (int)goaldepthoption;
-            GoalCheckID = -966812869 + (GoalDepth / 100);
+            GoalCheckID = -966813196 + (GoalDepth / 100);
         }
         Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is " + GoalDepth + "m");
     }
