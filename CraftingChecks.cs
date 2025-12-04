@@ -2,14 +2,7 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
-using TMPro;
-using System.Drawing;
-using System.IO;
-using System.Collections.Concurrent;
-using Archipelago.MultiClient.Net.Models;
-using static System.Collections.Specialized.BitVector32;
 using Newtonsoft.Json.Linq;
-using System.Linq;
 
 namespace CUAP;
 
@@ -98,1857 +91,3502 @@ public class CraftingChecks : MonoBehaviour
         {75,-966812872},
         {76,-966812871},
         {77,-966812870},
-    };
-    private static Dictionary<string, int> RecipeNametoID = new Dictionary<string, int>()
-    {
-        { "Neural booster Recipe", 0 },
-        { "Scaffolding Recipe", 1 },
-        { "Foliage rope (from foliage) Recipe", 2 },
-        { "Foliage rope (from dry foliage) Recipe", 3 },
-        { "Foliage (from dry foliage) Recipe", 4 },
-        { "Foliage rope (from musharm) Recipe", 5 },
-        { "Sterilized dressing Recipe", 6 },
-        { "Dressing (from ripped dressing) Recipe", 7 },
-        { "Burger Recipe", 8 },
-        { "Ripped dressing (from foliage) Recipe", 9 },
-        { "Ripped dressing (from dried foliage) Recipe", 10 },
-        { "Canteen Recipe", 11 },
-        { "Filtered canteen Recipe", 12 },
-        { "Large carcass Recipe", 13 },
-        { "Carcass splint Recipe", 14 },
-        { "Metal digging tool Recipe", 15 },
-        { "Pickaxe Recipe", 16 },
-        { "Reinforced rope Recipe", 17 },
-        { "Makeshift L.R.D. Recipe", 18 },
-        { "L.R.D. Recipe", 19 },
-        { "Bruise kit Recipe", 20 },
-        { "Splint Recipe", 21 },
-        { "Foliage bag Recipe", 22 },
-        { "Sling bag Recipe", 23 },
-        { "Relief cream Recipe", 24 },
-        { "Antiseptic Recipe", 25 },
-        { "Blood bag (from alloy) Recipe", 26 },
-        { "Blood bag (from empty bag) Recipe", 27 },
-        { "Blood bag (from filled bag) Recipe", 28 },
-        { "Blood bag (from yellow flesh) Recipe", 29 },
-        { "Dressing (from musharm) Recipe", 30 },
-        { "Opium Recipe", 31 },
-        { "Morphine (from opium) Recipe", 32 },
-        { "Fentanyl Recipe", 33 },
-        { "Lantern Recipe", 34 },
-        { "Antidepressants Recipe", 35 },
-        { "Turbulent crystal shard Recipe", 36 },
-        { "Flammable powder (from stuck fruit) Recipe", 37 },
-        { "Flammable powder (from freed fruit) Recipe", 38 },
-        { "Dynamite Recipe", 39 },
-        { "Magazine base Recipe", 40 },
-        { "Small magazine Recipe", 41 },
-        { "Rifle magazine Recipe", 42 },
-        { "Box of 12-Gauge Recipe", 43 },
-        { "Makeshift rifle Recipe", 44 },
-        { "Scrap metal Recipe", 45 },
-        { "9mm round Recipe", 46 },
-        { "12-Gauge buckshot Recipe", 47 },
-        { "5.56 round Recipe", 48 },
-        { "Tweezers Recipe", 49 },
-        { "Metal alloy Recipe", 50 },
-        { "Advanced scuba diving gear Recipe", 51 },
-        { "Makeshift digging tool Recipe", 52 },
-        { "Bone welding tool Recipe", 53 },
-        { "Clotting mush Recipe", 54 },
-        { "Procoagulant Recipe", 55 },
-        { "Mini laser drill Recipe", 56 },
-        { "Makeshift helmet Recipe", 57 },
-        { "Bicycle helmet Recipe", 58 },
-        { "Makeshift headlamp Recipe", 59 },
-        { "Duffel bag Recipe", 60 },
-        { "Tourniquet Recipe", 61 },
-        { "Plastic dressing Recipe", 62 },
-        { "Limb wraps Recipe", 63 },
-        { "Headlamp Recipe", 64 },
-        { "Bowl of cereal Recipe", 65 },
-        { "Naltrexone Recipe", 66 },
-        { "Blood sac Recipe", 67 },
-        { "Antiseptic mush Recipe", 68 },
-        { "Morphine (from relief crystal) Recipe", 69 },
-        { "Grav-Bag Recipe", 70 },
-        { "Terrain scanner Recipe", 71 },
-        { "Auto-auto-pump Recipe", 72 },
-        { "Climbing claws Recipe", 73 },
-        { "Blood bag (from crystal) Recipe", 74 },
-        { "Ice pack Recipe", 75 },
-        { "Flashlight Recipe", 76 },
-        { "Foliage (from fungus chunk) Recipe", 77 },
+        {78,-966812869},
+        {79,-966812868},
+        {80,-966812867},
+        {81,-966812866},
+        {82,-966812865},
+        {83,-966812864},
+        {84,-966812863},
+        {85,-966812862},
+        {86,-966812861},
+        {87,-966812860},
+        {88,-966812859},
+        {89,-966812858},
+        {90,-966812857},
+        {91,-966812856},
+        {92,-966812855},
+        {93,-966812854},
+        {94,-966812853},
+        {95,-966812852},
+        {96,-966812851},
+        {97,-966812850},
+        {98,-966812849},
+        {99,-966812848},
+        {100,-966812847},
+        {101,-966812846},
+        {102,-966812845},
+        {103,-966812844},
     };
     private int lastFrameRecipeCount;
     private static Dictionary<string, Recipe> CheckNameToRecipe = new Dictionary<string, Recipe>()
 {   // Same order as items.py, and the interal recipe order in-game
-    {"Neural booster Recipe",new Recipe // This is the exact way the game makes recipes (see Recipes.SetUpRecipes in the game's code)
+    {"Foliage rope Recipe",new Recipe
         {
-            result = "neuralbooster",
+            INT = 1,
+            result = new RecipeResult
+            {
+                id = "rope"
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "braingrow"
+                    quality = new CraftingQuality("foliage"),
+                    minimumCondition = 0f
                 },
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "mindwipe"
-                },
-                new RecipeItem
-                {
-                    id = "glowplantfruit"
+                    quality = new CraftingQuality("foliage"),
+                    minimumCondition = 0f
                 }
             },
-            alwaysShow = true // set every recipe to alwaysShow to prevent confusion with newly unlocked recipes being hidden
+            category = Recipes.RecipeCategory.Materials
         }
     },
-    {"Scaffolding pack Recipe",new Recipe
+    {"String Recipe",new Recipe
         {
-            result = "scaffoldingpack",
-            items = new List<RecipeItem>
+            INT = 5,
+            result = new RecipeResult
             {
-                new RecipeItem
-                {
-                    id = "metalalloy"
-                },
-                new RecipeItem
-                {
-                    id = "metalalloy"
-                },
-                new RecipeItem
-                {
-                    id = "metalalloy"
-                },
-                new RecipeItem
-                {
-                    id = "metalalloy"
-                }
+                id = "string",
+                amount = 3
             },
-            alwaysShow = true
-        }
-    },
-    {"Foliage rope (from foliage) Recipe",new Recipe
-        {
-            result = "rope",
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "foliage"
+                    specificId = "rope",
+                    minimumCondition = 0f
                 },
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "foliage"
-                }
-            },
-            alwaysShow = true
-        }
-    },
-    {"Foliage rope (from dry foliage) Recipe",new Recipe
-        {
-            result = "rope",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "dryfoliage"
+                    specificId = "rope",
+                    minimumCondition = 0f
                 },
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "dryfoliage"
-                }
-            },
-            alwaysShow = true
-        }
-    },
-    {"Foliage (from dry foliage) Recipe",new Recipe
-        {
-            result = "foliage",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "dryfoliage"
-                },
-                new RecipeItem
-                {
-                    id = "water",
-                    isTag = true,
-                    destroyItem = false,
-                    reduceCondition = 0.05f,
-                    minCondition = 0.05f
-                }
-            },
-            alwaysShow = true
-        }
-    },
-    {"Foliage rope (from musharm) Recipe",new Recipe
-        {
-            result = "rope",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "musharm"
-                },
-                new RecipeItem
-                {
-                    id = "musharm"
-                }
-            },
-            alwaysShow = true
-        }
-    },
-    {"Serilized dressing Recipe",new Recipe
-        {
-            result = "sterilizedbandage",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "dressing",
-                    isTag = true
-                },
-                new RecipeItem
-                {
-                    id = "antiseptic",
-                    isTag = true,
-                    destroyItem = false,
-                    reduceCondition = 0.2f,
-                    minCondition = 0.2f
-                }
-            },
-            scaleByFirstItemCondition = true,
-            alwaysShow = true
-        }
-    },
-    {"Dressing (from ripped dressing) Recipe",new Recipe
-        {
-            result = "bandage",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "rippeddressing"
-                },
-                new RecipeItem
-                {
-                    id = "rippeddressing"
-                }
-            },
-            scaleByFirstItemCondition = true,
-            alwaysShow = true
-        }
-    },
-    {"Burger Recipe",new Recipe
-        {
-            result = "burger",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "meat",
-                    isTag = true
-                },
-                new RecipeItem
-                {
-                    id = "ketchup",
-                    destroyItem = false,
-                    minCondition = 0.2f,
-                    reduceCondition = 0.2f
-                },
-                new RecipeItem
-                {
-                    id = "foliage"
-                },
-                new RecipeItem
-                {
-                    id = "foliage"
-                }
-            },
-            alwaysShow = true
-        }
-    },
-    {"Ripped dressing (from foliage) Recipe",new Recipe
-        {
-            result = "rippeddressing",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "foliage"
-                },
-                new RecipeItem
-                {
-                    id = "foliage"
-                },
-                new RecipeItem
-                {
-                    id = "foliage"
-                }
-            },
-            alwaysShow = true
-        }
-    },
-    {"Ripped dressing (from dried foliage) Recipe",new Recipe
-        {
-            result = "rippeddressing",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "dryfoliage"
-                },
-                new RecipeItem
-                {
-                    id = "dryfoliage"
-                },
-                new RecipeItem
-                {
-                    id = "dryfoliage"
-                }
-            },
-            alwaysShow = true
-        }
-    },
-    {"Canteen Recipe",new Recipe
-        {
-            result = "canteen",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "water",
-                    minCondition = 0f,
-                    isTag = true
-                },
-                new RecipeItem
-                {
-                    id = "rope"
-                },
-                new RecipeItem
-                {
-                    id = "rope"
-                }
-            },
-            alwaysShow = true,
-            resultCondition = 0f
-        }
-    },
-    {"Filtered canteen Recipe",new Recipe
-        {
-            result = "filtercanteen",
-            scaleByFirstItemCondition = true,
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "canteen",
-                    minCondition = 0f
-                },
-                new RecipeItem
-                {
-                    id = "filterstraw"
-                }
-            },
-            alwaysShow = true,
-        }
-    },
-    {"Large carcass Recipe",new Recipe
-        {
-            result = "largecarcass",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "carcass"
-                },
-                new RecipeItem
-                {
-                    id = "carcass"
-                }
-            },
-            alwaysShow = true
-        }
-    },
-    {"Carcass splint Recipe",new Recipe
-        {
-            result = "carcasssplint",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "largecarcass"
-                },
-                new RecipeItem
-                {
-                    id = "carcass"
-                },
-                new RecipeItem
-                {
-                    id = "rope"
-                }
-            },
-            alwaysShow = true
-        }
-    },
-    {"Metal digging tool Recipe",new Recipe
-        {
-            result = "primitivediggingtool",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "stick"
-                },
-                new RecipeItem
-                {
-                    id = "reinforcedrope"
-                },
-                new RecipeItem
-                {
-                    id = "scrapmetal",
-                    minCondition = 0.7f
-                }
-            },
-            alwaysShow = true,
-            scaleByFirstItemCondition = true,
-            resultCondition = 0.75f
-        }
-    },
-    {"Pickaxe Recipe",new Recipe
-        {
-            result = "pickaxe",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "ironstick"
-                },
-                new RecipeItem
-                {
-                    id = "reinforcedrope"
-                },
-                new RecipeItem
-                {
-                    id = "metalalloy"
-                }
-            },
-            alwaysShow = true,
-            scaleByFirstItemCondition = true,
-            resultCondition = 1f
-        }
-    },
-    {"Reinforced rope Recipe",new Recipe
-        {
-            result = "reinforcedrope",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "rope"
-                },
-                new RecipeItem
-                {
-                    id = "rope"
-                },
-                new RecipeItem
-                {
-                    id = "scrapmetal",
-                    reduceCondition = 0.25f,
-                    minCondition = 0.25f,
+                    quality = new CraftingQuality("cutting"),
+                    minimumCondition = 0f,
                     destroyItem = false
                 }
             },
-            alwaysShow = true
+            category = Recipes.RecipeCategory.Materials
         }
     },
-    {"Makeshift L.R.D. Recipe",new Recipe
+    {"Canvas Recipe",new Recipe
         {
-            result = "makeshiftlrd",
+            INT = 2,
+            result = new RecipeResult
+            {
+                id = "canvas"
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "scrapmetal",
-                    minCondition = 0.7f
+                    quality = new CraftingQuality("foliage"),
+                    minimumCondition = 0f
                 },
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "glowplantfruit"
+                    quality = new CraftingQuality("foliage"),
+                    minimumCondition = 0f
                 },
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "rope",
-                    minCondition = 0.5f,
-                    reduceCondition = 0.5f,
-                    destroyItem = true
-                },
-                new RecipeItem
-                {
-                    id = "dressing",
-                    isTag = true,
-                    minCondition = 0.5f,
-                    reduceCondition = 0.5f,
-                    destroyItem = true
+                    quality = new CraftingQuality("foliage"),
+                    minimumCondition = 0f
                 }
             },
-            alwaysShow = true
+            category = Recipes.RecipeCategory.Materials
         }
     },
-    {"L.R.D. Recipe",new Recipe
+    {"Wood scraps Recipe",new Recipe
         {
-            result = "lrd",
-            items = new List<RecipeItem>
+            INT = 3,
+            result = new RecipeResult
             {
-                new RecipeItem
-                {
-                    id = "makeshiftlrd"
-                },
-                new RecipeItem
-                {
-                    id = "circuitboard"
-                },
-                new RecipeItem
-                {
-                    id = "metalalloy"
-                },
-                new RecipeItem
-                {
-                    id = "opiate",
-                    isTag = true,
-                    minCondition = 0.5f,
-                    reduceCondition = 0.5f,
-                    destroyItem = true
-                }
+                id = "woodscraps"
             },
-            alwaysShow = true
-        }
-    },
-    {"Bruise kit Recipe",new Recipe
-        {
-            result = "bruisekit",
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "dressing",
-                    isTag = true,
+                    quality = new CraftingQuality("foliage"),
+                    minimumCondition = 0f
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("foliage"),
+                    minimumCondition = 0f
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("foliage"),
+                    minimumCondition = 0f
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("foliage"),
+                    minimumCondition = 0f
+                }
+            }
+        }
+    },
+    {"Ripped dressing Recipe",new Recipe
+        {
+            INT = 0,
+            result = new RecipeResult
+            {
+                id = "rippeddressing"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("rippable"),
                     destroyItem = false,
-                    reduceCondition = 0.5f
-                },
-                new RecipeItem
-                {
-                    id = "glowplantfruit"
-                },
-                new RecipeItem
-                {
-                    id = "opiate",
-                    isTag = true,
-                    destroyItem = false,
-                    reduceCondition = 0.35f
+                    minimumCondition = 0f
                 }
             },
-            alwaysShow = true
+            category = Recipes.RecipeCategory.Materials
         }
     },
-    {"Splint Recipe",new Recipe
+    {"Sterilized dressing Recipe",new Recipe
         {
-            result = "splint",
+            INT = 1,
+            result = new RecipeResult
+            {
+                id = "sterilizedbandage"
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "metalalloy"
+                    quality = new CraftingQuality("dressing")
                 },
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "reinforcedrope"
+                    isLiquid = true,
+                    quality = new CraftingQuality("disinfectant", 10f)
                 }
             },
-            alwaysShow = true,
-            resultCondition = 0.6f
+            category = Recipes.RecipeCategory.Medicine
         }
     },
-    {"Foliage bag Recipe",new Recipe
+    {"Bio-chem fluid Recipe",new Recipe
         {
-            result = "foliagebag",
+            INT = 4,
+            result = new RecipeResult
+            {
+                id = "biochem",
+                isLiquid = true,
+                resultCondition = 10f
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "rope"
-                },
-                new RecipeItem
-                {
-                    id = "scrapmetal",
-                    minCondition = 0.7f
-                },
-                new RecipeItem
-                {
-                    id = "foliage"
-                },
-                new RecipeItem
-                {
-                    id = "foliage"
+                    specificId = "glowplantfruit",
+                    minimumCondition = 0f
                 }
             },
-            alwaysShow = true
-        }
-    },
-    {"Sling bag Recipe",new Recipe
-        {
-            result = "slingbag",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "reinforcedrope"
-                },
-                new RecipeItem
-                {
-                    id = "foliagebag"
-                },
-                new RecipeItem
-                {
-                    id = "rope"
-                }
-            },
-            alwaysShow = true,
-            scaleByFirstItemCondition = true
-        }
-    },
-    {"Relief cream Recipe",new Recipe
-        {
-            result = "paincream",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "opiate",
-                    isTag = true
-                },
-                new RecipeItem
-                {
-                    id = "glowplantfruit"
-                },
-                new RecipeItem
-                {
-                    id = "glowplantfruit"
-                },
-                new RecipeItem
-                {
-                    id = "bloodsac"
-                }
-            },
-            alwaysShow = true,
-            scaleByFirstItemCondition = true,
-            resultCondition = 1f
-        }
-    },
-    {"Antiseptic Recipe",new Recipe
-        {
-            result = "disinfectant",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "water",
-                    isTag = true
-                },
-                new RecipeItem
-                {
-                    id = "glowplantfruit"
-                },
-                new RecipeItem
-                {
-                    id = "glowplantfruit"
-                },
-                new RecipeItem
-                {
-                    id = "bloodsac"
-                }
-            },
-            alwaysShow = true,
-            scaleByFirstItemCondition = true,
-            resultCondition = 0.5f
-        }
-    },
-    {"Blood bag (from alloy) Recipe",new Recipe
-        {
-            result = "bloodbag",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "bloodsac"
-                },
-                new RecipeItem
-                {
-                    id = "bloodsac"
-                },
-                new RecipeItem
-                {
-                    id = "metalalloy"
-                },
-                new RecipeItem
-                {
-                    id = "glowplantfruit"
-                }
-            },
-            alwaysShow = true,
-        }
-    },
-    {"Blood bag (from empty bag) Recipe",new Recipe
-        {
-            result = "bloodbag",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "bloodsac"
-                },
-                new RecipeItem
-                {
-                    id = "bloodsac"
-                },
-                new RecipeItem
-                {
-                    id = "bloodbagempty"
-                },
-                new RecipeItem
-                {
-                    id = "glowplantfruit"
-                }
-            },
-            alwaysShow = true,
-        }
-    },
-    {"Blood bag (from filled bag) Recipe",new Recipe
-        {
-            result = "bloodbag",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "bloodsac"
-                },
-                new RecipeItem
-                {
-                    id = "bloodsac"
-                },
-                new RecipeItem
-                {
-                    id = "bloodbag"
-                },
-                new RecipeItem
-                {
-                    id = "glowplantfruit"
-                }
-            },
-            alwaysShow = true,
-        }
-    },
-    {"Blood bag (from yellow flesh) Recip",new Recipe
-        {
-            result = "bloodbag",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "bloodbaghuman"
-                },
-                new RecipeItem
-                {
-                    id = "experimentflesh"
-                },
-                new RecipeItem
-                {
-                    id = "glowplantfruit"
-                }
-            },
-            alwaysShow = true,
-            scaleByFirstItemCondition = true
-        }
-    },
-    {"Dressing (from musharm) Recipe",new Recipe
-        {
-            result = "bandage",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "musharm"
-                },
-                new RecipeItem
-                {
-                    id = "musharm"
-                },
-                new RecipeItem
-                {
-                    id = "rope"
-                }
-            },
-            alwaysShow = true,
+            category = Recipes.RecipeCategory.Materials
         }
     },
     {"Opium Recipe",new Recipe
         {
-            result = "opium",
+            INT = 7,
+            result = new RecipeResult
+            {
+                id = "opium",
+                isLiquid = true,
+                resultCondition = 50f
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "mushpear"
+                    specificId = "mushpear",
+                    minimumCondition = 0f
                 },
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "mushpear"
+                    specificId = "mushpear",
+                    minimumCondition = 0f
                 },
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "glowplantfruit"
+                    isLiquid = true,
+                    specificId = "biochem",
+                    minimumCondition = 10f
                 },
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "scrapmetal",
-                    destroyItem = false,
-                    reduceCondition = 0.5f,
-                    minCondition = 0.5f
+                    isLiquid = true,
+                    quality = new CraftingQuality("water", 50f)
                 }
             },
-            alwaysShow = true,
-            resultCondition = 0.5f
+            category = Recipes.RecipeCategory.Medicine
         }
     },
-    {"Morphine (from opium) Recipe",new Recipe
+    {"Morphine Recipe",new Recipe
         {
-            result = "morphine",
+            INT = 9,
+            result = new RecipeResult
+            {
+                id = "morphine",
+                isLiquid = true,
+                resultCondition = 50f
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(75f)
                 {
-                    id = "opium"
+                    specificId = "opium",
+                    isLiquid = true
                 },
-                new RecipeItem
+                new RecipeItem(10f)
                 {
-                    id = "opium"
+                    isLiquid = true,
+                    specificId = "biochem"
                 },
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "glowplantfruit"
+                    isLiquid = true,
+                    quality = new CraftingQuality("water", 15f)
                 }
             },
-            alwaysShow = true,
+            category = Recipes.RecipeCategory.Medicine
         }
     },
     {"Fentanyl Recipe",new Recipe
         {
-            result = "fentanyl",
+            INT = 11,
+            result = new RecipeResult
+            {
+                id = "fentanyl",
+                isLiquid = true,
+                resultCondition = 10f
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(50f)
                 {
-                    id = "morphine"
+                    specificId = "morphine",
+                    isLiquid = true
                 },
-                new RecipeItem
+                new RecipeItem(25f)
                 {
-                    id = "morphine"
+                    isLiquid = true,
+                    specificId = "biochem"
                 },
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "glowplantfruit"
+                    isLiquid = true,
+                    quality = new CraftingQuality("water", 25f)
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "flammablepowder"
                 }
             },
-            alwaysShow = true,
+            category = Recipes.RecipeCategory.Medicine
         }
     },
-    {"Lantern Recipe",new Recipe
+    {"Painkillers Recipe",new Recipe
         {
-            result = "lantern",
+            INT = 10,
+            result = new RecipeResult
+            {
+                id = "painkillers",
+                isLiquid = true,
+                resultCondition = 200f
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "emissivecrystalshard"
+                    specificId = "reliefcrystalshard"
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "scrapmetal",
+                    specificId = "plasticchunk"
+                },
+                new RecipeItem(20f)
+                {
+                    isLiquid = true,
+                    specificId = "biochem"
+                },
+                new RecipeItem(0.9f)
+                {
+                    isLiquid = true,
+                    quality = new CraftingQuality("water", 50f)
+                }
+            },
+            category = Recipes.RecipeCategory.Medicine
+        }
+    },
+    {"Neural booster Recipe",new Recipe
+        {
+            INT = 18,
+            result = new RecipeResult
+            {
+                id = "neuralbooster"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(50f)
+                {
+                    isLiquid = true,
+                    specificId = "biochem"
+                },
+                new RecipeItem(80f)
+                {
+                    isLiquid = true,
+                    specificId = "braingrow"
+                },
+                new RecipeItem(30f)
+                {
+                    isLiquid = true,
+                    specificId = "mindwipe"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "plasticchunk"
+                },
+                new RecipeItem(0.9f)
+                {
+                    specificId = "circuitboard"
+                }
+            },
+            category = Recipes.RecipeCategory.Medicine
+        }
+    },
+    {"Canteen Recipe",new Recipe
+        {
+            INT = 6,
+            result = new RecipeResult
+            {
+                id = "canteen"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0.9f)
+                {
+                    specificId = "plasticchunk",
+                    minimumCondition = 0f
+                },
+                new RecipeItem(0.9f)
+                {
+                    specificId = "plasticchunk",
+                    minimumCondition = 0f
+                },
+                new RecipeItem(0.9f)
+                {
+                    specificId = "rope",
+                    minimumCondition = 0f
+                },
+                new RecipeItem(0.9f)
+                {
+                    isLiquid = true,
+                    specificId = "biochem",
+                    minimumCondition = 10f
+                }
+            },
+            category = Recipes.RecipeCategory.Utilities
+        }
+    },
+    {"Foliage bag Recipe",new Recipe
+        {
+            INT = 5,
+            result = new RecipeResult
+            {
+                id = "foliagebag"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0.9f)
+                {
+                    specificId = "rope",
+                    minimumCondition = 0f
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("canvas"),
+                    minimumCondition = 0f
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("canvas"),
+                    minimumCondition = 0f
+                }
+            },
+            category = Recipes.RecipeCategory.Utilities
+        }
+    },
+    {"Sling bag Recipe",new Recipe
+        {
+            INT = 7,
+            result = new RecipeResult
+            {
+                id = "slingbag"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0.9f)
+                {
+                    specificId = "foliagebag",
+                    minimumCondition = 0f
+                },
+                new RecipeItem(0.9f)
+                {
+                    specificId = "string",
+                    minimumCondition = 0f
+                },
+                new RecipeItem(0.9f)
+                {
+                    specificId = "rope",
+                    minimumCondition = 0f
+                },
+                new RecipeItem(0.9f)
+                {
+                    specificId = "rope",
+                    minimumCondition = 0f
+                }
+            },
+            category = Recipes.RecipeCategory.Utilities
+        }
+    },
+    {"Scrap cube Recipe",new Recipe
+        {
+            INT = 6,
+            result = new RecipeResult
+            {
+                id = "scrapcube"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0.9f)
+                {
+                    specificId = "scrapmetal",
+                    minimumCondition = 0.9f
+                },
+                new RecipeItem(0.9f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true,
+                    minimumCondition = 10f
+                }
+            },
+            category = Recipes.RecipeCategory.Materials
+        }
+    },
+    {"Scrap panel Recipe",new Recipe
+        {
+            INT = 5,
+            result = new RecipeResult
+            {
+                id = "scrappanel",
+                amount = 5
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0.9f)
+                {
+                    specificId = "scrapcube",
+                    minimumCondition = 0.9f
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("cutting"),
+                    minimumCondition = 0f,
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Materials
+        }
+    },
+    {"Scrap tube Recipe",new Recipe
+        {
+            INT = 5,
+            result = new RecipeResult
+            {
+                id = "scraptube",
+                amount = 2
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0.9f)
+                {
+                    specificId = "scrapcube",
+                    minimumCondition = 0.9f
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("cutting"),
+                    minimumCondition = 0f,
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Materials
+        }
+    },
+    {"Nails Recipe",new Recipe
+        {
+            INT = 5,
+            result = new RecipeResult
+            {
+                id = "nails",
+                amount = 2
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("cube", 1f)
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("cutting", 2.5f),
+                    minimumCondition = 0f,
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Materials
+        }
+    },
+    {"Wood cube Recipe",new Recipe
+        {
+            INT = 4,
+            result = new RecipeResult
+            {
+                id = "woodcube"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "woodscraps"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "woodscraps"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "woodscraps"
+                },
+                new RecipeItem(0.9f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true,
+                    minimumCondition = 10f
+                }
+            },
+            category = Recipes.RecipeCategory.Materials
+        }
+    },
+    {"Wood panel Recipe",new Recipe
+        {
+            INT = 4,
+            result = new RecipeResult
+            {
+                id = "woodpanel",
+                amount = 5
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "woodcube",
+                    minimumCondition = 0.9f
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("cutting"),
+                    minimumCondition = 0f,
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Materials
+        }
+    },
+    {"Stick Recipe",new Recipe
+        {
+            INT = 4,
+            result = new RecipeResult
+            {
+                id = "stick",
+                amount = 2
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "woodcube"
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("cutting"),
+                    minimumCondition = 0f,
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Materials
+        }
+    },
+    {"Flimsy knife Recipe",new Recipe
+        {
+            INT = 4,
+            result = new RecipeResult
+            {
+                id = "flimsyknife"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0.9f)
+                {
+                    specificId = "scrapmetal",
+                    minimumCondition = 0.9f
+                },
+                new RecipeItem(0.9f)
+                {
+                    specificId = "rope",
+                    minimumCondition = 0f
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("cube", 0.5f)
+                }
+            },
+            category = Recipes.RecipeCategory.Tools
+        }
+    },
+    {"Processed copper Recipe",new Recipe
+        {
+            INT = 10,
+            result = new RecipeResult
+            {
+                id = "processedcopper"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0.9f)
+                {
+                    specificId = "rawcopper",
+                    minimumCondition = 0f
+                },
+                new RecipeItem(0.9f)
+                {
+                    isLiquid = true,
+                    specificId = "biochem",
+                    minimumCondition = 40f
+                }
+            },
+            category = Recipes.RecipeCategory.Materials
+        }
+    },
+    {"Bundle of wires Recipe",new Recipe
+        {
+            INT = 10,
+            result = new RecipeResult
+            {
+                id = "bundleofwires",
+                amount = 6
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0.9f)
+                {
+                    specificId = "processedcopper",
+                    minimumCondition = 0f
+                },
+                new RecipeItem(0.9f)
+                {
+                    specificId = "plasticchunk",
+                    minimumCondition = 0f
+                },
+                new RecipeItem(0.9f)
+                {
+                    specificId = "plasticchunk",
+                    minimumCondition = 0f
+                },
+                new RecipeItem(0.9f)
+                {
+                    specificId = "plasticchunk",
+                    minimumCondition = 0f
+                }
+            },
+            category = Recipes.RecipeCategory.Materials
+        }
+    },
+    {"Titanium slab Recipe",new Recipe
+        {
+            INT = 15,
+            result = new RecipeResult
+            {
+                id = "titaniumslab"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0.9f)
+                {
+                    specificId = "ilmenitechunk",
+                    minimumCondition = 0f
+                },
+                new RecipeItem(0.9f)
+                {
+                    isLiquid = true,
+                    specificId = "biochem",
+                    minimumCondition = 50f
+                },
+                new RecipeItem(0.9f)
+                {
+                    isLiquid = true,
+                    quality = new CraftingQuality("water", 100f)
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("hammering", 4f),
                     destroyItem = false,
-                    reduceCondition = 0.5f,
-                    minCondition = 0.5f
+                    minimumCondition = 0f
                 },
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "rope"
-                },
-                new RecipeItem
-                {
-                    id = "glowplantfruit"
-                }
-            },
-            scaleByFirstItemCondition = true,
-            alwaysShow = true
-        }
-    },
-    {"Antidepressants Recipe",new Recipe
-        {
-            result = "antidepressants",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "soothingcrystalshard"
-                },
-                new RecipeItem
-                {
-                    id = "glowplantfruit"
-                },
-                new RecipeItem
-                {
-                    id = "glowplantfruit"
-                },
-                new RecipeItem
-                {
-                    id = "scrapmetal",
+                    quality = new CraftingQuality("cutting", 4f),
                     destroyItem = false,
-                    reduceCondition = 0.5f,
-                    minCondition = 0.5f
+                    minimumCondition = 0f
                 }
             },
-            alwaysShow = true,
-            scaleByFirstItemCondition = true
+            category = Recipes.RecipeCategory.Materials
         }
     },
-    {"Turbulent crystal shard Recipe",new Recipe
+    {"Titanium sheet Recipe",new Recipe
         {
-            result = "turbulentcrystalshard",
+            INT = 15,
+            result = new RecipeResult
+            {
+                id = "titaniumsheet",
+                amount = 5
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "gravbag"
+                    specificId = "titaniumslab",
+                    minimumCondition = 0f
                 },
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "tool",
-                    isTag = true,
+                    isLiquid = true,
+                    specificId = "biochem",
+                    minimumCondition = 10f
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("cutting", 4f),
                     destroyItem = false,
-                    reduceCondition = 0f
+                    minimumCondition = 0f
                 }
             },
-            alwaysShow = true,
+            category = Recipes.RecipeCategory.Materials
         }
     },
-    {"Flammable powder (from stuck fruit) Recipe",new Recipe
+    {"Titanium rod Recipe",new Recipe
         {
-            result = "flammablepowder",
-            resultCondition = 0.75f,
+            INT = 15,
+            result = new RecipeResult
+            {
+                id = "titaniumrod",
+                amount = 2
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "stonefruitopen"
+                    specificId = "titaniumslab",
+                    minimumCondition = 0f
                 },
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "tool",
-                    isTag = true,
+                    isLiquid = true,
+                    specificId = "biochem",
+                    minimumCondition = 10f
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("cutting", 4f),
                     destroyItem = false,
-                    reduceCondition = 0f
+                    minimumCondition = 0f
                 }
             },
-            alwaysShow = true,
+            category = Recipes.RecipeCategory.Materials
         }
     },
-    {"Flammable powder (from freed fruit) Recipe",new Recipe
+    {"Alien blood Recipe",new Recipe
         {
-            result = "flammablepowder",
-            resultCondition = 0.75f,
+            INT = 2,
+            result = new RecipeResult
+            {
+                id = "alienblood",
+                isLiquid = true,
+                resultCondition = 50f
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "stonefruitclosed"
-                },
-                new RecipeItem
-                {
-                    id = "tool",
-                    isTag = true,
-                    destroyItem = false,
-                    reduceCondition = 0f
+                    minimumCondition = 0f,
+                    specificId = "bloodsac"
                 }
             },
-            alwaysShow = true,
+            category = Recipes.RecipeCategory.Medicine
         }
     },
-    {"Dynamite Recipe",new Recipe
+    {"Blood Recipe",new Recipe
         {
-            result = "dynamite",
+            INT = 8,
+            result = new RecipeResult
+            {
+                id = "blood",
+                isLiquid = true,
+                resultCondition = 100f
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(99.99f)
                 {
-                    id = "flammablepowder"
+                    specificId = "alienblood",
+                    isLiquid = true
                 },
-                new RecipeItem
+                new RecipeItem(10f)
                 {
-                    id = "flammablepowder"
+                    specificId = "biochem",
+                    isLiquid = true
                 },
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "metalalloy"
-                },
-                new RecipeItem
-                {
-                    id = "rope"
+                    quality = new CraftingQuality("water", 40f),
+                    isLiquid = true
                 }
             },
-            alwaysShow = true,
+            category = Recipes.RecipeCategory.Medicine
         }
     },
-    {"Magazine base Recipe",new Recipe
+    {"Makeshift wrench Recipe",new Recipe
         {
-            result = "magazinebase",
+            INT = 9,
+            result = new RecipeResult
+            {
+                id = "makeshiftwrench",
+                resultCondition = 1f
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "metalalloy",
-                    destroyItem = false,
-                    reduceCondition = 0.5f,
-                    minCondition = 0.5f
+                    quality = "rod",
+                    minimumCondition = 0f
                 },
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "scrapmetal",
-                    destroyItem = false,
-                    reduceCondition = 0.5f,
-                    minCondition = 0.5f
+                    quality = "rod",
+                    minimumCondition = 0f
+                },
+                new RecipeItem(0.9f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true,
+                    minimumCondition = 10f
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = "hammering",
+                    minimumCondition = 0f,
+                    destroyItem = false
                 }
             },
-            alwaysShow = true,
+            category = Recipes.RecipeCategory.Tools
         }
     },
-    {"Small magazine Recipe",new Recipe
+    {"Wrench Recipe",new Recipe
         {
-            result = "smallmagazine",
+            INT = 12,
+            result = new RecipeResult
+            {
+                id = "wrench",
+                resultCondition = 1f
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "magazinebase"
+                    specificId = "makeshiftwrench",
+                    minimumCondition = 0f
                 },
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "rope"
+                    quality = new CraftingQuality("rod", 4f),
+                    minimumCondition = 0f
+                },
+                new RecipeItem(0.9f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true,
+                    minimumCondition = 10f
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = "hammering",
+                    minimumCondition = 0f,
+                    destroyItem = false
                 }
             },
-            alwaysShow = true,
+            category = Recipes.RecipeCategory.Tools
         }
     },
-    {"Rifle magazine Recipe",new Recipe
+    {"Crude cleaver Recipe",new Recipe
         {
-            result = "riflemagazine",
+            INT = 9,
+            result = new RecipeResult
+            {
+                id = "crudecleaver",
+                resultCondition = 1f
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "magazinebase"
+                    quality = new CraftingQuality("rod", 0.5f),
+                    minimumCondition = 0f
                 },
-                new RecipeItem
+                new RecipeItem(0.9f)
                 {
-                    id = "reinforcedrope"
+                    quality = "panel",
+                    minimumCondition = 0f
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = "panel",
+                    minimumCondition = 0f
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = "nails",
+                    minimumCondition = 0f,
+                    destroyItem = false
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = "hammering",
+                    minimumCondition = 0f,
+                    destroyItem = false
                 }
             },
-            alwaysShow = true,
+            category = Recipes.RecipeCategory.Tools
         }
     },
-    {"Box of 12-Gauge Recipe",new Recipe
+    {"Flammable powder Recipe",new Recipe
         {
-            result = "boxof12gauge",
+            INT = 8,
+            result = new RecipeResult
+            {
+                id = "flammablepowder"
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "magazinebase"
+                    specificId = "stonefruitopen"
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "scrapmetal",
-                    destroyItem = false,
-                    reduceCondition = 0.1f,
-                    minCondition = 0.1f
+                    quality = "hammering",
+                    destroyItem = false
+                },
+                new RecipeItem(5f)
+                {
+                    isLiquid = true,
+                    specificId = "biochem"
                 }
             },
-            alwaysShow = true,
+            category = Recipes.RecipeCategory.Materials
         }
     },
-    {"Makeshift rifle Recipe",new Recipe
+    {"Casing Recipe",new Recipe
         {
-            result = "makeshiftrifle",
+            INT = 10,
+            result = new RecipeResult
+            {
+                id = "casing",
+                amount = 5
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "magazinebase"
+                    quality = "panel"
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "metalalloy"
+                    quality = "cutting",
+                    destroyItem = false
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "rope"
-                },
-                new RecipeItem
-                {
-                    id = "tool",
-                    isTag = true,
-                    destroyItem = false,
-                    reduceCondition = 0f
+                    quality = "hammering",
+                    destroyItem = false
                 }
             },
-            alwaysShow = true,
-        }
-    },
-    {"Scrap metal Recipe",new Recipe
-        {
-            result = "scrapmetal",
-            resultCondition = 0.15f,
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "casing"
-                },
-                new RecipeItem
-                {
-                    id = "tool",
-                    isTag = true,
-                    destroyItem = false,
-                    reduceCondition = 0f
-                }
-            },
-            alwaysShow = true,
+            category = Recipes.RecipeCategory.Materials
         }
     },
     {"9mm round Recipe",new Recipe
         {
-            result = "9mmround",
+            INT = 12,
+            result = new RecipeResult
+            {
+                id = "9mmround",
+                amount = 5
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "scrapmetal",
-                    destroyItem = false,
-                    reduceCondition = 1f,
-                    minCondition = 0.9f
+                    specificId = "casing"
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "flammablepowder",
-                    destroyItem = false,
-                    reduceCondition = 0.5f,
-                    minCondition = 0.5f
+                    specificId = "casing"
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "tool",
-                    isTag = true,
-                    destroyItem = false,
-                    reduceCondition = 0f
+                    specificId = "casing"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "casing"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "casing"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "flammablepowder"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("hammering", 0.5f),
+                    destroyItem = false
                 }
             },
-            alwaysShow = true,
-            amount = 8
-        }
-    },
-    {"12-Gauge buckshot Recipe",new Recipe
-        {
-            result = "12gauge",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "scrapmetal",
-                    destroyItem = false,
-                    reduceCondition = 1f,
-                    minCondition = 0.9f
-                },
-                new RecipeItem
-                {
-                    id = "flammablepowder",
-                    destroyItem = false,
-                    reduceCondition = 0.7f,
-                    minCondition = 0.7f
-                },
-                new RecipeItem
-                {
-                    id = "glowplantfruit",
-                    destroyItem = false,
-                    reduceCondition = 0.5f
-                },
-                new RecipeItem
-                {
-                    id = "tool",
-                    isTag = true,
-                    destroyItem = false,
-                    reduceCondition = 0f
-                }
-            },
-            alwaysShow = true,
-            amount = 6
+            category = Recipes.RecipeCategory.Utilities
         }
     },
     {"5.56 round Recipe",new Recipe
         {
-            result = "556round",
+            INT = 12,
+            result = new RecipeResult
+            {
+                id = "556round",
+                amount = 4
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "metalalloy",
-                    destroyItem = false,
-                    reduceCondition = 0.5f,
-                    minCondition = 0.5f
+                    specificId = "casing"
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "flammablepowder",
-                    destroyItem = false,
-                    reduceCondition = 0.4f,
-                    minCondition = 0.4f
+                    specificId = "casing"
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "tool",
-                    isTag = true,
-                    destroyItem = false,
-                    reduceCondition = 0f
+                    specificId = "casing"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "casing"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "flammablepowder"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("hammering", 0.5f),
+                    destroyItem = false
                 }
             },
-            alwaysShow = true,
-            amount = 6
+            category = Recipes.RecipeCategory.Utilities
         }
     },
-    {"Tweezers Recipe",new Recipe
+    {"12-Gauge buckshot Recipe",new Recipe
         {
-            result = "tweezers",
+            INT = 12,
+            result = new RecipeResult
+            {
+                id = "12gauge",
+                amount = 3
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "metalalloy"
+                    specificId = "casing"
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "tool",
-                    isTag = true,
-                    destroyItem = false,
-                    reduceCondition = 0f
+                    specificId = "casing"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "casing"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "plasticchunk"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "flammablepowder"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("hammering", 0.5f),
+                    destroyItem = false
                 }
             },
-            alwaysShow = true,
-            resultCondition = 0.1f
+            category = Recipes.RecipeCategory.Utilities
         }
     },
-    {"Metal alloy Recipe",new Recipe
+    {"Magazine base Recipe",new Recipe
         {
-            result = "metalalloy",
+            INT = 12,
+            result = new RecipeResult
+            {
+                id = "magazinebase"
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "scrapmetal",
-                    minCondition = 0.7f,
-                    reduceCondition = 0.7f
+                    quality = "panel"
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "scrapmetal",
-                    minCondition = 0.7f,
-                    reduceCondition = 0.7f
+                    quality = "panel"
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "glowplantfruit"
+                    quality = "nails",
+                    destroyItem = false
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "plasticchunk"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "hammering",
+                    destroyItem = false
                 }
             },
-            alwaysShow = true
+            category = Recipes.RecipeCategory.Materials
         }
     },
-    {"Advanced scuba diving gear Recipe",new Recipe
+    {"Small magazine Recipe",new Recipe
         {
-            result = "scubadivinggear",
+            INT = 12,
+            result = new RecipeResult
+            {
+                id = "smallmagazine"
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "oxygencrystalshard"
+                    specificId = "magazinebase"
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "metalalloy"
+                    specificId = "plasticchunk"
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "reinforcedrope"
-                },
-                new RecipeItem
-                {
-                    id = "circuitboard"
+                    quality = "hammering",
+                    destroyItem = false
                 }
             },
-            alwaysShow = true,
-            scaleByFirstItemCondition = true
+            category = Recipes.RecipeCategory.Tools
         }
     },
-    {"Makeshift digging tool Recipe",new Recipe
+    {"Rifle magazine Recipe",new Recipe
         {
-            result = "makeshiftdiggingtool",
+            INT = 12,
+            result = new RecipeResult
+            {
+                id = "riflemagazine"
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "scrapmetal",
-                    minCondition = 0.7f
+                    specificId = "magazinebase"
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "metalalloy"
+                    quality = "panel"
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "reinforcedrope"
+                    quality = "hammering",
+                    destroyItem = false
                 }
             },
-            alwaysShow = true,
-            scaleByFirstItemCondition = true
+            category = Recipes.RecipeCategory.Tools
         }
     },
-    {"Bone welding tool Recipe",new Recipe
+    {"Box of 12-Guage Recipe",new Recipe
         {
-            result = "boneweldingtool",
+            INT = 8,
+            result = new RecipeResult
+            {
+                id = "boxof12gauge"
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "circuitboard"
+                    quality = new CraftingQuality("panel", 0.5f)
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "metalalloy"
+                    specificId = "plasticchunk"
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "flammablepowder"
+                    specificId = "plasticchunk"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "cutting",
+                    destroyItem = false
                 }
             },
-            alwaysShow = true,
+            category = Recipes.RecipeCategory.Utilities
         }
     },
-    {"Clotting mush Recipe",new Recipe
+    {"Dynamite Recipe",new Recipe
         {
-            result = "clottingmush",
+            INT = 10,
+            result = new RecipeResult
+            {
+                id = "dynamite"
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "bloodsac"
+                    specificId = "flammablepowder"
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "flammablepowder"
+                    specificId = "flammablepowder"
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "scrapmetal",
-                    destroyItem = false,
-                    minCondition = 0.5f,
-                    reduceCondition = 0.5f
+                    specificId = "string"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "panel"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "hammering",
+                    destroyItem = false
                 }
             },
-            alwaysShow = true,
+            category = Recipes.RecipeCategory.Utilities
         }
     },
-    {"Procoagulant Recipe",new Recipe
+    {"Large carcass Recipe",new Recipe
         {
-            result = "bloodcoagulant",
+            INT = 4,
+            result = new RecipeResult
+            {
+                id = "largecarcass"
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "clottingmush"
+                    specificId = "carcass"
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "bloodsac"
+                    specificId = "carcass"
                 },
-                new RecipeItem
+                new RecipeItem(10f)
                 {
-                    id = "bunchunk"
-                },
-                new RecipeItem
-                {
-                    id = "bunchunk"
+                    specificId = "biochem",
+                    isLiquid = true
                 }
             },
-            alwaysShow = true,
+            category = Recipes.RecipeCategory.Materials
         }
     },
-    {"Mini laser drill Recipe",new Recipe
+    {"Circuit board Recipe",new Recipe
         {
-            result = "minilaserdrill",
+            INT = 9,
+            result = new RecipeResult
+            {
+                id = "circuitboard"
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "circuitboard"
+                    specificId = "circuitboard"
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "circuitboard"
-                },
-                new RecipeItem
-                {
-                    id = "metalalloy"
-                },
-                new RecipeItem
-                {
-                    id = "flashlight"
+                    specificId = "bundleofwires"
                 }
             },
-            alwaysShow = true,
+            category = Recipes.RecipeCategory.Materials
         }
     },
-    {"Makeshift helmet Recipe",new Recipe
+    {"Small battery Recipe",new Recipe
         {
-            result = "makeshifthelmet",
+            INT = 11,
+            result = new RecipeResult
+            {
+                id = "smallbattery",
+                amount = 2
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "largecarcass"
+                    specificId = "processedcopper"
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "reinforcedrope"
+                    specificId = "plasticchunk"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "plasticchunk"
+                },
+                new RecipeItem(10f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "hammering",
+                    destroyItem = false
                 }
             },
-            alwaysShow = true,
+            category = Recipes.RecipeCategory.Utilities
         }
     },
-    {"Bicycle helmet Recipe",new Recipe
+    {"Medium battery Recipe",new Recipe
         {
-            result = "bikehelmet",
+            INT = 12,
+            result = new RecipeResult
+            {
+                id = "mediumbattery"
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "makeshifthelmet"
+                    specificId = "smallbattery"
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "metalalloy"
+                    specificId = "smallbattery"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "panel"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "plasticchunk"
+                },
+                new RecipeItem(10f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true
                 }
             },
-            alwaysShow = true,
+            category = Recipes.RecipeCategory.Utilities
         }
     },
-    {"Makeshift headlamp Recipe",new Recipe
+    {"Large battery Recipe",new Recipe
         {
-            result = "makeshiftheadlamp",
+            INT = 13,
+            result = new RecipeResult
+            {
+                id = "largebattery"
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "carcass"
+                    specificId = "mediumbattery"
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "glowplantfruit"
+                    specificId = "processedcopper"
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "rope"
+                    specificId = "plasticchunk"
                 },
-                new RecipeItem
+                new RecipeItem(20f)
                 {
-                    id = "rope"
+                    specificId = "biochem",
+                    isLiquid = true
                 }
             },
-            alwaysShow = true,
-        }
-    },
-    {"Duffel bag Recipe",new Recipe
-        {
-            result = "duffelbag",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "brokenbag"
-                },
-                new RecipeItem
-                {
-                    id = "reinforcedrope"
-                }
-            },
-            alwaysShow = true,
-            scaleByFirstItemCondition = true,
-            resultCondition = 0.75f
-        }
-    },
-    {"Tourniquet Recipe",new Recipe
-        {
-            result = "tourniquet",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "scrapmetal",
-                    minCondition = 0.7f
-                },
-                new RecipeItem
-                {
-                    id = "reinforcedrope"
-                }
-            },
-            alwaysShow = true,
-            resultCondition = 0.2f
-        }
-    },
-    {"Plastic dressing Recipe",new Recipe
-        {
-            result = "plasticbandage",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "dressing",
-                    isTag = true
-                },
-                new RecipeItem
-                {
-                    id = "metalalloy"
-                },
-                new RecipeItem
-                {
-                    id = "glowplantfruit"
-                }
-            },
-            alwaysShow = true,
-            scaleByFirstItemCondition = true
-        }
-    },
-    {"Limb wraps Recipe",new Recipe
-        {
-            result = "limbwraps",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "dressing",
-                    isTag = true
-                },
-                new RecipeItem
-                {
-                    id = "dressing",
-                    isTag = true
-                }
-            },
-            alwaysShow = true,
-            scaleByFirstItemCondition = true
-        }
-    },
-    {"Headlamp Recipe",new Recipe
-        {
-            result = "headlamp",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "flashlight"
-                },
-                new RecipeItem
-                {
-                    id = "reinforcedrope"
-                }
-            },
-            alwaysShow = true,
-            scaleByFirstItemCondition = true
-        }
-    },
-    {"Bowl of cereal Recipe",new Recipe
-        {
-            result = "bowlofcereal",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "milk",
-                    destroyItem = false,
-                    reduceCondition = 0.5f
-                },
-                new RecipeItem
-                {
-                    id = "cereal",
-                    destroyItem = false,
-                    reduceCondition = 0.5f
-                },
-                new RecipeItem
-                {
-                    id = "foliage"
-                }
-            },
-            alwaysShow = true,
-        }
-    },
-    {"Naltrexone Recipe",new Recipe
-        {
-            result = "naltrexone",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "digestioncrystalshard"
-                },
-                new RecipeItem
-                {
-                    id = "opiate",
-                    isTag = true
-                },
-                new RecipeItem
-                {
-                    id = "glowplantfruit"
-                }
-            },
-            alwaysShow = true,
-            scaleByFirstItemCondition = true
-        }
-    },
-    {"Blood sac Recipe",new Recipe
-        {
-            result = "bloodsac",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "experimentflesh"
-                },
-                new RecipeItem
-                {
-                    id = "experimentflesh"
-                }
-            },
-            alwaysShow = true,
-        }
-    },
-    {"Antiseptic mush Recipe",new Recipe
-        {
-            result = "antisepticmush",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "bulbskin"
-                },
-                new RecipeItem
-                {
-                    id = "roselight"
-                }
-            },
-            alwaysShow = true,
-        }
-    },
-    {"Morphine (from relief crystal) Recipe",new Recipe
-        {
-            result = "morphine",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "reliefcrystalshard"
-                },
-                new RecipeItem
-                {
-                    id = "water",
-                    isTag = true
-                }
-            },
-            alwaysShow = true,
-        }
-    },
-    {"Grav-Bag Recipe",new Recipe
-        {
-            result = "gravbag",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "turbulentcrystalshard"
-                },
-                new RecipeItem
-                {
-                    id = "metalalloy"
-                },
-                new RecipeItem
-                {
-                    id = "reinforcedrope"
-                }
-            },
-            alwaysShow = true,
-        }
-    },
-    {"Terrain scanner Recipe",new Recipe
-        {
-            result = "terrainscanner",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "metalalloy"
-                },
-                new RecipeItem
-                {
-                    id = "circuitboard"
-                },
-                new RecipeItem
-                {
-                    id = "circuitboard"
-                },
-                new RecipeItem
-                {
-                    id = "glowplantfruit"
-                }
-            },
-            alwaysShow = true,
-        }
-    },
-    {"Auto-auto-pump Recipe",new Recipe
-        {
-            result = "autoautopump",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "autopump"
-                },
-                new RecipeItem
-                {
-                    id = "circuitboard"
-                },
-                new RecipeItem
-                {
-                    id = "reinforcedrope"
-                }
-            },
-            alwaysShow = true,
-        }
-    },
-    {"Climbing claws Recipe",new Recipe
-        {
-            result = "climbingclaws",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "claws"
-                },
-                new RecipeItem
-                {
-                    id = "rope"
-                }
-            },
-            alwaysShow = true,
-            scaleByFirstItemCondition = true
-        }
-    },
-    {"Blood bag (from crystal) Recipe",new Recipe
-        {
-            result = "bloodbag",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "bloodcrystalshard"
-                },
-                new RecipeItem
-                {
-                    id = "metalalloy"
-                }
-            },
-            alwaysShow = true,
-            scaleByFirstItemCondition = true
-        }
-    },
-    {"Ice pack Recipe",new Recipe
-        {
-            result = "icepack",
-            items = new List<RecipeItem>
-            {
-                new RecipeItem
-                {
-                    id = "frigiantfruit"
-                },
-                new RecipeItem
-                {
-                    id = "frigiantfruit"
-                },
-                new RecipeItem
-                {
-                    id = "dressing",
-                    isTag = true
-                },
-                new RecipeItem
-                {
-                    id = "metalalloy"
-                }
-            },
-            alwaysShow = true,
+            category = Recipes.RecipeCategory.Utilities
         }
     },
     {"Flashlight Recipe",new Recipe
         {
-            result = "flashlight",
+            INT = 10,
+            result = new RecipeResult
+            {
+                id = "flashlight"
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "lightbulb"
+                    specificId = "lightbulb"
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "metalalloy"
+                    quality = "rod"
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "circuitboard"
+                    specificId = "flexiglass"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "plasticchunk"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "bundleofwires"
+                },
+                new RecipeItem(0.9f)
+                {
+                    specificId = "circuitboard"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "nails",
+                    destroyItem = false
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "hammering",
+                    destroyItem = false
                 }
             },
-            alwaysShow = true,
-            scaleByFirstItemCondition = true
+            category = Recipes.RecipeCategory.Utilities
         }
     },
-    {"Foliage (from fungus chunk) Recipe",new Recipe
+    {"Headlamp Recipe",new Recipe
         {
-            result = "foliage",
+            INT = 8,
+            result = new RecipeResult
+            {
+                id = "headlamp"
+            },
             items = new List<RecipeItem>
             {
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "funguschunk"
+                    specificId = "flashlight"
                 },
-                new RecipeItem
+                new RecipeItem(0f)
                 {
-                    id = "funguschunk"
+                    specificId = "rope"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "nails",
+                    destroyItem = false
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "hammering",
+                    destroyItem = false
                 }
             },
-            alwaysShow = true,
+            category = Recipes.RecipeCategory.Utilities
+        }
+    },
+    {"LCD screen Recipe",new Recipe
+        {
+            INT = 11,
+            result = new RecipeResult
+            {
+                id = "lcdscreen"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "flexiglass"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "plasticchunk"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "nails",
+                    destroyItem = false
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "bundleofwires"
+                },
+                new RecipeItem(0.9f)
+                {
+                    specificId = "circuitboard"
+                },
+                new RecipeItem(10f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "cutting",
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Materials
+        }
+    },
+    {"Flexiglass Recipe",new Recipe
+        {
+            INT = 9,
+            result = new RecipeResult
+            {
+                id = "flexiglass"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "plasticchunk"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "plasticchunk"
+                },
+                new RecipeItem(10f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "cutting",
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Materials
+        }
+    },
+    {"Lightbulb Recipe",new Recipe
+        {
+            INT = 11,
+            result = new RecipeResult
+            {
+                id = "lightbulb"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "flexiglass"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "flexiglass"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "cube"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "nails",
+                    destroyItem = false
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "bundleofwires"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "bundleofwires"
+                }
+            },
+            category = Recipes.RecipeCategory.Utilities
+        }
+    },
+    {"Limb wraps Recipe",new Recipe
+        {
+            INT = 6,
+            result = new RecipeResult
+            {
+                id = "limbwraps"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0.9f)
+                {
+                    quality = "dressing"
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = "dressing"
+                }
+            },
+            category = Recipes.RecipeCategory.Utilities
+        }
+    },
+    {"Makeshift lamp Recipe",new Recipe
+        {
+            INT = 4,
+            result = new RecipeResult
+            {
+                id = "makeshiftheadlamp"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "carcass"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "glowplantfruit"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "rope"
+                }
+            },
+            category = Recipes.RecipeCategory.Utilities
+        }
+    },
+    {"Bicycle helmet Recipe",new Recipe
+        {
+            INT = 13,
+            result = new RecipeResult
+            {
+                id = "bikehelmet"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "makeshifthelmet"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "panel"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "panel"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "panel"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "panel"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "plasticchunk"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "nails",
+                    destroyItem = false
+                },
+                new RecipeItem(10f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "cutting",
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Utilities
+        }
+    },
+    {"Makeshift helmet Recipe",new Recipe
+        {
+            INT = 8,
+            result = new RecipeResult
+            {
+                id = "makeshifthelmet"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "largecarcass"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "rope"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "string"
+                },
+                new RecipeItem(10f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true
+                }
+            },
+            category = Recipes.RecipeCategory.Utilities
+        }
+    },
+    {"Makeshift digging tool Recipe",new Recipe
+        {
+            INT = 7,
+            result = new RecipeResult
+            {
+                id = "makeshiftdiggingtool"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "flimsyknife"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "rope"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("rod", 0.5f)
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("rod", 0.5f)
+                },
+                new RecipeItem(10f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true
+                }
+            },
+            category = Recipes.RecipeCategory.Tools
+        }
+    },
+    {"Makeshift rifle Recipe",new Recipe
+        {
+            INT = 12,
+            result = new RecipeResult
+            {
+                id = "makeshiftrifle"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "magazinebase"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "nails",
+                    destroyItem = false
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("panel", 1f)
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("panel", 1f)
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("rod", 1f)
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("rod", 1f)
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("cube", 0.5f)
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "string"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "string"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "cutting",
+                    destroyItem = false
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "hammering",
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Tools
+        }
+    },
+    {"Mini laser drill Recipe",new Recipe
+        {
+            INT = 16,
+            result = new RecipeResult
+            {
+                id = "minilaserdrill"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("panel", 4f)
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("panel", 4f)
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("panel", 4f)
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "flexiglass"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "flexiglass"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "bundleofwires"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "bundleofwires"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "circuitboard"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "circuitboard"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "flashlight"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "plasticchunk"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "nails",
+                    destroyItem = false
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "cutting",
+                    destroyItem = false
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "hammering",
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Tools
+        }
+    },
+    {"Dressing Recipe",new Recipe
+        {
+            INT = 5,
+            result = new RecipeResult
+            {
+                id = "bandage"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0.9f)
+                {
+                    specificId = "rippeddressing"
+                },
+                new RecipeItem(0.9f)
+                {
+                    specificId = "rippeddressing"
+                }
+            },
+            category = Recipes.RecipeCategory.Medicine
+        }
+    },
+    {"Lantern Recipe",new Recipe
+        {
+            INT = 10,
+            result = new RecipeResult
+            {
+                id = "lantern"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "emissivecrystalshard"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "flexiglass"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("panel", 0.5f)
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("panel", 0.5f)
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "nails",
+                    destroyItem = false
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "hammering",
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Utilities
+        }
+    },
+    {"Terrain scanner Recipe",new Recipe
+        {
+            INT = 12,
+            result = new RecipeResult
+            {
+                id = "terrainscanner"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    quality = "panel"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "panel"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "panel"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "rod"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "lcdscreen"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "nails"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "bundleofwires"
+                },
+                new RecipeItem(0.9f)
+                {
+                    specificId = "circuitboard"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "hammering",
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Utilities
+        }
+    },
+    {"Advanced scuba diving gear Recipe",new Recipe
+        {
+            INT = 12,
+            result = new RecipeResult
+            {
+                id = "scubadivinggear"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "oxygencrystalshard"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "panel"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "panel"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "rod"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "rod"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "flexiglass"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "plasticchunk"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "plasticchunk"
+                },
+                new RecipeItem(10f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "bundleofwires"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "hammering",
+                    destroyItem = false
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "cutting",
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Utilities
+        }
+    },
+    {"Pickaxe Recipe",new Recipe
+        {
+            INT = 12,
+            result = new RecipeResult
+            {
+                id = "pickaxe"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "makeshiftdiggingtool"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "rod"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "rod"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "panel"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "panel"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "nails"
+                },
+                new RecipeItem(10f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "hammering",
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Tools
+        }
+    },
+    {"Scaffolding pack Recipe",new Recipe
+        {
+            INT = 14,
+            result = new RecipeResult
+            {
+                id = "scaffoldingpack"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("cube", 4f)
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("cube", 4f)
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "rope"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "plasticchunk"
+                }
+            },
+            category = Recipes.RecipeCategory.Utilities
+        }
+    },
+    {"Backpack Recipe",new Recipe
+        {
+            INT = 13,
+            result = new RecipeResult
+            {
+                id = "bigpack"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "rope"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "rope"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("panel", 0.5f)
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "canvas"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "canvas"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "canvas"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "canvas"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "canvas"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "string"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "string"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "string"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "cutting",
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Utilities
+        }
+    },
+    {"Bowl of cereal Recipe",new Recipe
+        {
+            INT = 2,
+            result = new RecipeResult
+            {
+                id = "bowlofcereal",
+                dontDrainResultLiquid = true,
+                amount = 3
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "cereal"
+                },
+                new RecipeItem(500f)
+                {
+                    specificId = "milk",
+                    isLiquid = true
+                }
+            },
+            category = Recipes.RecipeCategory.Food
+        }
+    },
+    {"Fat Recipe",new Recipe
+        {
+            INT = 8,
+            result = new RecipeResult
+            {
+                id = "fat",
+                isLiquid = true,
+                resultCondition = 100f
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0.2f)
+                {
+                    quality = "meat"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "heatsource",
+                    destroyItem = false
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("cutting", 0.5f),
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Food
+        }
+    },
+    {"Soap Recipe",new Recipe
+        {
+            INT = 8,
+            result = new RecipeResult
+            {
+                id = "soap",
+                isLiquid = true,
+                resultCondition = 100f
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(50f)
+                {
+                    specificId = "fat",
+                    isLiquid = true
+                },
+                new RecipeItem(10f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("water", 40f),
+                    isLiquid = true
+                }
+            },
+            category = Recipes.RecipeCategory.Medicine
+        }
+    },
+    {"Clotting mush Recipe",new Recipe
+        {
+            INT = 10,
+            result = new RecipeResult
+            {
+                id = "clottingmush"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("blood", 50f),
+                    isLiquid = true
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "flammablepowder"
+                },
+                new RecipeItem(10f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "flexiglass"
+                }
+            },
+            category = Recipes.RecipeCategory.Medicine
+        }
+    },
+    {"Naltrexone Recipe",new Recipe
+        {
+            INT = 10,
+            result = new RecipeResult
+            {
+                id = "naltrexone",
+                isLiquid = true,
+                resultCondition = 200f
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "digestioncrystalshard"
+                },
+                new RecipeItem(20f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true
+                },
+                new RecipeItem(0f)
+                {
+                    isLiquid = true,
+                    quality = new CraftingQuality("opiate", 50f)
+                }
+            },
+            category = Recipes.RecipeCategory.Medicine
+        }
+    },
+    {"Antidepressants Recipe",new Recipe
+        {
+            INT = 10,
+            result = new RecipeResult
+            {
+                id = "antidepressants",
+                isLiquid = true,
+                resultCondition = 200f
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "soothingcrystalshard"
+                },
+                new RecipeItem(20f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "flammablepowder"
+                }
+            },
+            category = Recipes.RecipeCategory.Medicine
+        }
+    },
+    {"Auto-injector Recipe",new Recipe
+        {
+            INT = 12,
+            result = new RecipeResult
+            {
+                id = "autoinjector"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    quality = "rod"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "flexiglass"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "plasticchunk"
+                },
+                new RecipeItem(10f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "bundleofwires"
+                },
+                new RecipeItem(0.9f)
+                {
+                    specificId = "circuitboard"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "cutting",
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Materials
+        }
+    },
+    {"Auto-auto-pump Recipe",new Recipe
+        {
+            INT = 12,
+            result = new RecipeResult
+            {
+                id = "autoautopump"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "autopump"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "circuitboard"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "autoinjector"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "bundleofwires"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "rope"
+                }
+            },
+            category = Recipes.RecipeCategory.Medicine
+        }
+    },
+    {"Antiseptic mush Recipe",new Recipe
+        {
+            INT = 8,
+            result = new RecipeResult
+            {
+                id = "antisepticmush"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "bulbskin"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "roselight"
+                }
+            },
+            category = Recipes.RecipeCategory.Medicine
+        }
+    },
+    {"Plastic dressing Recipe",new Recipe
+        {
+            INT = 14,
+            result = new RecipeResult
+            {
+                id = "plasticbandage"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0.5f)
+                {
+                    quality = "dressing"
+                },
+                new RecipeItem(20f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("panel", 4f)
+                }
+            },
+            category = Recipes.RecipeCategory.Medicine
+        }
+    },
+    {"Tourniquet Recipe",new Recipe
+        {
+            INT = 9,
+            result = new RecipeResult
+            {
+                id = "tourniquet",
+                resultCondition = 0.5f
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "rope"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "rope"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "string"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "plasticchunk"
+                },
+                new RecipeItem(10f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true
+                }
+            },
+            category = Recipes.RecipeCategory.Medicine
+        }
+    },
+    {"Bone welding tool Recipe",new Recipe
+        {
+            INT = 14,
+            result = new RecipeResult
+            {
+                id = "boneweldingtool"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    quality = "panel"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "panel"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "panel"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "bundleofwires"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "bundleofwires"
+                },
+                new RecipeItem(0.9f)
+                {
+                    specificId = "circuitboard"
+                },
+                new RecipeItem(20f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true
+                },
+                new RecipeItem(10f)
+                {
+                    specificId = "lrdserum",
+                    isLiquid = true
+                }
+            },
+            category = Recipes.RecipeCategory.Medicine
+        }
+    },
+    {"Tweezers Recipe",new Recipe
+        {
+            INT = 9,
+            result = new RecipeResult
+            {
+                id = "tweezers",
+                resultCondition = 0.1f
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    quality = "panel"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "hammering",
+                    destroyItem = false
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "cutting",
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Medicine
+        }
+    },
+    {"Blood bag Recipe",new Recipe
+        {
+            INT = 12,
+            result = new RecipeResult
+            {
+                id = "bloodbag"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "plasticchunk"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "flexiglass"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "flexiglass"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "bundleofwires"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "autoinjector"
+                },
+                new RecipeItem(20f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true
+                }
+            },
+            category = Recipes.RecipeCategory.Medicine
+        }
+    },
+    {"Antiseptic bottle Recipe",new Recipe
+        {
+            INT = 9,
+            result = new RecipeResult
+            {
+                id = "disinfectant",
+                isLiquid = true,
+                resultCondition = 100f
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(25f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true
+                },
+                new RecipeItem(50f)
+                {
+                    specificId = "soap",
+                    isLiquid = true
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("blood", 25f),
+                    isLiquid = true
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("water", 50f),
+                    isLiquid = true
+                }
+            },
+            category = Recipes.RecipeCategory.Medicine
+        }
+    },
+    {"Relief cream Recipe",new Recipe
+        {
+            INT = 9,
+            result = new RecipeResult
+            {
+                id = "reliefcream",
+                isLiquid = true,
+                resultCondition = 100f
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "flammablepowder"
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("water", 50f),
+                    isLiquid = true
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("blood", 25f),
+                    isLiquid = true
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("opiate", 50f),
+                    isLiquid = true
+                },
+                new RecipeItem(25f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true
+                }
+            },
+            category = Recipes.RecipeCategory.Medicine
+        }
+    },
+    {"Splint Recipe",new Recipe
+        {
+            INT = 8,
+            result = new RecipeResult
+            {
+                id = "splint",
+                resultCondition = 0.8f
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("panel", 0.5f)
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("panel", 0.5f)
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("panel", 0.5f)
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("rod")
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("rod")
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("nails"),
+                    destroyItem = false
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("hammering"),
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Medicine
+        }
+    },
+    {"Bruise kit Recipe",new Recipe
+        {
+            INT = 10,
+            result = new RecipeResult
+            {
+                id = "bruisekit"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0.5f)
+                {
+                    quality = "dressing"
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("opiate", 25f),
+                    isLiquid = true
+                },
+                new RecipeItem(20f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true
+                }
+            },
+            category = Recipes.RecipeCategory.Medicine
+        }
+    },
+    {"Carcass splint Recipe",new Recipe
+        {
+            INT = 6,
+            result = new RecipeResult
+            {
+                id = "carcasssplint"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "largecarcass"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "carcass"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "rope"
+                }
+            },
+            category = Recipes.RecipeCategory.Medicine
+        }
+    },
+    {"Makeshift L.R.D. Recipe",new Recipe
+        {
+            INT = 10,
+            result = new RecipeResult
+            {
+                id = "makeshiftlrd"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    quality = "panel"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "panel"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "bundleofwires"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "plasticchunk"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "autoinjector"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "nails",
+                    destroyItem = false
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "hammering",
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Medicine
+        }
+    },
+    {"L.R.D. Recipe",new Recipe
+        {
+            INT = 15,
+            result = new RecipeResult
+            {
+                id = "lrd"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "makeshiftlrd"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("panel", 4f)
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("panel", 4f)
+                },
+                new RecipeItem(25f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("water", 100f),
+                    isLiquid = true
+                },
+                new RecipeItem(0.9f)
+                {
+                    specificId = "circuitboard"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "bundleofwires"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "cutting",
+                    destroyItem = false
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "hammering",
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Medicine
+        }
+    },
+    {"L.R.D. Serum Recipe",new Recipe
+        {
+            INT = 11,
+            result = new RecipeResult
+            {
+                id = "lrdserum",
+                isLiquid = true,
+                resultCondition = 25f
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("disinfectant", 25f),
+                    isLiquid = true
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("water", 50f),
+                    isLiquid = true
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("opiate", 25f),
+                    isLiquid = true
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("blood", 25f),
+                    isLiquid = true
+                },
+                new RecipeItem(25f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true
+                }
+            },
+            category = Recipes.RecipeCategory.Medicine
+        }
+    },
+    {"Produce juice Recipe",new Recipe
+        {
+            INT = 2,
+            result = new RecipeResult
+            {
+                id = "producejuice",
+                resultCondition = 250f,
+                isLiquid = true
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0.5f)
+                {
+                    quality = "produce"
+                },
+                new RecipeItem(0.5f)
+                {
+                    quality = "produce"
+                },
+                new RecipeItem(0.5f)
+                {
+                    quality = "produce"
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("water", 75f),
+                    isLiquid = true
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("hammering", 0.1f),
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Food
+        }
+    },
+    {"Refined juice Recipe",new Recipe
+        {
+            INT = 4,
+            result = new RecipeResult
+            {
+                id = "refinedjuice",
+                resultCondition = 200f,
+                isLiquid = true
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(250f)
+                {
+                    specificId = "producejuice",
+                    isLiquid = true
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("heatsource"),
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Food
+        }
+    },
+    {"Drill repair kit Recipe",new Recipe
+        {
+            INT = 9,
+            result = new RecipeResult
+            {
+                id = "drillrepairkit"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    quality = "panel"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "panel"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "rod"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "rod"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "cube"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "nails",
+                    destroyItem = false
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "plasticchunk"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "bundleofwires"
+                },
+                new RecipeItem(0.9f)
+                {
+                    specificId = "circuitboard"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "hammering",
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Tools
+        }
+    },
+    {"Procoagulant Recipe",new Recipe
+        {
+            INT = 14,
+            result = new RecipeResult
+            {
+                id = "procoagulant",
+                isLiquid = true,
+                resultCondition = 100f
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "clottingmush"
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("blood", 50f)
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "bunchunk"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "bunchunk"
+                },
+                new RecipeItem(25f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true
+                }
+            },
+            category = Recipes.RecipeCategory.Medicine
+        }
+    },
+    {"Antiseptic bottle Recipe",new Recipe
+        {
+            INT = 7,
+            result = new RecipeResult
+            {
+                id = "disinfectant"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "canteen"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "plasticchunk"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "cutting",
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Medicine
+        }
+    },
+    {"Firestarter Recipe",new Recipe
+        {
+            INT = 8,
+            result = new RecipeResult
+            {
+                id = "firestarter"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "stick"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "stick"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "rope"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("foliage")
+                }
+            },
+            category = Recipes.RecipeCategory.Utilities
+        }
+    },
+    {"Campfire Recipe",new Recipe
+        {
+            INT = 4,
+            result = new RecipeResult
+            {
+                id = "campfire"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("firestarter"),
+                    destroyItem = false
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("flammable")
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("flammable")
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("flammable")
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("flammable")
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("flammable")
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("foliage")
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("foliage")
+                }
+            },
+            category = Recipes.RecipeCategory.Food
+        }
+    },
+    {"Water Recipe",new Recipe
+        {
+            INT = 4,
+            result = new RecipeResult
+            {
+                id = "water",
+                isLiquid = true,
+                resultCondition = 200f
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    quality = "heatsource",
+                    destroyItem = false
+                },
+                new RecipeItem(200f)
+                {
+                    specificId = "groundwater",
+                    isLiquid = true
+                }
+            },
+            category = Recipes.RecipeCategory.Food
+        }
+    },
+    {"Charcoal Recipe",new Recipe
+        {
+            INT = 7,
+            result = new RecipeResult
+            {
+                id = "charcoal",
+                amount = 3
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    quality = "heatsource",
+                    destroyItem = false
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "droppings"
+                },
+                new RecipeItem(10f)
+                {
+                    specificId = "biochem",
+                    isLiquid = true
+                }
+            },
+            category = Recipes.RecipeCategory.Utilities
+        }
+    },
+    {"Bread Recipe",new Recipe
+        {
+            INT = 7,
+            result = new RecipeResult
+            {
+                id = "bread"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    quality = "heatsource",
+                    destroyItem = false
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "flour"
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("water", 150f),
+                    isLiquid = true
+                }
+            },
+            category = Recipes.RecipeCategory.Food
+        }
+    },
+    {"Rye flour Recipe",new Recipe
+        {
+            INT = 6,
+            result = new RecipeResult
+            {
+                id = "ryeflour"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "ryebulb"
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("hammering", 0.5f),
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Food
+        }
+    },
+    {"Torch Recipe",new Recipe
+        {
+            INT = 5,
+            result = new RecipeResult
+            {
+                id = "torch",
+                resultCondition = 0f
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "stick"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "stick"
+                },
+                new RecipeItem(0f)
+                {
+                    specificId = "rope"
+                }
+            },
+            category = Recipes.RecipeCategory.Utilities
+        }
+    },
+    {"Torch (relight) Recipe",new Recipe
+        {
+            INT = 5,
+            result = new RecipeResult
+            {
+                id = "torch",
+                resultCondition = 1f
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    specificId = "torch"
+                },
+                new RecipeItem(25f)
+                {
+                    specificId = "fat",
+                    isLiquid = true
+                },
+                new RecipeItem(0f)
+                {
+                    quality = "heatsource",
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Utilities
+        }
+    },
+    {"Nutrient bar Recipe",new Recipe
+        {
+            INT = 9,
+            result = new RecipeResult
+            {
+                id = "nutrientbar"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    quality = "heatsource",
+                    destroyItem = false
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("flour", 1f)
+                },
+                new RecipeItem(0.5f)
+                {
+                    quality = new CraftingQuality("produce")
+                },
+                new RecipeItem(0.9f)
+                {
+                    quality = new CraftingQuality("fat", 25f),
+                    isLiquid = true
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("cutting", 0.5f),
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Food
+        }
+    },
+    {"Pemmican Recipe",new Recipe
+        {
+            INT = 6,
+            result = new RecipeResult
+            {
+                id = "pemmican"
+            },
+            items = new List<RecipeItem>
+            {
+                new RecipeItem(0f)
+                {
+                    quality = "heatsource",
+                    destroyItem = false
+                },
+                new RecipeItem(0.2f)
+                {
+                    quality = "meat"
+                },
+                new RecipeItem(0.5f)
+                {
+                    quality = "produce"
+                },
+                new RecipeItem(75f)
+                {
+                    specificId = "fat",
+                    isLiquid = true
+                },
+                new RecipeItem(0f)
+                {
+                    quality = new CraftingQuality("cutting", 0.5f),
+                    destroyItem = false
+                }
+            },
+            category = Recipes.RecipeCategory.Food
         }
     }
 };
@@ -1977,24 +3615,6 @@ public class CraftingChecks : MonoBehaviour
             {
                 CheckNameToRecipe.TryGetValue(gotrecipe, out Recipe recipeToLearn);
                 Recipes.recipes.Add(recipeToLearn); // Add the recipe to the list
-                Debug.Log("Learned Recipe " + gotrecipe + " from Archipelago!");
-                /*foreach (Recipe learnedRecipe in Recipes.recipes)
-                {
-                    foreach (RecipeItem item in learnedRecipe.items)
-                    {
-                        if (item.isTag)
-                        {
-                            foreach (KeyValuePair<string, ItemInfo> item2 in Item.GlobalItems.Where((KeyValuePair<string, ItemInfo> x) => x.Value.HasTag(item.id)))
-                            {
-                                item2.Value.craftable = true;
-                            }
-                        }
-                        else
-                        {
-                            Item.GetItem(item.id).craftable = true;
-                        }
-                    }
-                }*/ // This line of code is in the basegame, and I'm not entierly sure what it does. Including it here causes a NullReferenceException.
             }
         }
         lastFrameRecipeCount = RecievedRecipes.Count;
@@ -2009,7 +3629,6 @@ public class CraftingChecks : MonoBehaviour
                     continue; // Avoid spamming the server by not even attempting to send a check we already have sent.
                 }
                 RecipeIDtoCheckID.TryGetValue(recipeId.recipeIndex, out int CheckID);
-                Startup.Logger.LogMessage("Found a blueprint with " + recipeId.recipeIndex + " as its index, which is checkid " + CheckID + ".");
                 APClientClass.ChecksToSendQueue.Enqueue(CheckID);
                 AlreadySentChecks.Add(recipeId.recipeIndex);
                 Destroy(recipeId.gameObject);
