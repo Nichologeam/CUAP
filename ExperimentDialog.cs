@@ -56,11 +56,13 @@ public class ExperimentDialog : MonoBehaviour
                 body.inWater) // Underwater?
             {
                 BackupTextbox(item); // Then don't bother having Experiment speak
+                return;
             }
         }
         catch
         {
             BackupTextbox(item); // One of those calls failed? Assume Experiment can't talk
+            return;
         }
         if (item.ItemName.EndsWith("Unlock")) // progression item
         {
