@@ -125,9 +125,18 @@ public class TrapHandler : MonoBehaviour
     }
     IEnumerator Mindwipe()
     {
+        Skills skills = Vitals.gameObject.GetComponent<Skills>();
+        int INTSkillPreWipe = skills.INT; // Mindwipe resets INT to 0, so we'll save it to restore after
+        float INTExpPreWipe = skills.expINT;
+        int INTMaxPreWipe = skills.maxINT;
+        int INTMinPreWipe = skills.minINT;
         MindwipeScript mw = Vitals.gameObject.AddComponent<MindwipeScript>();
         yield return new WaitForSecondsRealtime(70);
         Destroy(mw);
         Destroy(GameObject.Find("Main Camera/Canvas/MindwipeViginette(Clone)"));
+        skills.INT = INTSkillPreWipe;
+        skills.expINT = INTExpPreWipe;
+        skills.maxINT = INTMaxPreWipe;
+        skills.minINT = INTMinPreWipe;
     }
 }
