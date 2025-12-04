@@ -14,7 +14,7 @@ public class ExperimentDialog : MonoBehaviour
     {
         Client = APClientClass.Client;
         PlayerTalker = GameObject.Find("Experiment/Body").GetComponent<Talker>();
-        Startup.Logger.LogMessage("Dialog patches applied!");
+        Startup.Logger.LogMessage("Dialogue patches applied!");
     }
     public static void ProcessDialog(Archipelago.MultiClient.Net.Models.ItemInfo item)
     {

@@ -37,7 +37,6 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
     {
         if (!Vitals.alive && Vitals.brainHealth == 0) // Experiment is dead! Send Deathlink!
         {
-            Startup.Logger.LogWarning("DeathlinkManager noticed that Experiment died! Sending Deathlink...");
             Client.SendDeathLink("Casualties: Unknown + " + Client.PlayerName);
             // todo: the game has ways to check the cause of death. read that value to determine cause for deathlink.
             Destroy(this); // This is in the update loop, so we should kill the script to not spam deathlinks. No damage will be done, because the player is forced back to main menu.

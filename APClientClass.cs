@@ -109,7 +109,7 @@ public class APClientClass
                     }
                     catch
                     {
-                        Startup.Logger.LogWarning("Trap dodged. Probably collected offline.");
+                        continue;
                     }
                 }
                 if ((bool)(item!.ItemName.EndsWith(" Recipe"))) // Recipe item. Add it to the list of unlocked recipes.
@@ -145,7 +145,6 @@ public class APClientClass
     private static void SendChecks()
     {
         NextSend = 3;
-        Startup.Logger.LogMessage("Running SendLocations.");
         Client?.SendLocations(ChecksToSend.ToArray());
         ChecksToSend.Clear();
     }

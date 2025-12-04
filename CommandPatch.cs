@@ -1,6 +1,4 @@
 ﻿using CreepyUtil.Archipelago;
-using System.Collections.Generic;
-using System;
 using UnityEngine;
 using TMPro;
 
@@ -36,7 +34,6 @@ public class CommandPatch : MonoBehaviour
                 {
                     // Split off the 'talk' command, then send the rest to the server
                     ChatMessage = LastFrameText.Substring(5);
-                    Startup.Logger.LogMessage("Sending '" + ChatMessage + "' to the server.");
                     Client.Say(ChatMessage);
                 }
             }

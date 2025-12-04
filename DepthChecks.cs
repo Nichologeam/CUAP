@@ -53,7 +53,6 @@ public class DepthChecks : MonoBehaviour
         if (RoundedMeters % 100 == 0)
         {
             CheckID = RoundedMeters / 100;
-            Startup.Logger.LogMessage("Depth read as " + RoundedMeters + "m, which SHOULD be the same as " + CheckID + "00m.");
             CheckID = -966812869 + CheckID - 1; // don't ask me why the check id is a random negative number, best guess is an integer over/underflow
             if (AlreadySentChecks.Contains(CheckID)) // whatever, just adds to the jank of this implimentation. for the immersion, for the love of the game!
             {
@@ -68,12 +67,10 @@ public class DepthChecks : MonoBehaviour
         if (worldgen.doPod && (APClientClass.DepthExtendersRecieved < (RoundedMeters) / 300)) // true if we are using a drillpod and can't afford 2 layers
         {
             worldgen.totalTraveled -= (int)(worldgen.height * 0.3f); // do it a second time
-            Startup.Logger.LogMessage("In drillpod, can't go deeper twice over");
         }
         else if (APClientClass.DepthExtendersRecieved < (RoundedMeters - 300) / 300)
         {
             worldgen.totalTraveled -= (int)(worldgen.height * 0.3f); // reversing WorldGeneration.IncreaseDepthByLayer
-            Startup.Logger.LogMessage("Can't afford to go deeper");
         }
         yield return new WaitUntil(() => !worldgen.loadingObject.activeSelf); // wait until loading is done to not trigger this every frame
     }
