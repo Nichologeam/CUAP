@@ -78,6 +78,7 @@ public class Startup : BaseUnityPlugin
                 Body.AddComponent<DeathlinkManager>();
                 Body.AddComponent<TrapHandler>();
                 Body.AddComponent<ExperimentDialog>();
+                Body.AddComponent<SkillChecks>();
                 WorldGen = GameObject.Find("World");
                 WorldGen.AddComponent<DepthChecks>();
                 WorldGen.AddComponent<LayerLocker>();

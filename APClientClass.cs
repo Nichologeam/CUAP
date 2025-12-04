@@ -120,6 +120,22 @@ public class APClientClass
                 {
                     DepthExtendersRecieved++;
                 }
+                if (item.ItemName.StartsWith("Progressive "))
+                {
+                    string Skill = item.ItemName.Substring(12);
+                    if (Skill == "STR")
+                    {
+                        SkillChecks.apMaxStr++;
+                    }
+                    else if(Skill == "RES")
+                    {
+                        SkillChecks.apMaxRes++;
+                    }
+                    else if(Skill == "INT")
+                    {
+                        SkillChecks.apMaxInt++;
+                    }
+                }
                 try
                 {
                     ExperimentDialog.ProcessDialog(item);
