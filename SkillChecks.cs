@@ -11,6 +11,7 @@ public class SkillChecks : MonoBehaviour
 {
     public static ApClient Client;
     public Skills playerSkills;
+    private WorldGeneration worldgen;
     public static int apMaxStr;
     public static int apMaxRes;
     public static int apMaxInt;
@@ -48,6 +49,7 @@ public class SkillChecks : MonoBehaviour
                 Destroy(this);
             }
         }
+        worldgen = GameObject.Find("World").GetComponent<WorldGeneration>();
         playerSkills = gameObject.GetComponent<Body>().skills;
         playerSkills.expSTR = 0;
         playerSkills.expRES = 0;
@@ -63,6 +65,10 @@ public class SkillChecks : MonoBehaviour
 
     private void Update()
     {
+        if (worldgen.loadingObject.activeSelf)
+        {
+            return;
+        }
         playerSkills.STR = apMaxStr; // set the level to the AP level
         playerSkills.RES = apMaxRes;
         playerSkills.INT = apMaxInt;
