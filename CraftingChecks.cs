@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using Newtonsoft.Json.Linq;
+using System.Linq;
 
 namespace CUAP;
 
@@ -10,7 +11,7 @@ public class CraftingChecks : MonoBehaviour
 {
     public static ApClient Client;
     private static List<string> RecievedRecipes;
-    private List<int> AlreadySentChecks = new List<int>();
+    public static List<int> AlreadySentChecks = new List<int>();
     private int lastFrameRecipeCount;
     private static Dictionary<string, Recipe> CheckNameToRecipe = new Dictionary<string, Recipe>()
 {   // Same order as items.py, and the interal recipe order in-game
@@ -3498,6 +3499,7 @@ public class CraftingChecks : MonoBehaviour
             }
         }
         Recipes.recipes.Clear(); // Unlearn every recipe upon first connecting. We will recieve them with items later.
+        SetupAPBlueprint();
     }
     private void Update()
     {
@@ -3513,23 +3515,47 @@ public class CraftingChecks : MonoBehaviour
         lastFrameRecipeCount = RecievedRecipes.Count;
         try
         {
-            BlueprintScript[] blueprints = GameObject.Find("blueprint(Clone)").GetComponentsInChildren<BlueprintScript>();
-            foreach (BlueprintScript recipeId in blueprints) // For each recipe item that exists, delete it and send its check.
+            var blueprints = GameObject.FindObjectsOfType<GameObject>()
+                .Where(o => o.name == "blueprint(Clone)")
+                .ToList();
+            foreach (GameObject bp in blueprints) // For each recipe item that exists, customise its useAction.
             {
-                if (AlreadySentChecks.Contains(recipeId.recipeIndex))
+                var recipeId = bp.gameObject.GetComponent<BlueprintScript>().recipeIndex;
+                if (AlreadySentChecks.Contains(recipeId))
                 {
-                    Destroy(recipeId.gameObject);
+                    Destroy(bp);
                     continue; // Avoid spamming the server by not even attempting to send a check we already have sent.
                 }
-                int CheckID = -966812463 + recipeId.recipeIndex;
-                APClientClass.ChecksToSendQueue.Enqueue(CheckID);
-                AlreadySentChecks.Add(recipeId.recipeIndex);
-                Destroy(recipeId.gameObject);
             }
         }
         catch
         {
             return; // no blueprints currently exist in the world
         }
+    }
+    void SetupAPBlueprint() // rebuild the basegame blueprint functions, but with AP code integrated.
+    {
+        Item.GlobalItems.Remove("blueprint");
+        string itemname = "blueprint";
+        ItemInfo patchAPinfo = new ItemInfo();
+        patchAPinfo.category = "utility";
+        patchAPinfo.slotRotation = 0f;
+        patchAPinfo.usable = true;
+        patchAPinfo.usableOnLimb = false;
+        patchAPinfo.destroyAtZeroCondition = true;
+        patchAPinfo.weight = 0.2f;
+        patchAPinfo.useAction = delegate (Body body, Item item)
+        {
+            item.condition = 0f;
+            body.skills.AddExp(2, 35f);
+            int CheckID = -966812463 + item.GetComponent<BlueprintScript>().recipeIndex;
+            APClientClass.ChecksToSendQueue.Enqueue(CheckID);
+            CraftingChecks.AlreadySentChecks.Add(item.GetComponent<BlueprintScript>().recipeIndex);
+            PlayerCamera.main.DoAlert("Blueprint check sent to Archipelago!", false);
+            Sound.Play("combine", item.transform.position, false, true, null, 1f, 1f, false, false);
+        };
+        patchAPinfo.value = 0; // i think setting this to 0 makes it unsellable? makes it useless to regardless
+        patchAPinfo.rec = new Recognition(0);
+        Item.GlobalItems.Add(itemname, patchAPinfo);
     }
 }
