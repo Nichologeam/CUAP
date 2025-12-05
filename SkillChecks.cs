@@ -1,6 +1,7 @@
 ﻿using CreepyUtil.Archipelago;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements.Collections;
@@ -51,79 +52,74 @@ public class SkillChecks : MonoBehaviour
         }
         worldgen = GameObject.Find("World").GetComponent<WorldGeneration>();
         playerSkills = gameObject.GetComponent<Body>().skills;
-        playerSkills.expSTR = 0;
-        playerSkills.expRES = 0;
-        playerSkills.expINT = 0;
-        playerSkills.STR = apMaxStr;
-        playerSkills.RES = apMaxRes;
-        playerSkills.INT = apMaxInt;
-        playerSkills.maxSTR = Skills.GetExperienceForLevel(sendStr + 1);
-        playerSkills.maxRES = Skills.GetExperienceForLevel(sendRes + 1);
-        playerSkills.maxINT = Skills.GetExperienceForLevel(sendInt + 1);
         Startup.Logger.LogMessage("Skillsanity is monitoring exp...");
     }
 
     private void Update()
     {
-        if (worldgen.loadingObject.activeSelf)
+        if (worldgen.loadingObject.activeSelf && GameObject.Find("ShuttleStarter(Clone)")) // We're in the starting layer of this run
         {
+            StartCoroutine(ResetSkills());
             return;
         }
-        playerSkills.STR = apMaxStr; // set the level to the AP level
+        if (playerSkills.expSTR >= sendStr) // check if we reached a basegame level
+        {
+            sendStr = Skills.GetExperienceForLevel(playerSkills.STR + 1); // simulate level up without increasing stats
+            playerSkills.STR = apMaxStr;
+            playerSkills.maxSTR = sendStr;
+            int checkID = -966812163 + EXPRequirementToLevel.Get(playerSkills.STR - 1); // find the level
+            if (alreadySentChecks.Contains(checkID))
+            {
+                return;
+            }
+            APClientClass.ChecksToSendQueue.Enqueue(checkID);
+            alreadySentChecks.Add(checkID);
+        }
+        if (playerSkills.expRES >= sendRes)
+        {
+            sendRes = Skills.GetExperienceForLevel(playerSkills.RES + 1);
+            playerSkills.RES = apMaxRes;
+            playerSkills.maxRES = sendRes;
+            int checkID = -966812148 + EXPRequirementToLevel.Get(playerSkills.RES - 1);
+            if (alreadySentChecks.Contains(checkID))
+            {
+                return;
+            }
+            APClientClass.ChecksToSendQueue.Enqueue(checkID);
+            alreadySentChecks.Add(checkID);
+        }
+        if (playerSkills.expINT >= sendInt)
+        {
+            sendInt = Skills.GetExperienceForLevel(playerSkills.INT + 1);
+            playerSkills.INT = apMaxInt;
+            playerSkills.maxINT = sendInt;
+            int checkID = -966812133 + EXPRequirementToLevel.Get(playerSkills.INT - 1);
+            if (alreadySentChecks.Contains(checkID))
+            {
+                return;
+            }
+            APClientClass.ChecksToSendQueue.Enqueue(checkID);
+            alreadySentChecks.Add(checkID);
+        }
+    }
+    IEnumerator ResetSkills()
+    {
+        while (worldgen.loadingObject.activeSelf)
+        {
+            yield return null;
+        }
+        playerSkills.expSTR = 0;
+        playerSkills.expRES = 0;
+        playerSkills.expINT = 0;
+        sendStr = 60;
+        sendRes = 60;
+        sendInt = 60;
+        playerSkills.STR = apMaxStr;
         playerSkills.RES = apMaxRes;
         playerSkills.INT = apMaxInt;
-        if (playerSkills.expSTR >= Skills.GetExperienceForLevel(sendStr)) // check if we reached a basegame level
-        {
-            sendStr = IncreaseSendExp(sendStr); // simulate level up without increasing stats
-            int checkID = -966812163 + EXPRequirementToLevel.Get(sendStr); // find the level
-            if (alreadySentChecks.Contains(checkID))
-            {
-                return;
-            }
-            APClientClass.ChecksToSendQueue.Enqueue(checkID);
-            alreadySentChecks.Add(checkID);
-        }
-        if (playerSkills.expRES >= Skills.GetExperienceForLevel(sendRes))
-        {
-            sendRes = IncreaseSendExp(sendRes);
-            int checkID = -966812148 + EXPRequirementToLevel.Get(sendRes);
-            if (alreadySentChecks.Contains(checkID))
-            {
-                return;
-            }
-            APClientClass.ChecksToSendQueue.Enqueue(checkID);
-            alreadySentChecks.Add(checkID);
-        }
-        if (playerSkills.expINT >= Skills.GetExperienceForLevel(sendInt))
-        {
-            sendInt = IncreaseSendExp(sendInt);
-            int checkID = -966812133 + EXPRequirementToLevel.Get(sendInt);
-            if (alreadySentChecks.Contains(checkID))
-            {
-                return;
-            }
-            APClientClass.ChecksToSendQueue.Enqueue(checkID);
-            alreadySentChecks.Add(checkID);
-        }
-        playerSkills.maxSTR = Skills.GetExperienceForLevel(sendStr + 1);
-        playerSkills.maxRES = Skills.GetExperienceForLevel(sendRes + 1);
-        playerSkills.maxINT = Skills.GetExperienceForLevel(sendInt + 1);
-    }
-
-    int IncreaseSendExp(int exptype)
-    { // Replicating the game's actual Skills.GetExperienceForLevel function
-        if (exptype < 600) // less than level 10
-        {
-            return exptype + 60;
-        }
-        else if (exptype == 600) // exactly level 10
-        {
-            return exptype + 100;
-        }
-        else if (exptype > 600 && exptype < 1485) // between level 10 and 15
-        {
-            return (int)(exptype * 1.18);
-        }
-        return 999999999; // above level 15 (simple way to never send these checks)
+        playerSkills.UpdateExpBoundaries();
+        playerSkills.maxSTR = sendStr;
+        playerSkills.maxRES = sendRes;
+        playerSkills.maxINT = sendInt;
     }
 }
