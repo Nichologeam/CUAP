@@ -2694,7 +2694,7 @@ public class CraftingChecks : MonoBehaviour
             category = Recipes.RecipeCategory.Medicine
         }
     },
-    {"Antiseptic bottle Recipe",new Recipe
+    {"Antiseptic Recipe",new Recipe
         {
             INT = 9,
             result = new RecipeResult
