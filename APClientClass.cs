@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CreepyUtil.Archipelago;
 using UnityEngine;
+using UnityEngine.UIElements.Collections;
 using static Archipelago.MultiClient.Net.Enums.ItemsHandlingFlags;
 
 namespace CUAP;
@@ -115,6 +116,18 @@ public class APClientClass
                 if ((bool)(item!.ItemName.EndsWith(" Recipe"))) // Recipe item. Add it to the list of unlocked recipes.
                 {
                     RecipeUnlockDictionary.Add(item.ItemName);
+                    try
+                    {
+                        if (CraftingChecks.freesamples)
+                        {
+                            UnityEngine.Object.Instantiate(Resources.Load<GameObject>(CraftingChecks.CheckNameToItem.Get(item.ItemName)),
+                            GameObject.Find("Experiment").transform.position, Quaternion.identity);
+                        }
+                    }
+                    catch
+                    {
+                        continue; // we're on the main menu
+                    }
                 }
                 if (item.ItemName == "Depth Extender")
                 {
