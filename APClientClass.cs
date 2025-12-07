@@ -3,9 +3,13 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using Archipelago.MultiClient.Net.Models;
+using Archipelago.MultiClient.Net.Packets;
 using CreepyUtil.Archipelago;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.UIElements.Collections;
+using static System.Collections.Specialized.BitVector32;
 using static Archipelago.MultiClient.Net.Enums.ItemsHandlingFlags;
 
 namespace CUAP;
@@ -85,7 +89,7 @@ public class APClientClass
         if (Client is null) return;
         Client.UpdateConnection();
         if (Client?.Session?.Socket is null || !Client.IsConnected) return;
-
+        Client.Session.Socket.PacketReceived += Socket_PacketReceived;
         NextSend -= Time.deltaTime;
         if (ChecksToSend.Any() && NextSend <= 0)
         {
@@ -158,7 +162,7 @@ public class APClientClass
                     continue;
                 }
             }
-            var newItems = rawNewItems // not entierly sure what this does but i dont want to delete it. it seems important.
+            var newItems = rawNewItems
                           .Where(item => item?.Flags != 0)
                           .Select(item => item?.ItemName!)
                           .ToArray();
@@ -168,6 +172,22 @@ public class APClientClass
         {
             ChecksToSendQueue.TryDequeue(out var location);
             ChecksToSend.Add(location);
+        }
+    }
+
+    private static void Socket_PacketReceived(Archipelago.MultiClient.Net.ArchipelagoPacketBase packet)
+    {
+        if (packet is LocationInfoPacket)
+        {
+            var items = packet.ToJObject()["locations"]?.ToObject<List<NetworkItem>>();
+            if (items != null && Client != null)
+            {
+                foreach (var item in items)
+                {
+                    CraftingChecks.BlueprintToItemName.Add(item.Location - 22318500, Client.ItemIdToItemName(item.Item, Client.PlayerSlot) ?? $"Unknown Item (id:{item.Item})");
+                    CraftingChecks.BlueprintToPlayerName.Add(item.Location - 22318500, Client.PlayerNames != null && item.Player >= 0 ? Client.PlayerNames[item.Player] : $"Unknown Player (id:{item.Player})");
+                }
+            }
         }
     }
 

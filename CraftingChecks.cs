@@ -4,6 +4,10 @@ using System;
 using UnityEngine;
 using Newtonsoft.Json.Linq;
 using System.Linq;
+using Archipelago.MultiClient.Net.Packets;
+using Archipelago.MultiClient.Net.Models;
+using UnityEngine.SocialPlatforms;
+using UnityEngine.UIElements.Collections;
 
 namespace CUAP;
 
@@ -14,6 +18,15 @@ public class CraftingChecks : MonoBehaviour
     public static List<int> AlreadySentChecks = new List<int>();
     private int lastFrameRecipeCount;
     public static bool freesamples = false;
+    private LocationScoutsPacket blueprintsPacket = new LocationScoutsPacket()
+    {
+        Locations = Enumerable.Range(22318500, 22318603 - 22318500 + 1)
+                            .Select(i => (long)i)
+                            .ToArray(),
+        CreateAsHint = 0
+    };
+    public static Dictionary<long, string> BlueprintToPlayerName = new Dictionary<long, string>();
+    public static Dictionary<long, string> BlueprintToItemName = new Dictionary<long, string>();
     public static Dictionary<string, string> CheckNameToItem = new Dictionary<string, string>()
     {
         {"Foliage rope Recipe","rope"},
@@ -3614,6 +3627,7 @@ public class CraftingChecks : MonoBehaviour
             }
         }
         Recipes.recipes.Clear(); // Unlearn every recipe upon first connecting. We will recieve them with items later.
+        Client.Session.Socket.SendPacket(blueprintsPacket);
         SetupAPBlueprint();
     }
     private void Update()
@@ -3633,14 +3647,20 @@ public class CraftingChecks : MonoBehaviour
             var blueprints = GameObject.FindObjectsOfType<GameObject>()
                 .Where(o => o.name == "blueprint(Clone)")
                 .ToList();
-            foreach (GameObject bp in blueprints) // For each recipe item that exists, customise its useAction.
+            foreach (GameObject bp in blueprints)
             {
-                var recipeId = bp.gameObject.GetComponent<BlueprintScript>().recipeIndex;
+                var blueprint = bp.GetComponent<BlueprintScript>();
+                var recipeId = blueprint.recipeIndex;
                 if (AlreadySentChecks.Contains(recipeId))
                 {
-                    Destroy(bp);
-                    continue; // Avoid spamming the server by not even attempting to send a check we already have sent.
+                    bp.gameObject.GetComponent<BlueprintScript>().recipeIndex = UnityEngine.Random.Range(0, 103); // rerandomize it
+                    continue; // the game internally only spawns blueprints up to the amount that are in the game,
+                    // since I remove them to randomize them, we need to rerandomzie up to all 104, because the game doesn't
                 }
+                var item = bp.GetComponent<Item>();
+                item.Stats.description = "Six multicolored circles are drawn on the page. Your chip seems to react to it in some way. Use it to send <v1> their <v2>.";
+                item.Stats.description = item.Stats.description.Replace("<v1>", BlueprintToPlayerName.Get(recipeId));
+                item.Stats.description = item.Stats.description.Replace("<v2>", BlueprintToItemName.Get(recipeId));
             }
         }
         catch
@@ -3652,25 +3672,31 @@ public class CraftingChecks : MonoBehaviour
     {
         Item.GlobalItems.Remove("blueprint");
         string itemname = "blueprint";
-        ItemInfo patchAPinfo = new ItemInfo();
-        patchAPinfo.category = "utility";
-        patchAPinfo.slotRotation = 0f;
-        patchAPinfo.usable = true;
-        patchAPinfo.usableOnLimb = false;
-        patchAPinfo.destroyAtZeroCondition = true;
-        patchAPinfo.weight = 0.2f;
-        patchAPinfo.useAction = delegate (Body body, Item item)
+        ItemInfo patchAPinfo = new ItemInfo
         {
-            item.condition = 0f;
-            body.skills.AddExp(2, 35f);
-            int CheckID = -966812463 + item.GetComponent<BlueprintScript>().recipeIndex;
-            APClientClass.ChecksToSendQueue.Enqueue(CheckID);
-            CraftingChecks.AlreadySentChecks.Add(item.GetComponent<BlueprintScript>().recipeIndex);
-            PlayerCamera.main.DoAlert("Blueprint check sent to Archipelago!", false);
-            Sound.Play("combine", item.transform.position, false, true, null, 1f, 1f, false, false);
+            category = "utility",
+            slotRotation = 0f,
+            usable = true,
+            usableOnLimb = false,
+            destroyAtZeroCondition = true,
+            weight = 0.2f,
+            useAction = delegate (Body body, Item item)
+            {
+                item.condition = 0f;
+                body.skills.AddExp(2, 35f);
+                long CheckID = -966812463 + item.GetComponent<BlueprintScript>().recipeIndex;
+                CUAP.APClientClass.ChecksToSendQueue.Enqueue(CheckID);
+                CUAP.CraftingChecks.AlreadySentChecks.Add(item.GetComponent<BlueprintScript>().recipeIndex);
+                PlayerCamera.main.DoAlert("Blueprint check sent to Archipelago!", false);
+                Sound.Play("combine", item.transform.position, false, true, null, 1f, 1f, false, false);
+            },
+            value = 0, // i think setting this to 0 makes it unsellable? makes it useless to regardless
+            fullName = "Archipelago Item",
+            description = "Six multicolored circles are drawn on the page. Your chip seems to react to it in some way. Use it to send <v1> their <v2>.",
+            rec = new Recognition(0)
         };
-        patchAPinfo.value = 0; // i think setting this to 0 makes it unsellable? makes it useless to regardless
-        patchAPinfo.rec = new Recognition(0);
         Item.GlobalItems.Add(itemname, patchAPinfo);
+        patchAPinfo.SetTags();
+        ItemLootPool.InitializePool();
     }
 }
