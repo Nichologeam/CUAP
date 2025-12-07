@@ -3,9 +3,12 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using Archipelago.MultiClient.Net.Enums;
+using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Packets;
 using CreepyUtil.Archipelago;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.UIElements.Collections;
@@ -22,8 +25,10 @@ public class APClientClass
     public static ApClient? Client;
     public static List<string> LayerUnlockDictionary = new List<string>();
     public static List<string> RecipeUnlockDictionary = new List<string>();
+    static Dictionary<int, Dictionary<long, string>> playerItemIdToName = new Dictionary<int, Dictionary<long, string>>();
     private static double NextSend = 4;
     public static int DepthExtendersRecieved = 0;
+    private static bool datapackageprocessed = false;
 
     public static string[]? TryConnect(int port, string slot, string address, string password, bool deathlink)
     {
@@ -59,7 +64,7 @@ public class APClientClass
         }
         catch (Exception e)
         {
-            Startup.Logger.LogError("There was an Error with Archipelago!");
+            Startup.Logger.LogError("There was an Error with Archipelago!" + e.Message);
             Disconnect();
             return [e.Message, e.StackTrace!];
         }
@@ -77,6 +82,7 @@ public class APClientClass
     {
         var slotdata = Client?.SlotData!;
         Startup.Logger.LogMessage("Connnected to Archipelago!");
+        Client?.Session.Socket.SendPacket(new GetFullDataPackagePacket());
     }
 
     public static bool IsConnected()
@@ -184,9 +190,59 @@ public class APClientClass
             {
                 foreach (var item in items)
                 {
-                    CraftingChecks.BlueprintToItemName.Add(item.Location - 22318500, Client.ItemIdToItemName(item.Item, Client.PlayerSlot) ?? $"Unknown Item (id:{item.Item})");
+                    playerItemIdToName.TryGetValue(item.Player, out Dictionary<long, string> blueprintitemidtoname);
+                    blueprintitemidtoname.TryGetValue(item.Item, out string itemname);
+                    CraftingChecks.BlueprintToItemName.Add(item.Location - 22318500, itemname);
                     CraftingChecks.BlueprintToPlayerName.Add(item.Location - 22318500, Client.PlayerNames != null && item.Player >= 0 ? Client.PlayerNames[item.Player] : $"Unknown Player (id:{item.Player})");
                 }
+            }
+        }
+        else if (packet is DataPackagePacket && !datapackageprocessed)
+        {
+            try
+            {
+                Startup.Logger.LogMessage("Received DataPackage");
+                datapackageprocessed = true;
+                var data = packet.ToJObject()["data"];
+                if (data == null) {Startup.Logger.LogError("'data' is null!"); return;}
+                var gamelist = data["games"];
+                JObject? games = gamelist as JObject;
+                if (games == null || Client == null) {Startup.Logger.LogError("'Games' is null!"); return;}
+                var allPlayers = Client.Session.Players.AllPlayers.ToList();
+                foreach (var player in allPlayers)
+                {
+                    Startup.Logger.LogMessage($"Processing {player.Name}");
+                    int playerID = player.Slot;
+                    string gameName = player.Game;
+                    if (!games.TryGetValue(gameName, out JToken? gameDataToken))
+                    {
+                        continue;
+                    }
+                    JObject? gameData = gameDataToken as JObject;
+                    if (gameData == null)
+                    {
+                        continue;
+                    }
+                    JObject? itemNameToIdJson = gameData["item_name_to_id"] as JObject;
+                    if (itemNameToIdJson == null)
+                    {
+                        continue;
+                    }
+                    Dictionary<long, string> itemNameToId = new Dictionary<long, string>();
+                    foreach (var prop in itemNameToIdJson.Properties())
+                    {
+                        long id = prop.Value.Value<long>();
+                        string name = prop.Name;
+
+                        if (!itemNameToId.ContainsKey(id))
+                            itemNameToId[id] = name;
+                    }
+                    playerItemIdToName[playerID] = itemNameToId;
+                }
+            }
+            catch (Exception ex)
+            {
+                Startup.Logger.LogError(ex.ToString());
             }
         }
     }
@@ -197,4 +253,10 @@ public class APClientClass
         Client?.SendLocations(ChecksToSend.ToArray());
         ChecksToSend.Clear();
     }
+}
+
+public class GetFullDataPackagePacket : ArchipelagoPacketBase
+{// Because 'Games' is required to have a value in the real datapackage, we can't set it to null for all games.
+    // So I'll just make my own without a games value! Problem solved!
+    public override ArchipelagoPacketType PacketType => ArchipelagoPacketType.GetDataPackage;
 }
