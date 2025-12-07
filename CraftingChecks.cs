@@ -5,8 +5,6 @@ using UnityEngine;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 using Archipelago.MultiClient.Net.Packets;
-using Archipelago.MultiClient.Net.Models;
-using UnityEngine.SocialPlatforms;
 using UnityEngine.UIElements.Collections;
 
 namespace CUAP;
@@ -3653,9 +3651,9 @@ public class CraftingChecks : MonoBehaviour
                 var recipeId = blueprint.recipeIndex;
                 if (AlreadySentChecks.Contains(recipeId))
                 {
-                    bp.gameObject.GetComponent<BlueprintScript>().recipeIndex = UnityEngine.Random.Range(0, 103); // rerandomize it
+                    bp.gameObject.GetComponent<BlueprintScript>().recipeIndex = UnityEngine.Random.Range(0, 104); // rerandomize it
                     continue; // the game internally only spawns blueprints up to the amount that are in the game,
-                    // since I remove them to randomize them, we need to rerandomzie up to all 104, because the game doesn't
+                    // since I remove them to randomize them, we need to rerandomize up to all 104, because the game doesn't
                 }
                 var item = bp.GetComponent<Item>();
                 item.Stats.description = "Six multicolored circles are drawn on the page. Your chip seems to react to it in some way. Use it to send <v1> their <v2>.";
@@ -3684,19 +3682,23 @@ public class CraftingChecks : MonoBehaviour
             {
                 item.condition = 0f;
                 body.skills.AddExp(2, 35f);
-                long CheckID = -966812463 + item.GetComponent<BlueprintScript>().recipeIndex;
-                CUAP.APClientClass.ChecksToSendQueue.Enqueue(CheckID);
-                CUAP.CraftingChecks.AlreadySentChecks.Add(item.GetComponent<BlueprintScript>().recipeIndex);
-                PlayerCamera.main.DoAlert("Blueprint check sent to Archipelago!", false);
+                CraftingChecks.SendBlueprintLocation(item.gameObject.GetComponent<BlueprintScript>().recipeIndex);
+                PlayerCamera.main.DoAlert("Item sent to <color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o!", false);
                 Sound.Play("combine", item.transform.position, false, true, null, 1f, 1f, false, false);
             },
             value = 0, // i think setting this to 0 makes it unsellable? makes it useless to regardless
-            fullName = "Archipelago Item",
-            description = "Six multicolored circles are drawn on the page. Your chip seems to react to it in some way. Use it to send <v1> their <v2>.",
+            fullName = "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o</color> Item",
             rec = new Recognition(0)
         };
         Item.GlobalItems.Add(itemname, patchAPinfo);
         patchAPinfo.SetTags();
         ItemLootPool.InitializePool();
+    }
+
+    public static void SendBlueprintLocation(int recipeIndex)
+    {
+        int CheckID = -966812696 + recipeIndex;
+        APClientClass.ChecksToSendQueue.Enqueue(CheckID);
+        AlreadySentChecks.Add(recipeIndex);
     }
 }
