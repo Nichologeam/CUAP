@@ -8,21 +8,19 @@ public class CommandPatch : MonoBehaviour
 {
     public static ApClient Client;
     private ConsoleScript Console;
-    private TMP_InputField input;
     private string LastFrameText;
     private string ChatMessage;
 
     private void OnEnable()
     {
         Client = APClientClass.Client;
-        Console = this.gameObject.GetComponent<ConsoleScript>();
+        Console = gameObject.GetComponent<ConsoleScript>();
         Startup.Logger.LogMessage("Console has been patched!");
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return) && Console.isActiveAndEnabled) // Console exists and a message was just sent
+        if (Input.GetKeyDown(KeyCode.Return)) // Console message may have been sent
         {
-            input = Console.GetComponent<TMP_InputField>();
             try
             {
                 if (LastFrameText.Substring(0, 4) != "talk")
@@ -42,14 +40,6 @@ public class CommandPatch : MonoBehaviour
                 return; // Message was less than 4 characters. Doing this to prevent errors when sending blank or short messages.
             }
         }
-        try // Enter was not pressed this frame, does the console exist?
-        {
-            input = Console.GetComponent<TMP_InputField>();
-            LastFrameText = input.text;
-        }
-        catch // No? The console isn't open. Return.
-        {
-            return; // This should realistically never happen, but you never know...
-        }
+        LastFrameText = Console.input.text; // enter was not pressed on this frame
     }
 }
