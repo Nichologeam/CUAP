@@ -33,6 +33,7 @@ public class Startup : BaseUnityPlugin
         {
             try
             {
+                ScrollableText.ForceClose(); // skip intoductory story
                 Client = APClientClass.Client;
                 if (Client is null || !(Client?.IsConnected ?? false)) // we aren't connected. disable the start run buttons.
                 {
