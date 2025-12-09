@@ -130,7 +130,17 @@ public class CraftingChecks : MonoBehaviour
         {"Torch Recipe","torch"},
         {"Torch (relight) Recipe","torch"},
         {"Nutrient bar Recipe","nutrientbar"},
-        {"Pemmican Recipe","pemmican"}
+        {"Pemmican Recipe","pemmican"},
+        {"Foliage meal Recipe","foliagemeal"},
+        {"Burger Recipe","burger"},
+        {"Soup Recipe","soup"},
+        {"Ice pack Recipe","icepack"},
+        {"Scarf Recipe","scarf"},
+        {"Titanium pickaxe Recipe","titaniumpickaxe"},
+        {"Titanium machete Recipe","titaniummachete"},
+        {"Titanium multitool Recipe","titaniummultitool"},
+        {"Climbing rope Recipe","climbingrope"}
+
     };
     private static Dictionary<string, Recipe> CheckNameToRecipe = new Dictionary<string, Recipe>()
     {   // Same order as items.py, and the interal recipe order in-game
@@ -3601,7 +3611,346 @@ public class CraftingChecks : MonoBehaviour
                 },
                 category = Recipes.RecipeCategory.Food
             }
-        }
+        },
+        {"Foliage meal Recipe",new Recipe
+            {
+                INT = 7,
+                result = new RecipeResult
+                {
+                    id = "foliagemeal"
+                },
+                items = new List<RecipeItem>
+                {
+                    new RecipeItem(0f)
+                    {
+                        quality = "heatsource",
+                        destroyItem = false
+                    },
+                    new RecipeItem(0f)
+                    {
+                        quality = "foliage"
+                    },
+                    new RecipeItem(0f)
+                    {
+                        quality = "foliage"
+                    },
+                    new RecipeItem(0f)
+                    {
+                        quality = "foliage"
+                    },
+                    new RecipeItem(0f)
+                    {
+                        quality = new CraftingQuality("produce")
+                    }
+                },
+                category = Recipes.RecipeCategory.Food
+            }
+        },
+        {"Burger Recipe",new Recipe
+            {
+                INT = 6,
+                result = new RecipeResult
+                {
+                    id = "burger"
+                },
+                items = new List<RecipeItem>
+                {
+                    new RecipeItem(0f)
+                    {
+                        quality = "heatsource",
+                        destroyItem = false
+                    },
+                    new RecipeItem(0.2f)
+                    {
+                        quality = "meat"
+                    },
+                    new RecipeItem(0.2f)
+                    {
+                        specificId = "bread"
+                    },
+                    new RecipeItem(20f)
+                    {
+                        specificId = "ketchup",
+                        isLiquid = true
+                    }
+                },
+                category = Recipes.RecipeCategory.Food
+            }
+        },
+        {"Soup Recipe",new Recipe
+            {
+                INT = 9,
+                result = new RecipeResult
+                {
+                    id = "soup",
+                    isLiquid = true,
+                    resultCondition = 300f
+                },
+                items = new List<RecipeItem>
+                {
+                    new RecipeItem(0f)
+                    {
+                        quality = "heatsource",
+                        destroyItem = false
+                    },
+                    new RecipeItem(0.9f)
+                    {
+                        quality = new CraftingQuality("water", 200f),
+                        isLiquid = true
+                    },
+                    new RecipeItem(25f)
+                    {
+                        specificId = "fat",
+                        isLiquid = true
+                    },
+                    new RecipeItem(0.2f)
+                    {
+                        quality = "meat"
+                    },
+                    new RecipeItem(0f)
+                    {
+                        quality = new CraftingQuality("cutting", 0.5f),
+                        destroyItem = false
+                    }
+                },
+                category = Recipes.RecipeCategory.Food
+            }
+        },
+        {"Ice pack Recipe",new Recipe
+            {
+                INT = 14,
+                result = new RecipeResult
+                {
+                    id = "icepack"
+                },
+                items = new List<RecipeItem>
+                {
+                    new RecipeItem(0.5f)
+                    {
+                        specificId = "frigiantfruit"
+                    },
+                    new RecipeItem(0.5f)
+                    {
+                        specificId = "frigiantfruit"
+                    },
+                    new RecipeItem(0f)
+                    {
+                        quality = new CraftingQuality("water", 200f),
+                        isLiquid = true
+                    },
+                    new RecipeItem(0f)
+                    {
+                        specificId = "canvas"
+                    },
+                    new RecipeItem(0f)
+                    {
+                        specificId = "canvas"
+                    },
+                    new RecipeItem(0f)
+                    {
+                        specificId = "string"
+                    },
+                    new RecipeItem(0.9f)
+                    {
+                        specificId = "circuitboard"
+                    }
+                },
+                category = Recipes.RecipeCategory.Medicine
+            }
+        },
+        {"Scarf Recipe",new Recipe
+            {
+                INT = 10,
+                result = new RecipeResult
+                {
+                    id = "scarf"
+                },
+                items = new List<RecipeItem>
+                {
+                    new RecipeItem(0f)
+                    {
+                        specificId = "canvas"
+                    },
+                    new RecipeItem(0f)
+                    {
+                        specificId = "canvas"
+                    },
+                    new RecipeItem(0f)
+                    {
+                        specificId = "canvas"
+                    },
+                    new RecipeItem(0f)
+                    {
+                        specificId = "canvas"
+                    },
+                    new RecipeItem(0f)
+                    {
+                        specificId = "canvas"
+                    },
+                    new RecipeItem(0f)
+                    {
+                        quality = "string"
+                    },
+                    new RecipeItem(0f)
+                    {
+                        quality = "string"
+                    },
+                    new RecipeItem(0f)
+                    {
+                        quality = "string"
+                    }
+                },
+                category = Recipes.RecipeCategory.Utilities
+            }
+        },
+        {"Titanium pickaxe Recipe",new Recipe
+            {
+                INT = 16,
+                result = new RecipeResult
+                {
+                    id = "titaniumpickaxe"
+                },
+                items = new List<RecipeItem>
+                {
+                    new RecipeItem(0f)
+                    {
+                        specificId = "pickaxe"
+                    },
+                    new RecipeItem(0f)
+                    {
+                        specificId = "titaniumrod"
+                    },
+                    new RecipeItem(0f)
+                    {
+                        specificId = "titaniumrod"
+                    },
+                    new RecipeItem(0f)
+                    {
+                        specificId = "plasticchunk"
+                    },
+                    new RecipeItem(20f)
+                    {
+                        specificId = "biochem",
+                        isLiquid = true
+                    },
+                    new RecipeItem(0f)
+                    {
+                        quality = "hammering",
+                        destroyItem = false
+                    }
+                },
+                category = Recipes.RecipeCategory.Tools
+            }
+        },
+        {"Titanium machete Recipe",new Recipe
+            {
+                INT = 16,
+                result = new RecipeResult
+                {
+                    id = "titaniummachete"
+                },
+                items = new List<RecipeItem>
+                {
+                    new RecipeItem(0f)
+                    {
+                        specificId = "machete"
+                    },
+                    new RecipeItem(0f)
+                    {
+                        specificId = "titaniumsheet"
+                    },
+                    new RecipeItem(0f)
+                    {
+                        specificId = "titaniumsheet"
+                    },
+                    new RecipeItem(0f)
+                    {
+                        specificId = "plasticchunk"
+                    },
+                    new RecipeItem(20f)
+                    {
+                        specificId = "biochem",
+                        isLiquid = true
+                    },
+                    new RecipeItem(0f)
+                    {
+                        quality = "hammering",
+                        destroyItem = false
+                    }
+                },
+                category = Recipes.RecipeCategory.Tools
+            }
+        },
+        {"Titanum multitool Recipe",new Recipe
+            {
+                INT = 16,
+                result = new RecipeResult
+                {
+                    id = "titaniummultitool"
+                },
+                items = new List<RecipeItem>
+                {
+                    new RecipeItem(0f)
+                    {
+                        specificId = "titaniumsheet"
+                    },
+                    new RecipeItem(0f)
+                    {
+                        specificId = "titaniumrod"
+                    },
+                    new RecipeItem(0f)
+                    {
+                        specificId = "plasticchunk"
+                    },
+                    new RecipeItem(20f)
+                    {
+                        specificId = "biochem",
+                        isLiquid = true
+                    },
+                    new RecipeItem(0f)
+                    {
+                        quality = "hammering",
+                        destroyItem = false
+                    },
+                    new RecipeItem(0f)
+                    {
+                        quality = "cutting",
+                        destroyItem = false
+                    }
+                },
+                category = Recipes.RecipeCategory.Tools
+            }
+        },
+        {"Climbing rope Recipe",new Recipe
+            {
+                INT = 8,
+                result = new RecipeResult
+                {
+                    id = "climbingrope"
+                },
+                items = new List<RecipeItem>
+                {
+                    new RecipeItem(0f)
+                    {
+                        specificId = "rope"
+                    },
+                    new RecipeItem(0f)
+                    {
+                        specificId = "rope"
+                    },
+                    new RecipeItem(0f)
+                    {
+                        specificId = "rope"
+                    },
+                    new RecipeItem(0f)
+                    {
+                        quality = new CraftingQuality("nails", 1f),
+                        destroyItem = false
+                    }
+                },
+                category = Recipes.RecipeCategory.Utilities
+            }
+        },
     };
 
     private void OnEnable()
@@ -3651,9 +4000,9 @@ public class CraftingChecks : MonoBehaviour
                 var recipeId = blueprint.recipeIndex;
                 if (AlreadySentChecks.Contains(recipeId))
                 {
-                    bp.gameObject.GetComponent<BlueprintScript>().recipeIndex = UnityEngine.Random.Range(0, 104); // rerandomize it
+                    bp.gameObject.GetComponent<BlueprintScript>().recipeIndex = UnityEngine.Random.Range(0, 112); // rerandomize it
                     continue; // the game internally only spawns blueprints up to the amount that are in the game,
-                    // since I remove them to randomize them, we need to rerandomize up to all 104, because the game doesn't
+                    // since I remove them to randomize them, we need to rerandomize up to all 112, because the game doesn't
                 }
                 var item = bp.GetComponent<Item>();
                 item.Stats.description = "Six multicolored circles are drawn on the page. Your chip seems to react to it in some way. Use it to send <v1> their <v2>.";
@@ -3687,7 +4036,7 @@ public class CraftingChecks : MonoBehaviour
                 Sound.Play("combine", item.transform.position, false, true, null, 1f, 1f, false, false);
             },
             value = 0, // i think setting this to 0 makes it unsellable? makes it useless to regardless
-            fullName = "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o</color> Item",
+            fullName = "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Item",
             rec = new Recognition(0)
         };
         Item.GlobalItems.Add(itemname, patchAPinfo);
