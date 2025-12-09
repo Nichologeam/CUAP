@@ -11,16 +11,16 @@ namespace CUAP;
 public class SkillChecks : MonoBehaviour
 {
     public static ApClient Client;
-    public Skills playerSkills;
+    public static Skills playerSkills;
     private WorldGeneration worldgen;
     public static int apMaxStr;
     public static int apMaxRes;
     public static int apMaxInt;
-    int sendStr = 60;
-    int sendRes = 60;
-    int sendInt = 60;
-    List<int> alreadySentChecks = new List<int>();
-    Dictionary<int, int> EXPRequirementToLevel = new Dictionary<int, int>()
+    // int sendStr = 60;
+    // int sendRes = 60;
+    // int sendInt = 60;
+    // List<int> alreadySentChecks = new List<int>();
+    /* Dictionary<int, int> EXPRequirementToLevel = new Dictionary<int, int>()
     { // level is subtracted by 1
         {60,0},
         {120,1},
@@ -37,7 +37,7 @@ public class SkillChecks : MonoBehaviour
         {1062,12},
         {1255,13},
         {1484,14},
-    };
+    }; */
     private void OnEnable()
     {
         Client = APClientClass.Client;
@@ -62,7 +62,13 @@ public class SkillChecks : MonoBehaviour
             StartCoroutine(ResetSkills());
             return;
         }
-        if (playerSkills.expSTR >= sendStr) // check if we reached a basegame level
+        playerSkills.STR = apMaxStr;
+        playerSkills.expSTR = Skills.GetExperienceForLevel(apMaxStr - 1);
+        playerSkills.RES = apMaxRes;
+        playerSkills.expRES = Skills.GetExperienceForLevel(apMaxRes - 1);
+        playerSkills.INT = apMaxInt;
+        playerSkills.expINT = Skills.GetExperienceForLevel(apMaxInt - 1);
+        /* if (playerSkills.expSTR >= sendStr) // check if we reached a basegame level
         {
             sendStr = Skills.GetExperienceForLevel(playerSkills.STR + 1); // simulate level up without increasing stats
             playerSkills.STR = apMaxStr;
@@ -100,7 +106,7 @@ public class SkillChecks : MonoBehaviour
             }
             APClientClass.ChecksToSendQueue.Enqueue(checkID);
             alreadySentChecks.Add(checkID);
-        }
+        }*/
     }
     IEnumerator ResetSkills()
     {
@@ -111,15 +117,15 @@ public class SkillChecks : MonoBehaviour
         playerSkills.expSTR = 0;
         playerSkills.expRES = 0;
         playerSkills.expINT = 0;
-        sendStr = 60;
-        sendRes = 60;
-        sendInt = 60;
+        // sendStr = 60;
+        // sendRes = 60;
+        // sendInt = 60;
         playerSkills.STR = apMaxStr;
         playerSkills.RES = apMaxRes;
         playerSkills.INT = apMaxInt;
         playerSkills.UpdateExpBoundaries();
-        playerSkills.maxSTR = sendStr;
-        playerSkills.maxRES = sendRes;
-        playerSkills.maxINT = sendInt;
+        // playerSkills.maxSTR = sendStr;
+        // playerSkills.maxRES = sendRes;
+        // playerSkills.maxINT = sendInt;
     }
 }

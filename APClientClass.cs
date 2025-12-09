@@ -149,14 +149,17 @@ public class APClientClass
                     if (Skill == "STR")
                     {
                         SkillChecks.apMaxStr++;
+                        SkillChecks.playerSkills.UpdateExpBoundaries();
                     }
                     else if(Skill == "RES")
                     {
                         SkillChecks.apMaxRes++;
+                        SkillChecks.playerSkills.UpdateExpBoundaries();
                     }
                     else if(Skill == "INT")
                     {
                         SkillChecks.apMaxInt++;
+                        SkillChecks.playerSkills.UpdateExpBoundaries();
                     }
                 }
                 try
