@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace CUAP;
 
-[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.4.0.0")]
+[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.4.2.0")]
 public class Startup : BaseUnityPlugin
 {
     public static new ManualLogSource Logger;
@@ -21,7 +21,7 @@ public class Startup : BaseUnityPlugin
     private void Awake()
     {
         Logger = base.Logger;
-        Logger.LogMessage($"Casualties: Unknown/Scav Prototype Archipelago Plugin v0.4.0 loaded!");
+        Logger.LogMessage($"Casualties: Unknown/Scav Prototype Archipelago Plugin v0.4.2 loaded!");
         Handler = new GameObject("Archipelago GUI Hander");
         Handler.AddComponent<APGui>();
         DontDestroyOnLoad(Handler);
@@ -66,7 +66,7 @@ public class Startup : BaseUnityPlugin
     {
         if (scene.name == "SampleScene") // Loading into the game, let's apply Archipelago patches.
         {
-            Console = GameObject.Find("Console/Canvas/Console");
+            Console = GameObject.Find("Console(Clone)");
             if (Console.GetComponent<CommandPatch>())
             {
                 return; // Patches have already been applied, no need to apply them again.
