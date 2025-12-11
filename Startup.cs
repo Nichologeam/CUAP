@@ -53,6 +53,23 @@ public class Startup : BaseUnityPlugin
                 {
                     Console.AddComponent<CommandPatch>();
                 }
+                GameObject.Find("Canvas/VersionWarning/Text (TMP) (1)").GetComponent<TextMeshProUGUI>().text =
+                """
+                <alpha=#11><i>...of both Casualties: Unknown and CUAP.<alpha=#FF></i>
+
+
+                Bug reports on the Discord server would be appreciated.
+                <size=16><alpha=#11>Either the Orsoniks' Studio #art or Archipelago: After Dark #future-game-design threads.<alpha=#FF><size=20>
+
+
+                Keep a look-out for:<alpha=#55>
+                - Bugs with the crafting system
+                - Incorrectly sending checks
+                - Errors in the BepInEx console
+                - Nonfuctional .yaml settings
+                - Glitches
+                <size=16><alpha=#11>You can also directly create issues on the CUAP Github repository.
+                """;
             }
             catch
             {
@@ -98,23 +115,6 @@ public class Startup : BaseUnityPlugin
             Body = null;
             WorldGen = null;
             Moodles = null;
-            GameObject.Find("Canvas/VersionWarning/Text (TMP) (1)").GetComponent<TextMeshProUGUI>().text =
-                """
-                < alpha =#11><i>...of both Casualties: Unknown and CUAP.<alpha=#FF></i>
-
-
-                Bug reports on the Discord server would be appreciated.
-                < size = 16 >< alpha =#11>Either the Orsoniks' Studio #art or Archipelago: After Dark #future-game-design threads.<alpha=#FF><size=20>
-
-
-                Keep a look-out for:< alpha =#55>
-                - Bugs with the crafting system
-                - Incorrectly sending checks
-                - Errors in the BepInEx console
-                - Nonfuctional.yaml settings
-                - Glitches
-                < size = 16 >< alpha =#11>You can also directly create issues on the CUAP Github repository.
-                """;
         }
     }
 }
