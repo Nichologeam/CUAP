@@ -58,7 +58,7 @@ public class APGui : MonoBehaviour
         if (!IsConnected())
         {
             Offset = new(1700, 0);
-            GUI.Box(new Rect(10 + Offset.x, 10 + Offset.y, 200, 300), "C:U Archipelago Client");
+            GUI.Box(new Rect(10 + Offset.x, 10 + Offset.y, 200, 300), "Archipelago Client");
 
             GUI.Label(new Rect(20 + Offset.x, 40 + Offset.y, 300, 30), "Address:Port", TextStyle);
             Ipporttext = GUI.TextField(new Rect(20 + Offset.x, 60 + Offset.y, 180, 25), Ipporttext, 25);
