@@ -1,7 +1,6 @@
 ### Casualties: Unknown/Scav Prototype Archipelago
 
-This mod is made for the V5PreTesting4 version of Casualties: Unknown, which can be downloaded from the game's [Itch page](https://orsonik.itch.io/scav-prototype). Make sure you download V5PreTesting4 and not V4.1.
-To play the V4 version of this mod, download CUAP v0.3.1. Everything after that is V5PreTesting4.
+This mod is made for the V5PreTesting5 version of Casualties: Unknown, which can be downloaded from the game's [Itch page](https://orsonik.itch.io/scav-prototype). Make sure you download V5PreTesting5 and not V4.1.
 
 # **Setup Guide**
 1. Download BepInEx v5.4.23.3 from its [Github Page](https://github.com/BepInEx/BepInEx/releases/tag/v5.4.23.3)
@@ -11,11 +10,11 @@ To play the V4 version of this mod, download CUAP v0.3.1. Everything after that 
     - If done correctly, a Plugins folder should appear in the BepInEx folder
 4. Download and install the client mod by extracting the CUAPClientModx.x.x.zip folder into the newly created Plugins folder
 	- If done correctly, a CUAP folder should appear (not CUAPClientModx.x.x)
-5. Download [Archipelago 0.6.4](https://github.com/ArchipelagoMW/Archipelago/releases/tag/0.6.4) or newer
-6. Download the APWorld and place it in the custom_worlds folder of your Archipelago install
+5. [If Hosting] Download [Archipelago 0.6.4](https://github.com/ArchipelagoMW/Archipelago/releases/tag/0.6.4) or newer
+6. [If Hosting] Download the APWorld and place it in the custom_worlds folder of your Archipelago install
 7. Download the .yaml file attached and fill out your desired settings, then place it in the Players folder of your Archipelago install
-8. Open Archipelago and select 'Generate'
-9. Upload the .zip file in the Output folder to [the Archipelago website](https://archipelago.gg/uploads) to host
+8. [If Hosting] Open Archipelago and select 'Generate'
+9. [If Hosting] Upload the .zip file in the Output folder to [the Archipelago website](https://archipelago.gg/uploads) to host
 	- Alternatively, you can host on your own PC by selecting 'Host' in the Archipelago Launcher
 10. Launch the game normally and enter the room connection information in the top right
 	- If you want to run with Deathlink, click the 'Deathlink' button
@@ -23,6 +22,8 @@ To play the V4 version of this mod, download CUAP v0.3.1. Everything after that 
 11. I recommend also connecting a text client, as Experiment is known to skip out on saying the item receive dialogue sometimes
     - To do this, open the 'Text Client' in the Archipelago Launcher
 12. If anything goes wrong while playing, please let me know. This is still in very early development and isn't anywhere near stable
+	- You can contact me in the AP After Dark Discord in the Casualties: Unkown thread in #future-game-design
+	- or in the Orsoniks' studio Discord in the C:U Multiworld Randomizer (Archipelago) thread in #art
 
 # **Sending Chat Messages**
 
