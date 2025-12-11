@@ -58,11 +58,11 @@ public class TrapHandler : MonoBehaviour
     {
         if (TrapName == "Depression Trap")
         {
-            Vitals.happiness =- 20;
+            Vitals.happiness = -20;
         }
         if (TrapName == "Hearing Loss Trap")
         {
-            Vitals.hearingLoss =+ 50;
+            Vitals.hearingLoss = +50;
         }
         if (TrapName == "Earthquake Trap")
         {
@@ -84,15 +84,7 @@ public class TrapHandler : MonoBehaviour
         }
         if (TrapName == "Elder Thornback Trap")
         {
-            if (UnityEngine.Random.Range(0, 1) == 0)
-            {
-                plrcam.currentThreatTheme = 15; // play the Elder Thornback first phase theme
-            }
-            else
-            {
-                plrcam.currentThreatTheme = 10; // play the Elder Thornback second phase theme
-            }
-            plrcam.threatMusicTime = 3000; // for 3000 frames (50 seconds)
+            StartCoroutine(Thornback());
         }
         if (TrapName == "Cave Ticks Trap")
         {
@@ -123,7 +115,7 @@ public class TrapHandler : MonoBehaviour
                     heldItems.Add(slot.gameObject.GetComponentInChildren<Item>());
                 }
                 catch
-                { 
+                {
                     continue;
                 }
             }
@@ -173,9 +165,17 @@ public class TrapHandler : MonoBehaviour
         Destroy(mw);
         Destroy(GameObject.Find("Main Camera/Canvas/MindwipeViginette(Clone)"));
         skills.INT = INTSkillPreWipe;
-        skills.expINT =+ INTExpPreWipe;
+        skills.expINT = +INTExpPreWipe;
         skills.maxINT = INTMaxPreWipe;
         skills.minINT = INTMinPreWipe;
         mindwipeActive = false;
+    }
+    IEnumerator Thornback()
+    {
+        plrcam.currentThreatTheme = 15; // play the Elder Thornback first phase theme
+        plrcam.threatMusicTime = 1000; // for 1000 frames
+        moodles.horrifiedLevel = 1;
+        yield return plrcam.threatMusicTime == 0;
+        moodles.horrifiedLevel = 0;
     }
 }
