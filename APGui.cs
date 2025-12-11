@@ -14,7 +14,7 @@ public class APGui : MonoBehaviour
     public static string State = "";
     public static Vector2 Offset;
     public static bool WasPressed;
-    public static bool DeathlinkEnabled;
+    public static bool DeathlinkEnabled = false;
 
     public static GUIStyle TextStyle = new()
     {
@@ -77,43 +77,22 @@ public class APGui : MonoBehaviour
                     $"Depth Extenders: " + APClientClass.DepthExtendersRecieved + "          Max Depth: " + ((300 * APClientClass.DepthExtendersRecieved) + 300));
         }
 
-        if (!IsConnected() && GUI.Button(new Rect(15 + Offset.x, 210 + Offset.y, 90, 30), "Connect"))
+        if (!IsConnected() && GUI.Button(new Rect(20 + Offset.x, 210 + Offset.y, 180, 30), "Connect"))
         {
-            Startup.Logger.LogMessage("Connecting without Deathlink");
-            DeathlinkEnabled = false;
             var ipPortSplit = Ipporttext.Split(':');
             if (!int.TryParse(ipPortSplit[1], out var port))
             {
                 State = $"[{ipPortSplit[1]}] is not a valid port";
                 return;
             }
-            var error = TryConnect(port, Slot, ipPortSplit[0], Password, false);
+            var error = TryConnect(port, Slot, ipPortSplit[0], Password);
             if (error is not null)
             {
                 State = string.Join("\n", error);
                 return;
             }
-            
             State = "";
             File.WriteAllText("ApConnection.txt", $"{Ipporttext}\n{Password}\n{Slot}");
-        }
-
-        if (!IsConnected() && GUI.Button(new Rect(115 + Offset.x, 210 + Offset.y, 90, 30), "DeathLink"))
-        {
-            Startup.Logger.LogMessage("Connecting with Deathlink");
-            DeathlinkEnabled = true;
-            var ipPortSplit = Ipporttext.Split(':');
-            if (!int.TryParse(ipPortSplit[1], out var port))
-            {
-                State = $"[{ipPortSplit[1]}] is not a valid port";
-                return;
-            }
-            var error = TryConnect(port, Slot, ipPortSplit[0], Password, true);
-            if (error is not null)
-            {
-                State = string.Join("\n", error);
-                return;
-            }
         }
 
         if (IsConnected() && GUI.Button(new Rect(20 + Offset.x, 210 + Offset.y, 180, 30), "Disconnect(Main menu only!)"))

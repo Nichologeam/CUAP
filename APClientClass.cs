@@ -30,34 +30,19 @@ public class APClientClass
     public static int DepthExtendersRecieved = 0;
     private static bool datapackageprocessed = false;
 
-    public static string[]? TryConnect(int port, string slot, string address, string password, bool deathlink)
+    public static string[]? TryConnect(int port, string slot, string address, string password)
     {
         try
         {
             Client = new ApClient();
-            if (!deathlink)
+            Startup.Logger.LogMessage($"Attempting to connect to [{address}]:[{port}], with password: [{password}], on slot: [{slot}]");
+            var connectError = Client.TryConnect(new LoginInfo(port, slot, address, password), 0x3AF4F1BC,
+                "Casualties: Unknown", AllItems, (new Version(0, 6, 4)), requestSlotData: true);
+            if (connectError is not null && connectError.Length > 0)
             {
-                Startup.Logger.LogMessage($"Attempting to connect to [{address}]:[{port}], with password: [{password}], on slot: [{slot}]");
-                var connectError = Client.TryConnect(new LoginInfo(port, slot, address, password), 0x3AF4F1BC,
-                    "Casualties: Unknown", AllItems, (new Version(0, 6, 3)), requestSlotData: true);
-                if (connectError is not null && connectError.Length > 0)
-                {
-                    Startup.Logger.LogError("There was an Error connecting!" + connectError);
-                    Disconnect();
-                    return connectError;
-                }
-            }
-            else
-            {
-                Startup.Logger.LogMessage($"Attempting to connect with DeathLink to [{address}]:[{port}], with password: [{password}], on slot: [{slot}]");
-                var connectError = Client.TryConnect(new LoginInfo(port, slot, address, password), 0x3AF4F1BC,
-                    "Casualties: Unknown", AllItems, (new Version(0, 6, 3)), ["DeathLink"], requestSlotData: true);
-                if (connectError is not null && connectError.Length > 0)
-                {
-                    Startup.Logger.LogError("There was an Error connecting with DeathLink!" + connectError);
-                    Disconnect();
-                    return connectError;
-                }
+                Startup.Logger.LogError("There was an Error connecting!" + connectError);
+                Disconnect();
+                return connectError;
             }
 
             HasConnected();

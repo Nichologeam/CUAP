@@ -48,6 +48,11 @@ public class Startup : BaseUnityPlugin
                     GameObject.Find("Canvas/Button (7)").GetComponent<Button>().interactable = true;
                     GameObject.Find("Canvas/Button (2)").GetComponent<Button>().interactable = true;
                 }
+                Console = GameObject.Find("Console(Clone)");
+                if (!Console.GetComponent<CommandPatch>())
+                {
+                    Console.AddComponent<CommandPatch>();
+                }
             }
             catch
             {
@@ -68,15 +73,13 @@ public class Startup : BaseUnityPlugin
     {
         if (scene.name == "SampleScene") // Loading into the game, let's apply Archipelago patches.
         {
-            Console = GameObject.Find("Console(Clone)");
-            if (Console.GetComponent<CommandPatch>())
+            Body = GameObject.Find("Experiment/Body");
+            if (Body.GetComponent<DeathlinkManager>())
             {
                 return; // Patches have already been applied, no need to apply them again.
             }
             else
             {
-                Console.AddComponent<CommandPatch>();
-                Body = GameObject.Find("Experiment/Body");
                 Body.AddComponent<DeathlinkManager>();
                 Body.AddComponent<TrapHandler>();
                 Body.AddComponent<ExperimentDialog>();
