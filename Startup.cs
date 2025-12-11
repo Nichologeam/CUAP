@@ -23,7 +23,7 @@ public class Startup : BaseUnityPlugin
     {
         Logger = base.Logger;
         Logger.LogMessage($"Casualties: Unknown/Scav Prototype Archipelago Plugin v0.4.2 loaded!");
-        Handler = new GameObject("Archipelago GUI Hander");
+        Handler = new GameObject("Archipelago GUI Handler");
         Handler.AddComponent<APGui>();
         DontDestroyOnLoad(Handler);
     }
