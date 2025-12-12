@@ -1,4 +1,4 @@
-### Casualties: Unknown/Scav Prototype Archipelago
+### Casualties: Unknown Archipelago
 
 This mod is made for the V5PreTesting5 version of Casualties: Unknown, which can be downloaded from the game's [Itch page](https://orsonik.itch.io/scav-prototype). Make sure you download V5PreTesting5 and not V4.1.
 
@@ -17,14 +17,11 @@ This mod is made for the V5PreTesting5 version of Casualties: Unknown, which can
 9. [If Hosting] Upload the .zip file in the Output folder to [the Archipelago website](https://archipelago.gg/uploads) to host
 	- Alternatively, you can host on your own PC by selecting 'Host' in the Archipelago Launcher
 10. Launch the game normally and enter the room connection information in the top right
-	- If you want to run with Deathlink, click the 'Deathlink' button
-	- If you don't, click 'connect'
-11. I recommend also connecting a text client, as Experiment is known to skip out on saying the item receive dialogue sometimes
-    - To do this, open the 'Text Client' in the Archipelago Launcher
-12. If anything goes wrong while playing, please let me know. This is still in very early development and isn't anywhere near stable
+	- DeathLink is toggleable at any time using the 'aptoggledeathlink' command in the game's console (press `)
+	- DeathLink severity changes how DeathLink works. 'kill' kills Experiment. 'limbdamage' does a moderate amount of damage to a random limb.
+11. If anything goes wrong while playing, please let me know. This is still in development and bugs may happen
 	- You can contact me in the AP After Dark Discord in the Casualties: Unkown thread in #future-game-design
 	- or in the Orsoniks' studio Discord in the C:U Multiworld Randomizer (Archipelago) thread in #art
 
-# **Sending Chat Messages**
-
-Despite its limited functionality, you can send chat messages and chat commands. Open the in-game debug console with ` and start your command with 'talk '. Everything after the space will be sent as a chat message, including any commands like '!hint'. Note that there is no way to see incoming chat messages, so you will need a text client or another player to tell you.
+# **In-game Text Client**
+Using the debug console, you can send chat messages and chat commands. Open the in-game debug console with ` and start your command with 'talk '. Everything after the space will be sent as a chat message, including any commands like '!hint'.
