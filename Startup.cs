@@ -80,7 +80,7 @@ public class Startup : BaseUnityPlugin
         {
             if (Client is null || !(Client?.IsConnected ?? false))
             {
-                Startup.Logger.LogError("Archipelago disconnected mid run! Quitting to main menu to prevent breaking the client!");
+                CommandPatch.Console.LogToConsole("Archipelago disconnected mid run! Quitting to main menu to prevent breaking the client!");
                 // GameObject.Find("World").GetComponent<WorldGeneration>().SaveAndExit();
                 PlayerCamera.main.ToMainMenu();
             }

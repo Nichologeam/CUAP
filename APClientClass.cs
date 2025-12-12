@@ -25,7 +25,8 @@ public class APClientClass
     public static ApClient? Client;
     public static List<string> LayerUnlockDictionary = new List<string>();
     public static List<string> RecipeUnlockDictionary = new List<string>();
-    static Dictionary<int, Dictionary<long, string>> playerItemIdToName = new Dictionary<int, Dictionary<long, string>>();
+    public static Dictionary<int, Dictionary<long, string>> playerItemIdToName = new Dictionary<int, Dictionary<long, string>>();
+    public static Dictionary<int, Dictionary<long, string>> playerLocIdToName = new Dictionary<int, Dictionary<long, string>>();
     private static double NextSend = 4;
     public static int DepthExtendersRecieved = 0;
     private static bool datapackageprocessed = false;
@@ -226,6 +227,21 @@ public class APClientClass
                             itemNameToId[id] = name;
                     }
                     playerItemIdToName[playerID] = itemNameToId;
+                    JObject? locNameToIdJson = gameData["location_name_to_id"] as JObject;
+                    if (locNameToIdJson == null)
+                    {
+                        continue;
+                    }
+                    Dictionary<long, string> locNameToId = new Dictionary<long, string>();
+                    foreach (var prop in locNameToIdJson.Properties())
+                    {
+                        long id = prop.Value.Value<long>();
+                        string name = prop.Name;
+
+                        if (!locNameToId.ContainsKey(id))
+                            locNameToId[id] = name;
+                    }
+                    playerLocIdToName[playerID] = locNameToId;
                 }
             }
             catch (Exception ex)
