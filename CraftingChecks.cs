@@ -4005,6 +4005,13 @@ public class CraftingChecks : MonoBehaviour
                     // since I remove them to randomize them, we need to rerandomize up to all 112, because the game doesn't
                 }
                 var item = bp.GetComponent<Item>();
+            }
+            if (GameObject.Find("blueprint(Clone)")) // does at least one blueprint still exist?
+            {
+                var closest = blueprints.OrderBy(o => (o.transform.position - GameObject.Find("Experiment/Body").transform.position).sqrMagnitude)
+                           .FirstOrDefault(); // find the closest one
+                var item = closest.gameObject.GetComponent<Item>();
+                var recipeId = closest.gameObject.GetComponent<BlueprintScript>().recipeIndex;
                 item.Stats.description = "Six multicolored circles are drawn on the page. Your chip seems to react to it in some way. Use it to send <v1> their <v2>.";
                 item.Stats.description = item.Stats.description.Replace("<v1>", BlueprintToPlayerName.Get(recipeId));
                 item.Stats.description = item.Stats.description.Replace("<v2>", BlueprintToItemName.Get(recipeId));
