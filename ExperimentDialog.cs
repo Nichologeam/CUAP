@@ -17,8 +17,7 @@ public class ExperimentDialog : MonoBehaviour
         Startup.Logger.LogMessage("Dialogue patches applied!");
     }
     public static void ProcessDialog(Archipelago.MultiClient.Net.Models.ItemInfo item)
-    {
-        // sticking all the dictionaries up here
+    {   // annoyingly ItemInfo does not contain a definition for ItemClassification, so I can't check it directly. This is a decent workaround.
         Dictionary<int, string> NormalItemDialog = new Dictionary<int, string>()
     {   
         {0,"I recieved a " + item.ItemName + " from " + item.Player + "."},
@@ -31,7 +30,7 @@ public class ExperimentDialog : MonoBehaviour
         {1,item.Player + ", this " + item.ItemName + " is the best thing I've seen down here!"},
         {2,"Finally! My " + item.ItemName + "! Thanks, " + item.Player + "!"},
     };
-        Dictionary<int, string> UsefulItemDialog = new Dictionary<int, string>() // todo: currently Progression and Useful have the same dialog. Change that?
+        Dictionary<int, string> UsefulItemDialog = new Dictionary<int, string>()
     {
         {0,"Huh? My " + item.ItemName + " from " + item.Player + "? How thoughtful!"},
         {1,item.Player + ", this " + item.ItemName + " is the best thing I've seen down here!"},
@@ -41,7 +40,7 @@ public class ExperimentDialog : MonoBehaviour
     {
         {0,"Oh... my " + item.ItemName + "... Thanks, " + item.Player + "... I guess..."},
         {1,"A " + item.ItemName + ". Not sure what I'll use it for, but thanks anyways, " + item.Player + "."},
-    };  // annoyingly ItemInfo does not contain a definition for ItemClassification, so I can't check it directly. This is a decent workaround.
+    };
         try
         {
             Body body = GameObject.Find("Experiment/Body").GetComponent<Body>();

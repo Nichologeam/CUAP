@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace CUAP;
 
-[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.4.2.0")]
+[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.4.3.0")]
 public class Startup : BaseUnityPlugin
 {
     public static new ManualLogSource Logger;
@@ -22,7 +22,7 @@ public class Startup : BaseUnityPlugin
     private void Awake()
     {
         Logger = base.Logger;
-        Logger.LogMessage($"Casualties: Unknown/Scav Prototype Archipelago Plugin v0.4.2 loaded!");
+        Logger.LogMessage($"Casualties: Unknown/Scav Prototype Archipelago Plugin v0.4.3 loaded!");
         Handler = new GameObject("Archipelago GUI Handler");
         Handler.AddComponent<APGui>();
         DontDestroyOnLoad(Handler);
@@ -59,7 +59,7 @@ public class Startup : BaseUnityPlugin
 
 
                 Bug reports on the Discord server would be appreciated.
-                <size=16><alpha=#11>Either the Orsoniks' Studio #art or Archipelago: After Dark #future-game-design threads.<alpha=#FF><size=20>
+                <size=16><alpha=#11>Either the Orsoniks' Studio #art or AP After Dark #future-game-design threads.<alpha=#FF><size=20>
 
 
                 Keep a look-out for:<alpha=#55>
@@ -80,7 +80,7 @@ public class Startup : BaseUnityPlugin
         {
             if (Client is null || !(Client?.IsConnected ?? false))
             {
-                CommandPatch.Console.LogToConsole("Archipelago disconnected mid run! Quitting to main menu to prevent breaking the client!");
+                Startup.Logger.LogError("Archipelago disconnected mid run! Quitting to main menu to prevent breaking the client!");
                 // GameObject.Find("World").GetComponent<WorldGeneration>().SaveAndExit();
                 PlayerCamera.main.ToMainMenu();
             }

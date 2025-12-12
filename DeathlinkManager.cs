@@ -67,7 +67,7 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
         else // Nearly exact replica of SelfHarmer.SelfHarm because we can't actually call it
         {
             DeathLinkText.autoSizeTextContainer = false;
-            Limb limb = Vitals.limbs[UnityEngine.Random.Range(1, Vitals.limbs.Length)]; // starting at 1 means the head can never be selected. prevents sudden comatose moodle.
+            Limb limb = Vitals.limbs[UnityEngine.Random.Range(1, Vitals.limbs.Length)]; // starting at 1 means the head can never be selected.
             limb.muscleHealth -= 30f;
             limb.skinHealth -= 70f;
             limb.bleedAmount += 40f;

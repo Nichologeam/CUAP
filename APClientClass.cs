@@ -8,11 +8,9 @@ using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Packets;
 using CreepyUtil.Archipelago;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.UIElements.Collections;
-using static System.Collections.Specialized.BitVector32;
 using static Archipelago.MultiClient.Net.Enums.ItemsHandlingFlags;
 
 namespace CUAP;
@@ -117,7 +115,7 @@ public class APClientClass
                         if (CraftingChecks.freesamples)
                         {
                             UnityEngine.Object.Instantiate(Resources.Load<GameObject>(CraftingChecks.CheckNameToItem.Get(item.ItemName)),
-                            GameObject.Find("Experiment").transform.position, Quaternion.identity);
+                            GameObject.Find("Experiment/Body").transform.position, Quaternion.identity);
                         }
                     }
                     catch
@@ -170,7 +168,7 @@ public class APClientClass
         }
     }
 
-    private static void Socket_PacketReceived(Archipelago.MultiClient.Net.ArchipelagoPacketBase packet)
+    private static void Socket_PacketReceived(ArchipelagoPacketBase packet)
     {
         if (packet is LocationInfoPacket)
         {
