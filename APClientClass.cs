@@ -12,6 +12,7 @@ using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.UIElements.Collections;
 using static Archipelago.MultiClient.Net.Enums.ItemsHandlingFlags;
+using System.Net;
 
 namespace CUAP;
 
@@ -76,6 +77,21 @@ public class APClientClass
 
     public static void Update()
     {
+        try
+        {
+            if (GameObject.Find("Main Camera/Canvas/WoundView").activeSelf)
+            {
+                APGui.ShowGUI = false;
+            }
+            else
+            {
+                APGui.ShowGUI = true;
+            }
+        }
+        catch
+        {
+            APGui.ShowGUI = true; // main menu... default true
+        }
         if (Client is null) return;
         Client.UpdateConnection();
         if (Client?.Session?.Socket is null || !Client.IsConnected) return;
