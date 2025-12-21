@@ -1,9 +1,10 @@
-﻿using CreepyUtil.Archipelago;
-using System;
-using UnityEngine;
-using TMPro;
-using Archipelago.MultiClient.Net.Packets;
+﻿using Archipelago.MultiClient.Net.Packets;
+using CreepyUtil.Archipelago;
 using Newtonsoft.Json.Linq;
+using System;
+using TMPro;
+using UnityEngine;
+using UnityEngine.XR;
 
 namespace CUAP;
 
@@ -58,14 +59,15 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
             // This cooldown prevents 349 ish of those deathlinks from going though, as it entierly destroys Experiment if Large Limb Damage is on.
         }   
         DeathlinkCooldown = 15;
+        ConstructMessage(e);
         if (DeathlinkSeverity)
         {
-            DeathLinkText.text = "DeathLink recieved. Your run has ended.";
+            DeathLinkText.text = DeathLinkText.text + " Your run has ended.";
             DeathLinkText.autoSizeTextContainer = true; // fixes linewrapping off the screen
             Vitals.brainHealth = 0; // Instantly kill Experiment
             Destroy(this); // Destroy script so we don't send a deathlink next frame. No damage will be done, because the player is forced back to main menu.
         }
-        else // Nearly exact replica of SelfHarmer.SelfHarm because we can't actually call it
+        else // Nearly exact replica of the V4 version of SelfHarmer.SelfHarm because we can't actually call it
         {
             DeathLinkText.autoSizeTextContainer = false;
             Limb limb = Vitals.limbs[UnityEngine.Random.Range(1, Vitals.limbs.Length)]; // starting at 1 means the head can never be selected.
@@ -74,8 +76,39 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
             limb.bleedAmount += 40f;
             limb.pain += 30f;
             Sound.Play("harmSting", Vector2.zero, true, false, null, 0.7f, 1f, false, false);
-            DeathLinkText.text = "DeathLink recieved. Damage done to " + limb.fullName + ".";
+            DeathLinkText.text = DeathLinkText.text + " Damage done to " + limb.fullName + ".";
             DeathLinkText.autoSizeTextContainer = true; // fixes linewrapping off the screen
+        }
+    }
+
+    void ConstructMessage(BouncedPacket e)
+    {
+        var dlInfo = e.Data;
+        try
+        {
+            if (dlInfo.TryGetValue("cause", out JToken c)) // Was a deathlink cause included?
+            {
+                var cString = c.ToObject<string>();
+                if (cString == "")
+                {
+                    if (dlInfo.TryGetValue("source", out JToken s)) // No? Use the slot name
+                    {
+                        var sString = s.ToObject<string>();
+                        if (sString == "")
+                        {
+                            DeathLinkText.text = "DeathLink recieved."; // Both of those failed (somehow)? Use non-dynamic text.
+                            return;
+                        }
+                        DeathLinkText.text = sString + " died.";
+                        return;
+                    }
+                }
+                DeathLinkText.text = cString + ".";
+            }
+        }
+        catch (Exception err)
+        {
+            Debug.LogException(err); // debug.log so it shows in in-game console
         }
     }
 }
