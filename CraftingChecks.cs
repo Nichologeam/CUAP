@@ -3963,7 +3963,8 @@ public class CraftingChecks : MonoBehaviour
             if (!Convert.ToBoolean(recipesoption))
             {
                 Startup.Logger.LogWarning("Recipe Randomization is disabled, destroying script.");
-                Destroy(this);
+                DestroyImmediate(this);
+                return;
             }
             else
             {

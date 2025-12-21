@@ -45,7 +45,8 @@ public class SkillChecks : MonoBehaviour
             if (!Convert.ToBoolean(skillsanityoption))
             {
                 Startup.Logger.LogWarning("Skillsanity is disabled, destroying script.");
-                Destroy(this);
+                DestroyImmediate(this);
+                return;
             }
         }
         worldgen = GameObject.Find("World").GetComponent<WorldGeneration>();

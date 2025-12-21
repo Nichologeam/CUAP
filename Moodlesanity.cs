@@ -186,7 +186,8 @@ public class Moodlesanity : MonoBehaviour
             if (!Convert.ToBoolean(moodlesanityoption))
             {
                 Startup.Logger.LogWarning("Moodlesanity is disabled, destroying script.");
-                Destroy(this);
+                DestroyImmediate(this);
+                return;
             }
         }
         Startup.Logger.LogMessage("Moodlesanity is monitoring moodles...");

@@ -27,7 +27,8 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
         if (!APGui.DeathlinkEnabled)
         {
             Startup.Logger.LogWarning("Deathlink is disabled, destroying script.");
-            Destroy(this); // we destroy the script this late so the text is set up for DepthChecks, which uses it regardless of deathlink being on
+            DestroyImmediate(this); // we destroy the script this late so the text is set up for DepthChecks, which uses it regardless of deathlink being on
+            return;
         }
         Client = APClientClass.Client;
         Startup.Logger.LogMessage("DeathlinkManager is monitoring Vitals...");
