@@ -71,7 +71,7 @@ public class APGui : MonoBehaviour
         }
         else
         {
-            Offset = new(0, 100);
+            Offset = new(0, 0);
             GUI.Box(new Rect(10 + Offset.x, 10 + Offset.y + 100, 200, 150), "Archipelago Client");
             GUI.Label(new Rect(20 + Offset.x, Offset.y + 155, 150, 35),
                     $"Depth Extenders: " + APClientClass.DepthExtendersRecieved + "          Max Depth: " + ((300 * APClientClass.DepthExtendersRecieved) + 300));
