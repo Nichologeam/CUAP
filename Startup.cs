@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace CUAP;
 
-[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.4.3.0")]
+[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.4.5.0")]
 public class Startup : BaseUnityPlugin
 {
     public static new ManualLogSource Logger;
@@ -22,7 +22,7 @@ public class Startup : BaseUnityPlugin
     private void Awake()
     {
         Logger = base.Logger;
-        Logger.LogMessage($"Casualties: Unknown/Scav Prototype Archipelago Plugin v0.4.3 loaded!");
+        Logger.LogMessage($"Casualties: Unknown Archipelago Plugin v0.4.5 loaded!");
         Handler = new GameObject("Archipelago GUI Handler");
         Handler.AddComponent<APGui>();
         DontDestroyOnLoad(Handler);
