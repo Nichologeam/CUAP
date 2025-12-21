@@ -18,7 +18,7 @@ public class CraftingChecks : MonoBehaviour
     public static bool freesamples = false;
     private LocationScoutsPacket blueprintsPacket = new LocationScoutsPacket()
     {
-        Locations = Enumerable.Range(22318500, 22318603 - 22318500 + 1)
+        Locations = Enumerable.Range(22318500, 22318612 - 22318500 + 1)
                             .Select(i => (long)i)
                             .ToArray(),
         CreateAsHint = 0
@@ -3965,17 +3965,17 @@ public class CraftingChecks : MonoBehaviour
                 Startup.Logger.LogWarning("Recipe Randomization is disabled, destroying script.");
                 Destroy(this);
             }
+            else
+            {
+                Recipes.recipes.Clear(); // Unlearn every recipe upon first connecting. We will recieve them with items later.
+                Client.Session.Socket.SendPacket(blueprintsPacket);
+                SetupAPBlueprint();
+            }
         }
         if (options.TryGetValue("FreeSamples", out var samples))
         {
-            if (Convert.ToBoolean(samples))
-            {
-                freesamples = true;
-            }
+            freesamples = Convert.ToBoolean(samples);
         }
-        Recipes.recipes.Clear(); // Unlearn every recipe upon first connecting. We will recieve them with items later.
-        Client.Session.Socket.SendPacket(blueprintsPacket);
-        SetupAPBlueprint();
     }
     private void Update()
     {
