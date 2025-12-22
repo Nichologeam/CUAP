@@ -39,7 +39,7 @@ public class LayerLocker : MonoBehaviour
     private void Update()
     {
         LayerHandler = APClientClass.LayerUnlockDictionary;
-        if (worldgen.loadingObject.activeSelf)
+        if (worldgen.loadingObject.activeSelf && !worldgen.tutorialOverride) // as funny as being in overgrown depths tutorial is, i had to fix this eventually
         {
             if (LayerHandler.Count <= 1) // Minimum is 1, since you always have your starting location. Placed a less than as a failsafe.
             {
