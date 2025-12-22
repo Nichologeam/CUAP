@@ -119,7 +119,7 @@ public class TrapHandler : MonoBehaviour
                     continue;
                 }
             }
-            Item chosenItem = heldItems.ElementAt(UnityEngine.Random.Range(0, heldItems.Count));
+            Item chosenItem = heldItems.ElementAt(UnityEngine.Random.Range(0, heldItems.Count + 1));
             chosenItem.condition = 0.01f;
         }
         if (TrapName == "Mindwipe Trap")
