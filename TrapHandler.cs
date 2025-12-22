@@ -137,6 +137,10 @@ public class TrapHandler : MonoBehaviour
     }
     IEnumerator UnchippedToggle()
     {
+        if (worldgen.unchippedMode)
+        {
+            yield break; // the layer is solarstuck or the run is already unchipped.
+        }
         unchippedActive = true;
         worldgen.unchippedMode = true;
         yield return new WaitForSecondsRealtime(50);
