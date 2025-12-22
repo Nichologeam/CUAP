@@ -3986,6 +3986,7 @@ public class CraftingChecks : MonoBehaviour
             foreach (string gotrecipe in RecievedRecipes)
             {
                 CheckNameToRecipe.TryGetValue(gotrecipe, out Recipe recipeToLearn);
+                recipeToLearn.specialKnown = true; // force recipe to show up
                 Recipes.recipes.Add(recipeToLearn); // Add the recipe to the list
             }
         }
