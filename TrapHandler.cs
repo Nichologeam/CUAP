@@ -161,6 +161,7 @@ public class TrapHandler : MonoBehaviour
     IEnumerator Mindwipe()
     {
         mindwipeActive = true;
+        var preWipehl = Vitals.hearingLoss; // Mindwipe causes a lot of hearing loss, so we restore it after
         Skills skills = Vitals.skills;
         int INTSkillPreWipe = skills.INT; // Mindwipe resets INT to 0, so we'll save it to restore after
         float INTExpPreWipe = skills.expINT;
@@ -174,6 +175,7 @@ public class TrapHandler : MonoBehaviour
         skills.expINT = +INTExpPreWipe;
         skills.maxINT = INTMaxPreWipe;
         skills.minINT = INTMinPreWipe;
+        Vitals.hearingLoss = preWipehl;
         mindwipeActive = false;
     }
     IEnumerator Thornback()
