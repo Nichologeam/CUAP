@@ -3,6 +3,7 @@ using Archipelago.MultiClient.Net.Packets;
 using CreepyUtil.Archipelago;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace CUAP;
@@ -12,8 +13,6 @@ public class CommandPatch : MonoBehaviour
     public static ApClient Client;
     public static ConsoleScript Console;
     private GameObject body;
-    private string LastFrameText;
-    private string ChatMessage;
     private string LastGotMessage;
     private JsonMessagePart[] LastGotItemMessage;
 
@@ -25,39 +24,7 @@ public class CommandPatch : MonoBehaviour
     }
     private void Update()
     {
-        if (Client is null)
-        {
-            try
-            {
-                Client = APClientClass.Client;
-            }
-            catch
-            {
-                // not connected
-            }
-        }
-        if (Input.GetKeyDown(KeyCode.Return)) // Console message may have been sent
-        {
-            try
-            {
-                if (LastFrameText.Substring(0, 4) != "talk")
-                {
-                    // Was the command 'talk'? If not, don't continue
-                    return;
-                }
-                else
-                {
-                    // Split off the 'talk' command, then send the rest to the server
-                    ChatMessage = LastFrameText.Substring(5);
-                    Client.Say(ChatMessage);
-                }
-            }
-            catch
-            {
-                return; // Message was less than 4 characters. Doing this to prevent errors when sending blank or short messages.
-            }
-        }
-        LastFrameText = Console.input.text; // enter was not pressed on this frame
+        Client = APClientClass.Client;
         if (Client is not null)
         {
             Client.OnServerMessagePacketReceived += PrintPlainJSON;
@@ -73,7 +40,7 @@ public class CommandPatch : MonoBehaviour
     private void PrintItemJSON(object sender, PrintJsonPacket message)
     {
         var combinedText = message.Data;
-        if (LastGotItemMessage == combinedText) { return; }
+        if (LastGotItemMessage == combinedText) return;
         LastGotItemMessage = combinedText;
         string constructedMessage = "";
         if (message.Data[1].Text == " sent ") // multiworld item (8 properties)
@@ -166,6 +133,111 @@ public class CommandPatch : MonoBehaviour
         }, null, new ValueTuple<string, string>[]
         {
             new ValueTuple<string, string>("severity", "How punishing DeathLink should be. Choices are 'kill' and 'limbdamage'")
+        }));
+        ConsoleScript.Commands.Add(new Command("apchat", "Sends a message to Archipelago chat.", delegate (string[] args)
+        {
+            if (APClientClass.Client is null)
+            {
+                throw new Exception("Archipelago isn't connected.");
+            }
+            if (args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
+            {
+                throw new Exception("No chat message was given.");
+            }
+            string chatMessage = string.Join(" ", args.Skip(1));
+            APClientClass.Client.Say(chatMessage);
+            Console.LogToConsole("CUAP: Chat message sent.");
+        }, null, new ValueTuple<string, string>[]
+        {
+            new ValueTuple<string, string>("text", "Chat message to send.")
+        }));
+        ConsoleScript.Commands.Add(new Command("aphint", "Alias for !hint command.", delegate (string[] args)
+        {
+            if (APClientClass.Client is null)
+            {
+                throw new Exception("Archipelago isn't connected.");
+            }
+            if (args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
+            {
+                Client.Say("!hint");
+                Console.LogToConsole("CUAP: Hint status requested.");
+                return;
+            }
+            string itemName = string.Join(" ", args.Skip(1));
+            Client.Say("!hint " + itemName);
+            Console.LogToConsole("CUAP: Hint sent.");
+        }, null, new ValueTuple<string, string>[]
+        {
+            new ValueTuple<string, string>("item", "Item to hint for. Leave blank to request hint status.")
+        }));
+        ConsoleScript.Commands.Add(new Command("aphintlocation", "Alias for !hint_location command.", delegate (string[] args)
+        {
+            if (APClientClass.Client is null)
+            {
+                throw new Exception("Archipelago isn't connected.");
+            }
+            if (args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
+            {
+                throw new Exception("No location was given to check.");
+            }
+            string locName = string.Join(" ", args.Skip(1));
+            Client.Say("!hint_location " + locName);
+            Console.LogToConsole("CUAP: Hint sent.");
+        }, null, new ValueTuple<string, string>[]
+        {
+            new ValueTuple<string, string>("location", "Location to hint.")
+        }));
+        ConsoleScript.Commands.Add(new Command("aprelease", "Alias for !release command.", delegate (string[] args)
+        {
+            if (APClientClass.Client is null)
+            {
+                throw new Exception("Archipelago isn't connected.");
+            }
+            Client.Say("!release");
+            Console.LogToConsole("CUAP: Release requested.");
+        }, null, Array.Empty<ValueTuple<string, string>>()));
+        ConsoleScript.Commands.Add(new Command("apcollect", "Alias for !collect command.", delegate (string[] args)
+        {
+            if (APClientClass.Client is null)
+            {
+                throw new Exception("Archipelago isn't connected.");
+            }
+            Client.Say("!collect");
+            Console.LogToConsole("CUAP: Collect requested.");
+        }, null, Array.Empty<ValueTuple<string, string>>()));
+        ConsoleScript.Commands.Add(new Command("apcheat", "Alias for !getitem command.", delegate (string[] args)
+        {
+            if (APClientClass.Client is null)
+            {
+                throw new Exception("Archipelago isn't connected.");
+            }
+            if (args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
+            {
+                throw new Exception("No item was given to cheat in.");
+            }
+            string itemName = string.Join(" ", args.Skip(1));
+            Client.Say("!getitem " + itemName);
+            Console.LogToConsole("CUAP: Cheat requested.");
+        }, null, new ValueTuple<string, string>[]
+        {
+            new ValueTuple<string, string>("item", "Item to request be cheated in.")
+        }));
+        ConsoleScript.Commands.Add(new Command("apalias", "Alias for !alias command.", delegate (string[] args)
+        {
+            if (APClientClass.Client is null)
+            {
+                throw new Exception("Archipelago isn't connected.");
+            }
+            if (args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
+            {
+                throw new Exception("No name was given.");
+            }
+            string newName = string.Join(" ", args.Skip(1));
+            Client.Say("!alias " + newName);
+            Console.LogToConsole("CUAP: Alias change requested.");
+        }, null, new ValueTuple<string, string>[]
+        {
+            new ValueTuple<string, string>("name", "Alias to change your slot name to.")
         }));
     }
 }
