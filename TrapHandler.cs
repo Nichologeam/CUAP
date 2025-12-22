@@ -159,7 +159,7 @@ public class TrapHandler : MonoBehaviour
     IEnumerator Mindwipe()
     {
         mindwipeActive = true;
-        Skills skills = Vitals.gameObject.GetComponent<Skills>();
+        Skills skills = Vitals.skills;
         int INTSkillPreWipe = skills.INT; // Mindwipe resets INT to 0, so we'll save it to restore after
         float INTExpPreWipe = skills.expINT;
         int INTMaxPreWipe = skills.maxINT;
