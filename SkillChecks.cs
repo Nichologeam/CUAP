@@ -65,6 +65,7 @@ public class SkillChecks : MonoBehaviour
         playerSkills.expSTR = Skills.GetExperienceForLevel(apMaxStr - 1);
         playerSkills.RES = apMaxRes;
         playerSkills.expRES = Skills.GetExperienceForLevel(apMaxRes - 1);
+        if (TrapHandler.mindwipeActive) return;
         playerSkills.INT = apMaxInt;
         playerSkills.expINT = Skills.GetExperienceForLevel(apMaxInt - 1);
         /* if (playerSkills.expSTR >= sendStr) // check if we reached a basegame level

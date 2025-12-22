@@ -19,7 +19,7 @@ public class TrapHandler : MonoBehaviour
     private bool revControlActive;
     private bool unchippedActive;
     private bool disfigActive;
-    private bool mindwipeActive;
+    public static bool mindwipeActive;
     private List<Item> heldItems = new List<Item>();
 
     private void OnEnable()
