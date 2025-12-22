@@ -2,9 +2,9 @@
 using CreepyUtil.Archipelago;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.XR;
 
 namespace CUAP;
 
@@ -15,6 +15,7 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
     private Body Vitals;
     private float DeathlinkCooldown;
     public static bool DeathlinkSeverity = true;
+
 
     private void OnEnable()
     {
@@ -38,9 +39,9 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
     {
         if (!Vitals.alive && Vitals.brainHealth == 0) // Experiment is dead! Send Deathlink!
         {
-            Client.SendDeathLink("Casualties: Unknown + " + Client.PlayerName);
-            // todo: the game has ways to check the cause of death. read that value to determine cause for deathlink.
-            Destroy(this); // This is in the update loop, so we should kill the script to not spam deathlinks. No damage will be done, because the player is forced back to main menu.
+            SelectDeathLinkCause();
+            DestroyImmediate(this); // This is in the update loop, so we should kill the script to not spam deathlinks. No damage will be done, because the player is forced back to main menu.
+            return;
         }
         DeathlinkCooldown -= Time.deltaTime;
         if (DeathlinkCooldown <= 0 && DeathlinkCooldown >= -1)
@@ -109,6 +110,41 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
         catch (Exception err)
         {
             Debug.LogException(err); // debug.log so it shows in in-game console
+        }
+    }
+
+    void SelectDeathLinkCause()
+    {
+        Dictionary<int, string> DrownDeathMessages = new Dictionary<int, string>()
+        {
+            {0,Client.PlayerName + " is part canine, not fish."},
+            {1,Client.PlayerName + " was too heavy to swim."},
+            {2,Client.PlayerName + " forgot their scuba gear."},
+            {3,Client.PlayerName + " forgot the importance of oxygen."}
+        };
+        Dictionary<int, string> BloodyDeathMessages = new Dictionary<int, string>()
+        {
+            {0,Client.PlayerName + " fell off."},
+            {1,Client.PlayerName + " ran out of bandages."},
+            {2,Client.PlayerName + " couldn't stop the bleeding."}
+        };
+        Dictionary<int, string> GenericDeathMessages = new Dictionary<int, string>()
+        {
+            {0,Client.PlayerName + " became a statistic."},
+            {1,"Casualties: Unknown + " + Client.PlayerName},
+            {2,Client.PlayerName + " met the same fate."}
+        };
+        if (Vitals.inWater)
+        {
+            Client.SendDeathLink(DrownDeathMessages[UnityEngine.Random.Range(0, DrownDeathMessages.Count + 1)]);
+        }
+        else if (Vitals.totalBleedSpeed > 0.02f) // I know this value seems low, but it is the same value the game uses for the bloody death screen
+        {
+            Client.SendDeathLink(BloodyDeathMessages[UnityEngine.Random.Range(0, DrownDeathMessages.Count + 1)]);
+        }
+        else
+        {
+            Client.SendDeathLink(GenericDeathMessages[UnityEngine.Random.Range(0, DrownDeathMessages.Count + 1)]);
         }
     }
 }
