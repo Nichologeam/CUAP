@@ -17,11 +17,18 @@ This mod is made for the V5PreTesting5 version of Casualties: Unknown, which can
 9. [If Hosting] Upload the .zip file in the Output folder to [the Archipelago website](https://archipelago.gg/uploads) to host
 	- Alternatively, you can host on your own PC by selecting 'Host' in the Archipelago Launcher
 10. Launch the game normally and enter the room connection information in the top right
-	- DeathLink is toggleable at any time using the 'aptoggledeathlink' command in the game's console (press `)
-	- DeathLink severity changes how DeathLink works. 'kill' kills Experiment. 'limbdamage' does a moderate amount of damage to a random limb.
+	- DeathLink is toggleable at any time using the game's console (see In-game Text Client below)
 11. If anything goes wrong while playing, please let me know. This is still in development and bugs may happen
 	- You can contact me in the AP After Dark Discord in the Casualties: Unkown thread in #future-game-design
 	- or in the Orsoniks' studio Discord in the C:U Multiworld Randomizer (Archipelago) thread in #art
 
 # **In-game Text Client**
-Using the debug console, you can send chat messages and chat commands. Open the in-game debug console with ` and start your command with 'talk '. Everything after the space will be sent as a chat message, including any commands like '!hint'.
+The in-game debug console now has various new Archipelago related commands. You can open the in-game debug console with `.
+- aptoggledeathlink [severity]: Enables or disables DeathLink. 'kill' kills Experiment. 'limbdamage' does a moderate amount of damage to a random limb.
+- apchat [text]: Send a chat message to Archipelago. Replaces the old Talk command system
+- aphint [item]: Alias for `apchat !hint`. Leave [item] empty for a hint status update.
+- aphintlocation [location]: Alias for `apchat !hint_location`
+- aprelease: Alias for `apchat !release`
+- apcollect: Alias for `apchat !collect`
+- apcheat: Alias for `apchat !getitem`
+- apalias [name]: Alias for `apchat !alias`
