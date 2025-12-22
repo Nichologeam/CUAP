@@ -162,6 +162,32 @@ public class APClientClass
                         SkillChecks.playerSkills.UpdateExpBoundaries();
                     }
                 }
+                if (item.ItemName == "Hope")
+                {
+                    try
+                    {
+                        var plr = GameObject.Find("Experiment/Body");
+                        plr.GetComponent<Body>().happiness += 3;
+                        Sound.Play("moodup", plr.transform.position, true);
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                }
+                if (item.ItemName == "Despair")
+                {
+                    try
+                    {
+                        var plr = GameObject.Find("Experiment/Body");
+                        plr.GetComponent<Body>().happiness -= 1;
+                        Sound.Play("mooddown", plr.transform.position, true);
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                }
                 try
                 {
                     ExperimentDialog.ProcessDialog(item);
