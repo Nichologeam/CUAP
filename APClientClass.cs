@@ -120,7 +120,7 @@ public class APClientClass
                     try
                     {
                         TrapHandler Traps = GameObject.Find("Experiment/Body").GetComponent<TrapHandler>();
-                        Traps.ProcessTraps(item.ItemName);
+                        Traps.ProcessTraps(item.ItemName, item.Player.Name);
                     }
                     catch
                     {
@@ -194,6 +194,10 @@ public class APClientClass
                 }
                 try
                 {
+                    if ((bool)(item!.ItemName.EndsWith(" Trap")) || item!.ItemName == "Fellow Experiment")
+                    {
+                        continue;
+                    }
                     ExperimentDialog.ProcessDialog(item);
                 }
                 catch

@@ -20,6 +20,7 @@ public class TrapHandler : MonoBehaviour
     private bool unchippedActive;
     private bool disfigActive;
     public static bool mindwipeActive;
+    string trapSender;
     private List<Item> heldItems = new List<Item>();
 
     private void OnEnable()
@@ -37,82 +38,97 @@ public class TrapHandler : MonoBehaviour
         {
             if (revControlActive)
             {
-                moodles.AddMoodle(5, "confused", "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Trap: Reversed Controls", "Somebody reversed your controls! Lasts 10 seconds.", false, false);
+                moodles.AddMoodle(5, "confused", "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Trap: Reversed Controls", trapSender + " reversed your controls! Lasts 10 seconds.", false, false);
             }
             if (unchippedActive)
             {
-                moodles.AddMoodle(5, "death", "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Trap: Unchipped", "Somebody disabled your brainchip! Lasts 50 seconds.", false, false);
+                moodles.AddMoodle(5, "death", "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Trap: Unchipped", trapSender + " disabled your brainchip! Lasts 50 seconds.", false, false);
             }
             if (disfigActive)
             {
-                moodles.AddMoodle(5, "dislocatedjaw", "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Trap: Disfigured", "Somebody removed your jaw! Lasts 180 seconds.", false, false);
+                moodles.AddMoodle(5, "dislocatedjaw", "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Trap: Disfigured", trapSender + " removed your jaw! Lasts 180 seconds.", false, false);
             }
             if (mindwipeActive)
             {
-                moodles.AddMoodle(5, "hollow", "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Trap: Mindwipe", "Somebody removed your memories! Lasts 70 seconds.", false, false);
+                moodles.AddMoodle(5, "hollow", "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Trap: Mindwipe", trapSender + " removed your memories! Lasts 70 seconds.", false, false);
             }
         }
         prevUpdateTime = moodleUpdateTime(moodles);
     }
-    public void ProcessTraps(string TrapName)
+    public void ProcessTraps(string TrapName, string ItemSender)
     {
+        trapSender = ItemSender;
         if (TrapName == "Depression Trap")
         {
             Vitals.happiness = -20;
+            plrcam.DoAlert("Trap: " + ItemSender + " said something demoralizing. Happiness decreased.", false);
         }
         if (TrapName == "Hearing Loss Trap")
         {
             Vitals.hearingLoss = +50;
+            plrcam.DoAlert("Trap: WHAT!? I CAN'T HEAR YOU " + ItemSender.ToUpper() + "! Hearing loss increased.", false);
         }
         if (TrapName == "Earthquake Trap")
         {
+            plrcam.DoAlert("Trap: " + ItemSender + " hit a fault line.", false);
             worldgen.earthquakeDelay = 0; // start an earthquake
             worldgen.earthquakeIntensity = 2; // twice as intense as basegame earthquake
             worldgen.earthquakeTime = 15; // for 15 seconds
         }
         if (TrapName == "Reverse Controls Trap")
         {
+            plrcam.DoAlert("Trap: " + ItemSender + " made you feel tipsy. Controls reversed.", false);
             StartCoroutine(ReverseControls());
         }
         if (TrapName == "Sleep Trap")
         {
             Vitals.sleeping = true;
+            plrcam.DoAlert("Trap: " + ItemSender + " thinks it's naptime. Good night!", false);
         }
         if (TrapName == "Unchipped Trap")
         {
+            plrcam.DoAlert("Trap: " + ItemSender + " is hacking into your brainchip!", false);
             StartCoroutine(UnchippedToggle());
         }
         if (TrapName == "Elder Thornback Trap")
         {
+            plrcam.DoAlert("Trap: " + ItemSender + " sent something big your way. Something <i>really</i> big.", false);
             StartCoroutine(Thornback());
         }
         if (TrapName == "Cave Ticks Trap")
         {
             Instantiate(Resources.Load<GameObject>("caveticks"), gameObject.transform.position, Quaternion.identity);
+            plrcam.DoAlert("Trap: " + ItemSender + " alerted the hoard. Good luck!", false);
         }
         if (TrapName == "Bad Rep Trap")
         {
+            plrcam.DoAlert("Trap: " + ItemSender + " spread gossip. All traders on this layer are now hostile.", false);
             foreach (var trader in FindObjectsOfType<TraderScript>())
             {
                 trader.hostility = 500;
+                Vitals.happiness += 2f; // counteract hostility happiness decrease
             }
         }
         if (TrapName == "Disfigured Trap" && !Vitals.disfigured)
         {
+            plrcam.DoAlert("Trap: " + ItemSender + " thinks you talk too much.", false);
             StartCoroutine(Disfigurement());
         }
         if (TrapName == "Fellow Experiment")
         {
             Instantiate(Resources.Load<GameObject>("corpse"), gameObject.transform.position, Quaternion.identity);
+            plrcam.DoAlert("Trap: " + ItemSender + " found you a friend! ...wait", false);
         }
         if (TrapName == "Fragile Items Trap")
         {
             heldItems.Clear();
             foreach (var slot in FindObjectsOfType<InventorySlot>())
             {
+                Debug.Log("found " + slot.limb.fullName + "'s inventory slot");
                 try
                 {
                     heldItems.Add(slot.gameObject.GetComponentInChildren<Item>());
+                    Debug.Log(slot.limb.fullName + " has " + slot.gameObject.GetComponentInChildren<Item>().fullName);
                 }
                 catch
                 {
@@ -120,11 +136,27 @@ public class TrapHandler : MonoBehaviour
                 }
             }
             Item chosenItem = heldItems.ElementAt(UnityEngine.Random.Range(0, heldItems.Count + 1));
-            chosenItem.condition = 0.01f;
+            Debug.Log(chosenItem.fullName + " was chosen to be damaged");
+            if (chosenItem.TryGetComponent<WaterContainerItem>(out WaterContainerItem _))
+            {
+                plrcam.DoAlert("Trap: " + ItemSender + " poked a hole in your " + chosenItem.fullName, false);
+            }
+            else
+            {
+                plrcam.DoAlert("Trap: " + ItemSender + " made your warranty expire. " + chosenItem.fullName + " was destroyed.", false);
+            }
+            chosenItem.condition = 0;
         }
         if (TrapName == "Mindwipe Trap")
         {
+            plrcam.DoAlert("Trap: " + ItemSender + " thinks you know too much.", false);
             StartCoroutine(Mindwipe());
+        }
+        if (TrapName == "Pushup Trap")
+        {
+            plrcam.DoAlert("Trap: " + ItemSender + " demands you get on the ground and give them twenty!", false);
+            plrcam.DoBodyWorkout(0);
+            plrcam.ToggleWoundView(false); // DoBodyWorkout forces the woundview open/closed. this reverses that. nothing i can do about the sound effect though
         }
     }
     IEnumerator ReverseControls()
@@ -162,6 +194,7 @@ public class TrapHandler : MonoBehaviour
     {
         mindwipeActive = true;
         var preWipehl = Vitals.hearingLoss; // Mindwipe causes a lot of hearing loss, so we restore it after
+        var preWipebh = Vitals.brainHealth; // Again, Mindwipe changes brain health, so we restore it
         Skills skills = Vitals.skills;
         int INTSkillPreWipe = skills.INT; // Mindwipe resets INT to 0, so we'll save it to restore after
         float INTExpPreWipe = skills.expINT;
@@ -176,6 +209,7 @@ public class TrapHandler : MonoBehaviour
         skills.maxINT = INTMaxPreWipe;
         skills.minINT = INTMinPreWipe;
         Vitals.hearingLoss = preWipehl;
+        Vitals.brainHealth = preWipebh;
         mindwipeActive = false;
     }
     IEnumerator Thornback()
@@ -183,7 +217,9 @@ public class TrapHandler : MonoBehaviour
         plrcam.currentThreatTheme = 15; // play the Elder Thornback first phase theme
         plrcam.threatMusicTime = 90; // for 90 seconds
         moodles.horrifiedLevel = 1;
-        yield return new WaitForSecondsRealtime(90);
+        yield return new WaitForSecondsRealtime(9); // timed to be on the beat drop for maximum effect (because i'm just cool like that)
+        moodles.horrifiedLevel = 3;
+        yield return new WaitForSecondsRealtime(81);
         moodles.horrifiedLevel = 0;
     }
 }

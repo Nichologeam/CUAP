@@ -43,11 +43,6 @@ public class ExperimentDialog : MonoBehaviour
             {1,item.Player + ", this " + item.ItemName + " is the best thing I've seen down here!"},
             {2,"Finally! My " + item.ItemName + "! Thanks, " + item.Player + "!"},
         };
-        Dictionary<int, string> TrapItemDialog = new Dictionary<int, string>()
-        {
-            {0,"Oh... my " + item.ItemName + "... Thanks, " + item.Player + "... I guess..."},
-            {1,"A " + item.ItemName + ". Not sure what I'll use it for, but thanks anyways, " + item.Player + "."},
-        };
         try
         {
             Body body = GameObject.Find("Experiment/Body").GetComponent<Body>();
@@ -70,11 +65,6 @@ public class ExperimentDialog : MonoBehaviour
         if (item.ItemName.EndsWith("Unlock") || item.ItemName.EndsWith("Recipe")) // progression or useful item
         {
             PlayerTalker.Talk(ProgressionItemDialog[UnityEngine.Random.Range(0, ProgressionItemDialog.Count + 1)], null, true, false);
-            return;
-        }
-        if (item.ItemName.EndsWith("Trap")) // trap item
-        {
-            PlayerTalker.Talk(TrapItemDialog[UnityEngine.Random.Range(0, TrapItemDialog.Count + 1)], null, true, false);
             return;
         }
         if (item.ItemName == "Hope")
