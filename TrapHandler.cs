@@ -151,9 +151,11 @@ public class TrapHandler : MonoBehaviour
     IEnumerator Disfigurement()
     {
         disfigActive = true;
+        var prevHeadHealth = Vitals.limbs[0].muscleHealth; // disfiguring removes 25 muscle health
         Vitals.disfigured = true;
         yield return new WaitForSecondsRealtime(180);
         Vitals.disfigured = false;
+        Vitals.limbs[0].muscleHealth = prevHeadHealth; // so we restore that afterwards
         disfigActive = false;
     }
     IEnumerator Mindwipe()
