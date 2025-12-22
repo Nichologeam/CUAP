@@ -91,7 +91,7 @@ public class Startup : BaseUnityPlugin
         if (scene.name == "SampleScene") // Loading into the game, let's apply Archipelago patches.
         {
             Body = GameObject.Find("Experiment/Body");
-            if (Body.GetComponent<DeathlinkManager>())
+            if (Body.GetComponent<TrapHandler>())
             {
                 return; // Patches have already been applied, no need to apply them again.
             }
