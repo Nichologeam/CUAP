@@ -111,7 +111,6 @@ public class Startup : BaseUnityPlugin
         }
         else if (scene.name == "PreGen") // Scene loaded was PreGen, let's clear these objects to avoid errors.
         {
-            Console = null;
             Body = null;
             WorldGen = null;
             Moodles = null;
