@@ -79,7 +79,11 @@ public class APClientClass
     {
         try
         {
-            if (GameObject.Find("Main Camera/Canvas/WoundView").activeSelf)
+            if (GameObject.Find("Console(Clone)").GetComponent<ConsoleScript>().active) // console is pulled down (client makes it difficult to read)
+            {
+                APGui.ShowGUI = false;
+            }
+            else if (GameObject.Find("Main Camera/Canvas/WoundView").activeSelf) // woundview is open (client covers it)
             {
                 APGui.ShowGUI = false;
             }
@@ -90,7 +94,7 @@ public class APClientClass
         }
         catch
         {
-            APGui.ShowGUI = true; // main menu... default true
+            APGui.ShowGUI = true; // default true
         }
         if (Client is null) return;
         Client.UpdateConnection();
