@@ -177,9 +177,9 @@ public class TrapHandler : MonoBehaviour
     IEnumerator Thornback()
     {
         plrcam.currentThreatTheme = 15; // play the Elder Thornback first phase theme
-        plrcam.threatMusicTime = 1000; // for 1000 frames
+        plrcam.threatMusicTime = 90; // for 90 seconds
         moodles.horrifiedLevel = 1;
-        yield return plrcam.threatMusicTime == 0;
+        yield return new WaitForSecondsRealtime(90);
         moodles.horrifiedLevel = 0;
     }
 }
