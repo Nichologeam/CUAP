@@ -66,7 +66,7 @@ public class TrapHandler : MonoBehaviour
         if (TrapName == "Hearing Loss Trap")
         {
             Vitals.hearingLoss = +50;
-            plrcam.DoAlert("Trap: WHAT!? I CAN'T HEAR YOU " + ItemSender.ToUpper() + "! Hearing loss increased.", false);
+            plrcam.DoAlert("Trap: <b>WHAT!? I CAN'T HEAR YOU " + ItemSender.ToUpper() + "!</b> Hearing loss increased.", false);
         }
         if (TrapName == "Earthquake Trap")
         {
@@ -105,8 +105,9 @@ public class TrapHandler : MonoBehaviour
             plrcam.DoAlert("Trap: " + ItemSender + " spread gossip. All traders on this layer are now hostile.", false);
             foreach (var trader in FindObjectsOfType<TraderScript>())
             {
+                if (trader.hostile) continue; // don't bother making them hostile a second time
                 trader.hostility = 500;
-                Vitals.happiness += 2f; // counteract hostility happiness decrease
+                Vitals.happiness += 3f; // counteract hostility happiness decrease
             }
         }
         if (TrapName == "Disfigured Trap" && !Vitals.disfigured)
