@@ -201,7 +201,7 @@ public class Moodlesanity : MonoBehaviour
             {
                 continue; // Avoid spamming the server by not even attempting to send a check we already have sent.
             }
-            if (mood.type == "Immunocompromised" && worldgen.loadingObject.activeSelf)
+            if (mood.type == "lowimmunity1" && worldgen.loadingObject.activeSelf)
             {
                 continue; // There's a bug where Experiment is Immunocompromised for the first few frames during worldgen. This if statement makes the check not send in that case.
             }
