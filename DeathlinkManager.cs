@@ -140,11 +140,11 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
         }
         else if (Vitals.totalBleedSpeed > 0.02f) // I know this value seems low, but it is the same value the game uses for the bloody death screen
         {
-            Client.SendDeathLink(BloodyDeathMessages[UnityEngine.Random.Range(0, DrownDeathMessages.Count + 1)]);
+            Client.SendDeathLink(BloodyDeathMessages[UnityEngine.Random.Range(0, BloodyDeathMessages.Count + 1)]);
         }
         else
         {
-            Client.SendDeathLink(GenericDeathMessages[UnityEngine.Random.Range(0, DrownDeathMessages.Count + 1)]);
+            Client.SendDeathLink(GenericDeathMessages[UnityEngine.Random.Range(0, GenericDeathMessages.Count + 1)]);
         }
     }
 }
