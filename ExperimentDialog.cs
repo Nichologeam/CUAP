@@ -1,4 +1,5 @@
-﻿using CreepyUtil.Archipelago;
+﻿using Archipelago.MultiClient.Net.MessageLog.Parts;
+using CreepyUtil.Archipelago;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,7 +22,8 @@ public class ExperimentDialog : MonoBehaviour
         Dictionary<int, string> NormalItemDialog = new Dictionary<int, string>()
         {   
             {0,"I recieved a " + item.ItemName + " from " + item.Player + "."},
-            {1,"It's a " + item.ItemName + " from " + item.Player + "."}
+            {1,"It's a " + item.ItemName + " from " + item.Player + "."},
+            {2,"Ah, it's just a " + item.ItemName + " that " + item.Player + " gave me."}
         };
         Dictionary<int, string> HopefulItemDialog = new Dictionary<int, string>()
         {
@@ -34,14 +36,28 @@ public class ExperimentDialog : MonoBehaviour
         {
             {0,"Everything will be okay, right " + item.Player + "?"},
             {1,"Oh... thanks " + item.Player + "... I suppose..."},
-            {2,item.Player + "?"},
+            {2,item.Player + "...?"},
             {3,"I... feel worse, " + item.Player + "."},
         };
-        Dictionary<int, string> ProgressionItemDialog = new Dictionary<int, string>()
+        Dictionary<int, string> RecipeItemDialog = new Dictionary<int, string>()
         {
-            {0,"Huh? My " + item.ItemName + " from " + item.Player + "? How thoughtful!"},
-            {1,item.Player + ", this " + item.ItemName + " is the best thing I've seen down here!"},
-            {2,"Finally! My " + item.ItemName + "! Thanks, " + item.Player + "!"},
+            {0,"A " + item.ItemName + "? Maybe crafing it could help " + item.Player + " in return."},
+            {1,item.Player + ", this " + item.ItemName.Replace(" Recipe","") + " is the best thing I've seen down here!"}, // trim recipe to make it make sense
+            {2,item.Player + " just gave me an idea for a new recipe! How does a " + item.ItemName.Replace(" Recipe","") + " sound?"}
+        };
+        Dictionary<int, string> LayerItemDialog = new Dictionary<int, string>()
+        {
+            {0,item.Player + " unblocked the way to the " + item.ItemName.Replace(" Unlock","") + "!"}, // remove the unlock from the item name to make this make more sense
+            {1,"Looks like I can go somewhere new thanks to " + item.Player + "."},
+            {2,"Finally! I can go to the " + item.ItemName.Replace(" Unlock","") + "! Thanks, " + item.Player + "!"},
+            {3,"Hopefully the " + item.ItemName.Replace(" Unlock","") + " is better than here, " + item.Player + "..."}
+        };
+        Dictionary<int, string> ExtenderItemDialog = new Dictionary<int, string>()
+        {
+            {0,"Looks like I can go deeper thanks to " + item.Player + "."},
+            {1,"I'm one step closer to the bottom, thanks to " + item.Player + "."},
+            {2,"You want me to go further " + item.Player + "? Aw..."},
+            {3,"The end is in sight " + item.Player + "!"},
         };
         try
         {
@@ -62,17 +78,27 @@ public class ExperimentDialog : MonoBehaviour
             BackupTextbox(item); // One of those calls failed? Assume Experiment can't talk
             return;
         }
-        if (item.ItemName.EndsWith("Unlock") || item.ItemName.EndsWith("Recipe")) // progression or useful item
+        if (item.ItemName.EndsWith("Extender"))
         {
-            PlayerTalker.Talk(ProgressionItemDialog[UnityEngine.Random.Range(0, ProgressionItemDialog.Count + 1)], null, true, false);
+            PlayerTalker.Talk(ExtenderItemDialog[UnityEngine.Random.Range(0, ExtenderItemDialog.Count + 1)], null, true, false);
             return;
         }
-        if (item.ItemName == "Hope")
+        if (item.ItemName.EndsWith("Recipe")) // recipe item
+        {
+            PlayerTalker.Talk(RecipeItemDialog[UnityEngine.Random.Range(0, RecipeItemDialog.Count + 1)], null, true, false);
+            return;
+        }
+        if (item.ItemName.EndsWith("Unlock")) // new layer
+        {
+            PlayerTalker.Talk(LayerItemDialog[UnityEngine.Random.Range(0, LayerItemDialog.Count + 1)], null, true, false);
+            return;
+        }
+        if (item.ItemName == "Hope") // hope filler item
         {
             PlayerTalker.Talk(HopefulItemDialog[UnityEngine.Random.Range(0, HopefulItemDialog.Count + 1)], null, true, false);
             return;
         }
-        if (item.ItemName == "Despair")
+        if (item.ItemName == "Despair") // despair filler item
         {
             PlayerTalker.Talk(DespairItemDialog[UnityEngine.Random.Range(0, DespairItemDialog.Count + 1)], null, true, false);
             return;
