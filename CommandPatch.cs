@@ -1,6 +1,7 @@
 ﻿using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Packets;
 using CreepyUtil.Archipelago;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,7 @@ public class CommandPatch : MonoBehaviour
     private GameObject body;
     private string LastGotMessage;
     private JsonMessagePart[] LastGotItemMessage;
+    private HintPrintJsonPacket LastGotHintMessage;
 
     private void OnEnable()
     {
@@ -29,6 +31,7 @@ public class CommandPatch : MonoBehaviour
         {
             Client.OnServerMessagePacketReceived += PrintPlainJSON;
             Client.OnItemLogPacketReceived += PrintItemJSON;
+            Client.OnHintPrintJsonPacketReceived += PrintHintJSON;
         }
     }
     private void PrintPlainJSON(object sender, PrintJsonPacket message)
@@ -72,6 +75,24 @@ public class CommandPatch : MonoBehaviour
         // message.Data[3]/[5] is " ("
         // message.Data[4]/[6] is the finder's location ID
         // message.Data[5]/[7] is ")"
+    }
+    private void PrintHintJSON(object sender, HintPrintJsonPacket message)
+    {
+        var combinedText = message;
+        if (LastGotHintMessage == combinedText || message.Found == true) return; // don't show found hints (less clutter)
+        LastGotHintMessage = combinedText;
+        var recPlrName = (Client.PlayerNames[message.ReceivingPlayer]);
+        NetworkItem item = message.Item;
+        var fndPlrName = (Client.PlayerNames[item.Player]);
+        APClientClass.playerItemIdToName.TryGetValue(message.ReceivingPlayer, out Dictionary<long, string> plrItemIds);
+        plrItemIds.TryGetValue(item.Item, out string itemName);
+        APClientClass.playerLocIdToName.TryGetValue(item.Player, out Dictionary<long, string> plrLocIds);
+        plrLocIds.TryGetValue(item.Location, out string locName);
+        string constructedMessage = recPlrName + "'s " + itemName + " is at " + locName + " in " + fndPlrName + "'s world.";
+        Console.LogToConsole(constructedMessage);
+        // message.Data[0] is receiving player ID
+        // message.Data[1] is the NetworkItem
+        // message.Data[2] is if the hint has been found
     }
     private void CreateAPCommands()
     {
