@@ -6,11 +6,14 @@ using Newtonsoft.Json.Linq;
 using System.Linq;
 using Archipelago.MultiClient.Net.Packets;
 using UnityEngine.UIElements.Collections;
+using System.IO;
 
 namespace CUAP;
 
 public class CraftingChecks : MonoBehaviour
 {
+    AssetBundle bundle;
+    private Sprite aplogo;
     public static ApClient Client;
     private static List<string> RecievedRecipes;
     public static List<int> AlreadySentChecks = new List<int>();
@@ -3971,6 +3974,8 @@ public class CraftingChecks : MonoBehaviour
                 Recipes.recipes.Clear(); // Unlearn every recipe upon first connecting. We will recieve them with items later.
                 Client.Session.Socket.SendPacket(blueprintsPacket);
                 SetupAPBlueprint();
+                bundle = AssetBundle.LoadFromFile(Path.Combine(BepInEx.Paths.PluginPath,"CUAP","apassets")); // load assetbundle
+                aplogo = bundle.LoadAsset<Sprite>("aplogopixel"); // load custom blueprint asset replacement
             }
         }
         if (options.TryGetValue("FreeSamples", out var samples))
@@ -3998,6 +4003,7 @@ public class CraftingChecks : MonoBehaviour
                 .ToList();
             foreach (GameObject bp in blueprints)
             {
+                bp.GetComponent<SpriteRenderer>().sprite = aplogo;
                 var blueprint = bp.GetComponent<BlueprintScript>();
                 var recipeId = blueprint.recipeIndex;
                 if (AlreadySentChecks.Contains(recipeId))
@@ -4006,7 +4012,6 @@ public class CraftingChecks : MonoBehaviour
                     continue; // the game internally only spawns blueprints up to the amount that are in the game,
                     // since I remove them to randomize them, we need to rerandomize up to all 112, because the game doesn't
                 }
-                var item = bp.GetComponent<Item>();
             }
             if (GameObject.Find("blueprint(Clone)")) // does at least one blueprint still exist?
             {
@@ -4014,7 +4019,7 @@ public class CraftingChecks : MonoBehaviour
                            .FirstOrDefault(); // find the closest one
                 var item = closest.gameObject.GetComponent<Item>();
                 var recipeId = closest.gameObject.GetComponent<BlueprintScript>().recipeIndex;
-                item.Stats.description = "Six multicolored circles are drawn on the page. Your chip seems to react to it in some way. Use it to send <v1> their <v2>.";
+                item.Stats.description = "Six multicolored circles held together by an invisible force. Use it to send <v1> their <v2>.";
                 item.Stats.description = item.Stats.description.Replace("<v1>", BlueprintToPlayerName.Get(recipeId));
                 item.Stats.description = item.Stats.description.Replace("<v2>", BlueprintToItemName.Get(recipeId));
             }
