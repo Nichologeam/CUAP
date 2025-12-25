@@ -12,7 +12,6 @@ using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.UIElements.Collections;
 using static Archipelago.MultiClient.Net.Enums.ItemsHandlingFlags;
-using System.Net;
 
 namespace CUAP;
 
@@ -29,6 +28,7 @@ public class APClientClass
     private static double NextSend = 4;
     public static int DepthExtendersRecieved = 0;
     private static bool datapackageprocessed = false;
+    public static int selectedGoal;
 
     public static string[]? TryConnect(int port, string slot, string address, string password)
     {
@@ -68,6 +68,17 @@ public class APClientClass
         var slotdata = Client?.SlotData!;
         Startup.Logger.LogMessage("Connnected to Archipelago!");
         Client?.Session.Socket.SendPacket(new GetFullDataPackagePacket());
+        if (slotdata != null && Client != null)
+        {
+            var options = Client.SlotData["options"] as JObject;
+            if (options != null)
+            {
+                if (options.TryGetValue("Goal", out var goal))
+                {
+                    selectedGoal = Convert.ToInt32(goal);
+                }
+            }
+        }
     }
 
     public static bool IsConnected()
@@ -96,6 +107,7 @@ public class APClientClass
         {
             APGui.ShowGUI = true; // default true
         }
+        APGui.UpdateGUIDescriptions();
         if (Client is null) return;
         Client.UpdateConnection();
         if (Client?.Session?.Socket is null || !Client.IsConnected) return;
@@ -114,6 +126,10 @@ public class APClientClass
                 if ((bool)(item!.ItemName.EndsWith(" Unlock"))) // <layername> Unlock item. Add it to the list of unlocked layers.
                 {
                     LayerUnlockDictionary.Add(item.ItemName);
+                }
+                if (item.ItemName == ("Progressive Layer"))
+                {
+                    DepthExtendersRecieved++; // reusing this since it would be unused in Overgrown Depths goal
                 }
                 if ((bool)(item!.ItemName.EndsWith(" Trap")) || item!.ItemName == "Fellow Experiment") // Trap item. Send off to the TrapHandler to deal with.
                 {
@@ -147,7 +163,7 @@ public class APClientClass
                 {
                     DepthExtendersRecieved++;
                 }
-                if (item.ItemName.StartsWith("Progressive "))
+                if (item.ItemName.StartsWith("Progressive ") && item.ItemName != "Progressive Layer")
                 {
                     string Skill = item.ItemName.Substring(12);
                     if (Skill == "STR")

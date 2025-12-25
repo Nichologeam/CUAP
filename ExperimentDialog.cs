@@ -78,7 +78,7 @@ public class ExperimentDialog : MonoBehaviour
             BackupTextbox(item); // One of those calls failed? Assume Experiment can't talk
             return;
         }
-        if (item.ItemName.EndsWith("Extender"))
+        if (item.ItemName.EndsWith("Extender") || item.ItemName == "Progressive Layer")
         {
             PlayerTalker.Talk(ExtenderItemDialog[UnityEngine.Random.Range(0, ExtenderItemDialog.Count + 1)], null, true, false);
             return;

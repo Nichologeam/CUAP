@@ -27,12 +27,21 @@ public class DepthChecks : MonoBehaviour
         worldgen = this.gameObject.GetComponent<WorldGeneration>();
         DisplayText = GameObject.Find("Main Camera/Canvas/TimeScaleShow/Text (TMP)").GetComponent<TextMeshProUGUI>();
         var options = Client.SlotData["options"] as JObject;
-        if (options.TryGetValue("GoalDepth", out var goaldepthoption)) // fetch and store the goal depth.
+        if (options.TryGetValue("GoalDepth", out var goaldepthoption)) // fetch and store the goal depth. will always be sent even if goal isn't Reach Depth
         {
-            GoalDepth = (int)goaldepthoption;
-            GoalCheckID = -966813196 + (GoalDepth / 100);
+            if (APClientClass.selectedGoal == 1)
+            {
+                GoalDepth = (int)goaldepthoption;
+                GoalCheckID = -966813196 + (GoalDepth / 100);
+                Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is " + GoalDepth + "m");
+            }
+            else if (APClientClass.selectedGoal == 2)
+            {
+                GoalCheckID = -966813196 + (1500 / 100);
+                Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is Escape Overgrown Depths");
+                GoalDepth = 1534;
+            }
         }
-        Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is " + GoalDepth + "m");
     }
     private void Update()
     {
@@ -64,13 +73,27 @@ public class DepthChecks : MonoBehaviour
     }
     IEnumerator CheckForDepthExtenders()
     {
-        if (worldgen.doPod && (APClientClass.DepthExtendersRecieved < (RoundedMeters) / 300)) // true if we are using a drillpod and can't afford 2 layers
+        if (APClientClass.selectedGoal == 1) // logic for Depth Extenders
         {
-            worldgen.totalTraveled -= (int)(worldgen.height * 0.3f); // do it a second time
+            if (worldgen.doPod && (APClientClass.DepthExtendersRecieved < (RoundedMeters) / 300)) // true if we are using a drillpod and can't afford 2 layers
+            {
+                worldgen.totalTraveled -= (int)(worldgen.height * 0.3f); // do it a second time
+            }
+            else if (APClientClass.DepthExtendersRecieved < (RoundedMeters - 300) / 300)
+            {
+                worldgen.totalTraveled -= (int)(worldgen.height * 0.3f); // reversing WorldGeneration.IncreaseDepthByLayer
+            }
         }
-        else if (APClientClass.DepthExtendersRecieved < (RoundedMeters - 300) / 300)
+        else if (APClientClass.selectedGoal == 2) // logic for Progressive Layers
         {
-            worldgen.totalTraveled -= (int)(worldgen.height * 0.3f); // reversing WorldGeneration.IncreaseDepthByLayer
+            if (worldgen.doPod && (APClientClass.DepthExtendersRecieved < worldgen.biomeDepth)) // true if we are using a drillpod and can't afford 2 layers
+            {
+                worldgen.totalTraveled -= (int)(worldgen.height * 0.3f); // do it a second time
+            }
+            else if (APClientClass.DepthExtendersRecieved < worldgen.biomeDepth)
+            {
+                worldgen.totalTraveled -= (int)(worldgen.height * 0.3f); // reversing WorldGeneration.IncreaseDepthByLayer
+            }
         }
         yield return new WaitUntil(() => !worldgen.loadingObject.activeSelf); // wait until loading is done to not trigger this every frame
     }

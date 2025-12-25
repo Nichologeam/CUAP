@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Linq.Expressions;
 using UnityEngine;
 using static CUAP.APClientClass;
 
@@ -16,6 +15,7 @@ public class APGui : MonoBehaviour
     public static Vector2 Offset;
     public static bool WasPressed;
     public static bool DeathlinkEnabled = false;
+    public static string GUIDescription = "";
 
     public static GUIStyle TextStyle = new()
     {
@@ -102,8 +102,7 @@ public class APGui : MonoBehaviour
                 Offset = new(0, -100);
             }
             GUI.Box(new Rect(10 + Offset.x, 10 + Offset.y + 100, 200, 150), "Archipelago Client");
-            GUI.Label(new Rect(20 + Offset.x, Offset.y + 155, 150, 35),
-                    $"Depth Extenders: " + APClientClass.DepthExtendersRecieved + "          Max Depth: " + ((300 * APClientClass.DepthExtendersRecieved) + 300));
+            GUI.Label(new Rect(15 + Offset.x, Offset.y + 155, 190, 150),GUIDescription);
         }
 
         if (!IsConnected() && GUI.Button(new Rect(20 + Offset.x, 210 + Offset.y, 180, 30), "Connect"))
@@ -135,4 +134,29 @@ public class APGui : MonoBehaviour
     }
 
     private void Update() => APClientClass.Update();
+
+    public static void UpdateGUIDescriptions()
+    {
+        if (APClientClass.selectedGoal == 1)
+        {
+            var maxDepth = (300 * APClientClass.DepthExtendersRecieved) + 300;
+            GUIDescription =
+                """
+                Depth Extenders: <de>
+                Max Depth: <md>
+                """;
+            GUIDescription = GUIDescription.Replace("<de>",APClientClass.DepthExtendersRecieved.ToString());
+            GUIDescription = GUIDescription.Replace("<md>",maxDepth.ToString());
+        }
+        else if (APClientClass.selectedGoal == 2)
+        {
+            GUIDescription =
+                """
+                Layer Unlocks: <lu>
+                Deepest Layer: <dl>
+                """;
+            GUIDescription = GUIDescription.Replace("<lu>", APClientClass.DepthExtendersRecieved.ToString());
+            GUIDescription = GUIDescription.Replace("<dl>", LayerLocker.LayerIDToName[APClientClass.DepthExtendersRecieved]).Replace(" Unlock","");
+        }
+    }
 }
