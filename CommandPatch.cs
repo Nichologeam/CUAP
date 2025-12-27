@@ -1,9 +1,10 @@
 ﻿using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Packets;
 using CreepyUtil.Archipelago;
-using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 
@@ -260,5 +261,31 @@ public class CommandPatch : MonoBehaviour
         {
             new ValueTuple<string, string>("name", "Alias to change your slot name to.")
         }));
+        ConsoleScript.Commands.Add(new Command("apreportbug", "Opens CUAP's Github to report a bug.", delegate (string[] args)
+        {
+            Console.CheckArgumentCount(args, 1);
+            if (args[1] == "true")
+            {
+                StartCoroutine(CommandPatch.CaptureScreenshot());
+            }
+            Application.OpenURL("https://github.com/Nichologeam/CUAP/issues/new?template=issuetemplate.md");
+        }, new Dictionary<int, List<string>> {
+        {
+            0,
+            new List<string> {"true","false"}
+        } }, new ValueTuple<string, string>[]
+        {
+            new ValueTuple<string, string>("screenshot", "Whether to capture a screenshot to the CUAP folder.")
+        }));
+    }
+    public static IEnumerator CaptureScreenshot()
+    {   // this is incredibly dumb, but it works
+        string CUAPFolder = Path.Combine(BepInEx.Paths.PluginPath, "CUAP\\"); // Get CUAP folder
+        Console.gameObject.GetComponentInChildren<Canvas>().enabled = false; // hide the console
+        yield return 0; // wait a frame so it's gone in render
+        ScreenCapture.CaptureScreenshot(CUAPFolder + "apreportbug.png"); // Put screenshot in CUAP folder
+        yield return 0; // wait ANOTHER frame for the screenshot to actually get taken
+        Console.gameObject.GetComponentInChildren<Canvas>().enabled = true; // then finally put the console back
+        Console.LogToConsole("CUAP: Screenshot saved to " + CUAPFolder);
     }
 }
