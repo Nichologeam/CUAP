@@ -1,14 +1,15 @@
 #nullable enable
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net;
+using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Packets;
 using CreepyUtil.Archipelago;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.UIElements.Collections;
 using static Archipelago.MultiClient.Net.Enums.ItemsHandlingFlags;
@@ -311,6 +312,20 @@ public class APClientClass
             catch (Exception ex)
             {
                 Startup.Logger.LogError(ex.ToString());
+            }
+        }
+        else if (packet is RetrievedPacket)
+        {
+            var data = packet.ToJObject()["data"];
+            if (data == null) { Startup.Logger.LogError("'data' is null!"); return; }
+            var keylist = data["keys"];
+            JObject? keys = keylist as JObject;
+            if (keys == null || Client == null) { Startup.Logger.LogError("'Games' is null!"); return; }
+            var token = keys["crafted_blueprints"];
+            if (token != null && token.Type != JTokenType.Null)
+            {
+                CraftingChecks.RecipeCraftedBefore = token.ToObject<Dictionary<int, bool>>() ?? [];
+                CraftingChecks.CraftedRecipes = CraftingChecks.RecipeCraftedBefore.Count(kvp => kvp.Value);
             }
         }
     }

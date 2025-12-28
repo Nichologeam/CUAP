@@ -5,6 +5,8 @@ using UnityEngine;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 using Archipelago.MultiClient.Net.Packets;
+using Archipelago.MultiClient.Net.Models;
+using Archipelago.MultiClient.Net.Enums;
 using UnityEngine.UIElements.Collections;
 using System.IO;
 
@@ -17,8 +19,11 @@ public class CraftingChecks : MonoBehaviour
     public static ApClient Client;
     private static List<string> RecievedRecipes;
     public static List<int> AlreadySentChecks = new List<int>();
-    private int lastFrameRecipeCount;
+    private int lastFrameRecipeCount = 0;
     public static bool freesamples = false;
+    private int RecipeNum = 0;
+    public static int CraftedRecipes = 0;
+    private static readonly HashSet<string> AppliedRecipes = new();
     private LocationScoutsPacket blueprintsPacket = new LocationScoutsPacket()
     {
         Locations = Enumerable.Range(22318500, 22318612 - 22318500 + 1)
@@ -3955,6 +3960,7 @@ public class CraftingChecks : MonoBehaviour
             }
         },
     };
+    public static Dictionary<int, bool> RecipeCraftedBefore = new Dictionary<int, bool>();
 
     private void OnEnable()
     {
@@ -3982,20 +3988,58 @@ public class CraftingChecks : MonoBehaviour
         {
             freesamples = Convert.ToBoolean(samples);
         }
+        if (APClientClass.selectedGoal == 4)
+        {
+            Client.Session.Socket.SendPacket(new GetPacket {Keys = new[]{"crafted_blueprints"}});
+        }
     }
     private void Update()
     {
         if (RecievedRecipes.Count > lastFrameRecipeCount)
         {
-            Recipes.recipes.Clear();
             foreach (string gotrecipe in RecievedRecipes)
             {
-                CheckNameToRecipe.TryGetValue(gotrecipe, out Recipe recipeToLearn);
-                recipeToLearn.specialKnown = true; // force recipe to show up
-                Recipes.recipes.Add(recipeToLearn); // Add the recipe to the list
+                if (!AppliedRecipes.Add(gotrecipe)) continue; // already in the list
+                CheckNameToRecipe.TryGetValue(gotrecipe, out Recipe recipeToLearn); // get the recipe we're learning
+                recipeToLearn.specialKnown = true; // mark is as known so it always shows up regardless of INT
+                Recipes.recipes.Add(recipeToLearn); // put it in the dictionary so the game knows its there
+                if (APClientClass.selectedGoal == 4)
+                {
+                    RecipeCraftedBefore.Add(RecipeNum++, false);
+                }
+            }
+            lastFrameRecipeCount = RecievedRecipes.Count;
+        }
+        if (APClientClass.selectedGoal == 4)
+        {
+            for (int i = 0; i < Recipes.recipes.Count; i++)
+            {
+                var recipe = Recipes.recipes[i]; // check each recipe. the order of recipes in Recipes.recipes will always match RecipeCraftedBefore
+                if (!recipe.hasMadeBefore) continue; // have we made it before? if not, ignore
+                if (RecipeCraftedBefore.TryGetValue(i, out bool alreadyCrafted) && alreadyCrafted) continue; // has it been added before? if so, ignore
+                RecipeCraftedBefore[i] = true; // update the dictionary
+                CraftedRecipes++; // increase our local recipes crafted number
+                Client.Session.Socket.SendPacket(new SetPacket // save the data to AP in case of disconnects
+                {
+                    Key = "crafted_blueprints",
+                    Operations = new[]
+                    {
+                    new OperationSpecification
+                    {
+                        OperationType = OperationType.Update,
+                        Value = JToken.FromObject(new Dictionary<int, bool>
+                        {
+                            [i] = true
+                        })
+                    }
+                }
+                });
+            }
+            if (RecipeCraftedBefore.Count == 112 && CraftedRecipes == 112) // we have all the recipes and have crafted them all
+            {
+                Client.Goal();
             }
         }
-        lastFrameRecipeCount = RecievedRecipes.Count;
         try
         {
             var blueprints = GameObject.FindObjectsOfType<GameObject>()
