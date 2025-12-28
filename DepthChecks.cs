@@ -41,6 +41,11 @@ public class DepthChecks : MonoBehaviour
                 Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is Escape Overgrown Depths");
                 GoalDepth = 1534;
             }
+            else if (APClientClass.selectedGoal == 3)
+            {
+                Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is Defeat Elder Thornback");
+                GoalDepth = 999999; // not needed for this goal
+            }
         }
     }
     private void Update()
@@ -73,7 +78,7 @@ public class DepthChecks : MonoBehaviour
     }
     IEnumerator CheckForDepthExtenders()
     {
-        if (APClientClass.selectedGoal == 1) // logic for Depth Extenders
+        if (APClientClass.selectedGoal != 2) // logic for Depth Extenders (goal 1 and 3)
         {
             if (worldgen.doPod && (APClientClass.DepthExtendersRecieved < (RoundedMeters) / 300)) // true if we are using a drillpod and can't afford 2 layers
             {

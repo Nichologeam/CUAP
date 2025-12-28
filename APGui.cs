@@ -142,6 +142,7 @@ public class APGui : MonoBehaviour
             var maxDepth = (300 * APClientClass.DepthExtendersRecieved) + 300;
             GUIDescription =
                 """
+                Goal: Depth
                 Depth Extenders: <de>
                 Max Depth: <md>
                 """;
@@ -152,11 +153,21 @@ public class APGui : MonoBehaviour
         {
             GUIDescription =
                 """
+                Goal: Escape Overgrown
                 Layer Unlocks: <lu>
                 Deepest Layer: <dl>
                 """;
             GUIDescription = GUIDescription.Replace("<lu>", APClientClass.DepthExtendersRecieved.ToString());
             GUIDescription = GUIDescription.Replace("<dl>", LayerLocker.LayerIDToName[APClientClass.DepthExtendersRecieved]).Replace(" Unlock","");
+        }
+        else if (APClientClass.selectedGoal == 3)
+        {
+            GUIDescription =
+                """
+                Goal: Kill Elder
+                Overgrown: <ou>
+                """;
+            GUIDescription = GUIDescription.Replace("<ou>", APClientClass.LayerUnlockDictionary.Contains("Overgrown Depths Unlock") ? "Unlocked" : "Locked");
         }
     }
 }
