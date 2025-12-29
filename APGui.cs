@@ -169,5 +169,14 @@ public class APGui : MonoBehaviour
                 """;
             GUIDescription = GUIDescription.Replace("<ou>", APClientClass.LayerUnlockDictionary.Contains("Overgrown Depths Unlock") ? "Unlocked" : "Locked");
         }
+        else if (APClientClass.selectedGoal == 4)
+        {
+            GUIDescription =
+                """
+                Goal: Craftsanity
+                Crafted: <rc>
+                """;
+            GUIDescription = GUIDescription.Replace("<rc>", CraftingChecks.CraftedRecipes.ToString() + "/112");
+        }
     }
 }

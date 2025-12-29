@@ -38,7 +38,7 @@ public class LayerLocker : MonoBehaviour
     }
     private void Update()
     {
-        if (APClientClass.selectedGoal != 2) // goals 1 and 3
+        if (APClientClass.selectedGoal is 1 or 3) // goals 1 and 3
         {
             LayerHandler = APClientClass.LayerUnlockDictionary;
             if (worldgen.loadingObject.activeSelf && !worldgen.tutorialOverride) // as funny as being in overgrown depths tutorial is, i had to fix this eventually
@@ -64,7 +64,7 @@ public class LayerLocker : MonoBehaviour
                 LayerId = -1;
             }
         }
-        else if (APClientClass.selectedGoal == 2)
+        else if (APClientClass.selectedGoal is 2 or 4) // goals 2 and 4
         {
             if (worldgen.loadingObject.activeSelf)
             {
