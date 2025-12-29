@@ -16,6 +16,14 @@ public class APGui : MonoBehaviour
     public static bool WasPressed;
     public static bool DeathlinkEnabled = false;
     public static string GUIDescription = "";
+    public static bool InGame
+    {
+        get
+        {
+            var camera = GameObject.Find("Main Camera");
+            return camera != null && camera.GetComponent<PlayerCamera>() != null;
+        }
+    }
 
     public static GUIStyle TextStyle = new()
     {
@@ -58,21 +66,6 @@ public class APGui : MonoBehaviour
         if (!ShowGUI) return;
         if (!IsConnected())
         {
-            try
-            {
-                if (GameObject.Find("Main Camera").GetComponent<PlayerCamera>())
-                {
-                    Offset = new(0, 100);
-                }
-                else // probably don't need this, but i'd rather have reduncancy
-                {
-                    Offset = new(0, 0);
-                }
-            }
-            catch
-            {
-                Offset = new(0, 0);
-            }
             GUI.Box(new Rect(10 + Offset.x, 10 + Offset.y, 200, 300), "Archipelago Client");
 
             GUI.Label(new Rect(20 + Offset.x, 40 + Offset.y, 300, 30), "Address:Port", TextStyle);
@@ -88,11 +81,11 @@ public class APGui : MonoBehaviour
         {
             try
             {
-                if (GameObject.Find("Main Camera").GetComponent<PlayerCamera>())
+                if (InGame)
                 {
                     Offset = new(0, 0);
                 }
-                else // probably don't need this, but i'd rather have reduncancy
+                else
                 {
                     Offset = new(0, -100);
                 }
@@ -122,10 +115,12 @@ public class APGui : MonoBehaviour
             State = "";
             File.WriteAllText("ApConnection.txt", $"{Ipporttext}\n{Password}\n{Slot}");
         }
-
-        if (IsConnected() && GUI.Button(new Rect(20 + Offset.x, 210 + Offset.y, 180, 30), "Disconnect(Main menu only!)"))
+        if (!InGame)
         {
-            Disconnect();
+            if (IsConnected() && GUI.Button(new Rect(20 + Offset.x, 210 + Offset.y, 180, 30), "Disconnect"))
+            {
+                Disconnect();
+            }
         }
 
         GUI.Label(new Rect(20 + Offset.x, 240 + Offset.y, 300, 30),
@@ -142,7 +137,7 @@ public class APGui : MonoBehaviour
             var maxDepth = (300 * APClientClass.DepthExtendersRecieved) + 300;
             GUIDescription =
                 """
-                Goal: Depth
+                Goal: Reach Depth
                 Depth Extenders: <de>
                 Max Depth: <md>
                 """;
@@ -164,7 +159,7 @@ public class APGui : MonoBehaviour
         {
             GUIDescription =
                 """
-                Goal: Kill Elder
+                Goal: Defeat Elder
                 Overgrown: <ou>
                 """;
             GUIDescription = GUIDescription.Replace("<ou>", APClientClass.LayerUnlockDictionary.Contains("Overgrown Depths Unlock") ? "Unlocked" : "Locked");
