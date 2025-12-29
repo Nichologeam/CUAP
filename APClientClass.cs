@@ -38,7 +38,7 @@ public class APClientClass
             Client = new ApClient();
             Startup.Logger.LogMessage($"Attempting to connect to [{address}]:[{port}], with password: [{password}], on slot: [{slot}]");
             var connectError = Client.TryConnect(new LoginInfo(port, slot, address, password), 0x3AF4F1BC,
-                "Casualties: Unknown", AllItems, (new Version(0, 6, 4)), requestSlotData: true);
+                "Casualties: Unknown", AllItems, (new Version(0, 6, 5)), requestSlotData: true);
             if (connectError is not null && connectError.Length > 0)
             {
                 Startup.Logger.LogError("There was an Error connecting!" + connectError);
