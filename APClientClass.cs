@@ -41,7 +41,7 @@ public class APClientClass
                 "Casualties: Unknown", AllItems, (new Version(0, 6, 5)), requestSlotData: true);
             if (connectError is not null && connectError.Length > 0)
             {
-                Startup.Logger.LogError("There was an Error connecting!" + connectError);
+                Startup.Logger.LogError("There was an error connecting!" + connectError);
                 Disconnect();
                 return connectError;
             }
@@ -50,7 +50,7 @@ public class APClientClass
         }
         catch (Exception e)
         {
-            Startup.Logger.LogError("There was an Error with Archipelago!" + e.Message);
+            Startup.Logger.LogError("There was an error with Archipelago!" + e.Message);
             Disconnect();
             return [e.Message, e.StackTrace!];
         }
@@ -320,7 +320,7 @@ public class APClientClass
             if (data == null) { Startup.Logger.LogError("'data' is null!"); return; }
             var keylist = data["keys"];
             JObject? keys = keylist as JObject;
-            if (keys == null || Client == null) { Startup.Logger.LogError("'Games' is null!"); return; }
+            if (keys == null || Client == null) { Startup.Logger.LogError("'keys' is null!"); return; }
             var token = keys["crafted_blueprints"];
             if (token != null && token.Type != JTokenType.Null)
             {
