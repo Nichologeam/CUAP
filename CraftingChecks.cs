@@ -3980,8 +3980,11 @@ public class CraftingChecks : MonoBehaviour
                 Recipes.recipes.Clear(); // Unlearn every recipe upon first connecting. We will recieve them with items later.
                 Client.Session.Socket.SendPacket(blueprintsPacket);
                 SetupAPBlueprint();
-                bundle = AssetBundle.LoadFromFile(Path.Combine(BepInEx.Paths.PluginPath,"CUAP","apassets")); // load assetbundle
-                aplogo = bundle.LoadAsset<Sprite>("aplogopixel"); // load custom blueprint asset replacement
+                if (bundle is null) // only load the bundle if we haven't already
+                {
+                    bundle = AssetBundle.LoadFromFile(Path.Combine(BepInEx.Paths.PluginPath, "CUAP", "apassets")); // load assetbundle
+                    aplogo = bundle.LoadAsset<Sprite>("aplogopixel"); // load custom blueprint asset replacement
+                }
             }
         }
         if (options.TryGetValue("FreeSamples", out var samples))
