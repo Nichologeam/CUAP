@@ -34,7 +34,7 @@ public class TrapHandler : MonoBehaviour
     }
     private void LateUpdate() // lateupdate so it's after normal moodle updates (no race condition, yippee!)
     {
-        if (moodleUpdateTime(moodles) > prevUpdateTime) // timer reset, moodles were updated
+        if (moodleUpdateTime(moodles) > prevUpdateTime && Vitals.alive) // timer reset, moodles were updated
         {
             if (revControlActive)
             {
@@ -125,7 +125,6 @@ public class TrapHandler : MonoBehaviour
             heldItems.Clear();
             foreach (var slot in FindObjectsOfType<InventorySlot>())
             {
-                Debug.Log("found " + slot.limb.fullName + "'s inventory slot");
                 try
                 {
                     heldItems.Add(slot.gameObject.GetComponentInChildren<Item>());
