@@ -466,7 +466,7 @@ public class CraftingChecks : MonoBehaviour
                 }
                 });
             }
-            if (RecipeCraftedBefore.Count == 112 && CraftedRecipes == 112) // we have all the recipes and have crafted them all
+            if (RecipeCraftedBefore.Count == Recipes.recipes.Count && CraftedRecipes == Recipes.recipes.Count) // we have all the recipes and have crafted them all
             {
                 Client.Goal();
             }
