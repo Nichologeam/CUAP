@@ -210,7 +210,7 @@ public class TrapHandler : MonoBehaviour
         skills.maxINT = INTMaxPreWipe;
         skills.minINT = INTMinPreWipe;
         Vitals.hearingLoss = preWipehl;
-        Vitals.brainHealth = preWipebh;
+        if (Vitals.alive) Vitals.brainHealth = preWipebh; // only if Experiment didn't die during the mindwipe
         mindwipeActive = false;
     }
     IEnumerator Thornback()
