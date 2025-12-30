@@ -408,7 +408,8 @@ public class CraftingChecks : MonoBehaviour
                 }
                 Client.Session.Socket.SendPacket(blueprintsPacket);
                 SetupAPBlueprint();
-                if (bundle is null) // only load the bundle if we haven't already
+                var loaded = AssetBundle.GetAllLoadedAssetBundles().FirstOrDefault(b => b.name == "apassets");
+                if (loaded == null) // only load the bundle if we haven't already
                 {
                     bundle = AssetBundle.LoadFromFile(Path.Combine(BepInEx.Paths.PluginPath, "CUAP", "apassets")); // load assetbundle
                     aplogo = bundle.LoadAsset<Sprite>("aplogopixel"); // load custom blueprint asset replacement
