@@ -32,3 +32,4 @@ The in-game debug console now has various new Archipelago related commands. You 
 - apcollect: Alias for `apchat !collect`
 - apcheat: Alias for `apchat !getitem`
 - apalias [name]: Alias for `apchat !alias`
+- apreportbug: Opens a bug report in this GitHub repository. Optionally takes a screenshot as well.
