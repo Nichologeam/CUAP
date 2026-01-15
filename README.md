@@ -10,9 +10,10 @@ This mod is made for the V5PreTesting5 version of Casualties: Unknown, which can
     - If done correctly, a Plugins folder should appear in the BepInEx folder
 4. Download and install the client mod by extracting the CUAPClientModx.x.x.zip folder into the newly created Plugins folder
 	- If done correctly, a CUAP folder should appear (not CUAPClientModx.x.x)
-5. [If Hosting] Download [Archipelago 0.6.4](https://github.com/ArchipelagoMW/Archipelago/releases/tag/0.6.4) or newer
+5. [If Hosting] Download [Archipelago 0.6.5](https://github.com/ArchipelagoMW/Archipelago/releases/tag/0.6.5) or newer
 6. [If Hosting] Download the APWorld and place it in the custom_worlds folder of your Archipelago install
 7. Download the .yaml file attached and fill out your desired settings, then place it in the Players folder of your Archipelago install
+    - If you have the Archipelago Launcher and APWorld, you can also use the Options Creator if you want a UI.
 8. [If Hosting] Open Archipelago and select 'Generate'
 9. [If Hosting] Upload the .zip file in the Output folder to [the Archipelago website](https://archipelago.gg/uploads) to host
 	- Alternatively, you can host on your own PC by selecting 'Host' in the Archipelago Launcher
