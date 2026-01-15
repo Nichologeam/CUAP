@@ -443,6 +443,7 @@ public class CraftingChecks : MonoBehaviour
                 CheckNameToRecipeID.TryGetValue(gotrecipe, out int recipeToLearn); // get the recipe we're learning
                 RecipeToINTRequirement.TryGetValue(gotrecipe, out int recipeRequiredINT); // get its int requried to craft
                 Recipes.recipes[recipeToLearn].INT = recipeRequiredINT; // set the int to the vanilla value
+                Recipes.recipes[recipeToLearn].specialKnown = true; // force it visible
                 if (APClientClass.selectedGoal == 4)
                 {
                     RecipeCraftedBefore.Add(RecipeNum++, false);
