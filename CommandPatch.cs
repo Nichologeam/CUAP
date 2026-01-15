@@ -89,8 +89,8 @@ public class CommandPatch : MonoBehaviour
         plrItemIds.TryGetValue(item.Item, out string itemName);
         APClientClass.playerLocIdToName.TryGetValue(item.Player, out Dictionary<long, string> plrLocIds);
         plrLocIds.TryGetValue(item.Location, out string locName);
-        string constructedMessage = recPlrName + "'s " + itemName + " is at " + locName + " in " + fndPlrName + "'s world.";
-        Console.LogToConsole(constructedMessage);
+        Console.LogToConsole(recPlrName + "'s " + itemName + " is at " + locName + " in " + fndPlrName + "'s world.");
+        APCanvas.DisplayArchipelagoNotification(recPlrName + "'s " + itemName + " is at " + fndPlrName + "'s " + locName + ".",2);
         // message.Data[0] is receiving player ID
         // message.Data[1] is the NetworkItem
         // message.Data[2] is if the hint has been found
@@ -103,13 +103,13 @@ public class CommandPatch : MonoBehaviour
             {
                 throw new Exception("Archipelago isn't connected.");
             }
-            if (APGui.DeathlinkEnabled)
+            if (APCanvas.DeathlinkEnabled)
             {
                 APClientClass.Client.Session.Socket.SendPacket(new ConnectUpdatePacket()
                 {
                     Tags = []
                 });
-                APGui.DeathlinkEnabled = false;
+                APCanvas.DeathlinkEnabled = false;
                 try
                 {
                     body = GameObject.Find("Experiment/Body");
@@ -127,7 +127,7 @@ public class CommandPatch : MonoBehaviour
                 {
                     Tags = ["DeathLink"]
                 });
-                APGui.DeathlinkEnabled = true;
+                APCanvas.DeathlinkEnabled = true;
                 try
                 {
                     body = GameObject.Find("Experiment/Body");

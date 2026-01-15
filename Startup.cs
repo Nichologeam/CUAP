@@ -24,7 +24,7 @@ public class Startup : BaseUnityPlugin
         Logger = base.Logger;
         Logger.LogMessage($"Casualties: Unknown Archipelago Plugin v0.5.1 loaded!");
         Handler = new GameObject("Archipelago GUI Handler");
-        Handler.AddComponent<APGui>();
+        Handler.AddComponent<APCanvas>();
         DontDestroyOnLoad(Handler);
     }
     private void Update()

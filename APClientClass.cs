@@ -9,7 +9,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.UIElements.Collections;
 using static Archipelago.MultiClient.Net.Enums.ItemsHandlingFlags;
@@ -93,22 +92,22 @@ public class APClientClass
         {
             if (GameObject.Find("Console(Clone)").GetComponent<ConsoleScript>().active) // console is pulled down (client makes it difficult to read)
             {
-                APGui.ShowGUI = false;
+                APCanvas.ShowGUI = false;
             }
             else if (GameObject.Find("Main Camera/Canvas/WoundView").activeSelf) // woundview is open (client covers it)
             {
-                APGui.ShowGUI = false;
+                APCanvas.ShowGUI = false;
             }
             else
             {
-                APGui.ShowGUI = true;
+                APCanvas.ShowGUI = true;
             }
         }
         catch
         {
-            APGui.ShowGUI = true; // default true
+            APCanvas.ShowGUI = true; // default true
         }
-        APGui.UpdateGUIDescriptions();
+        APCanvas.UpdateGUIDescriptions();
         if (Client is null) return;
         Client.UpdateConnection();
         if (Client?.Session?.Socket is null || !Client.IsConnected) return;
@@ -312,6 +311,7 @@ public class APClientClass
             catch (Exception ex)
             {
                 Startup.Logger.LogError(ex.ToString());
+                APCanvas.DisplayArchipelagoNotification("Datapackage Error: " + ex.ToString(), 3);
             }
         }
         else if (packet is RetrievedPacket)

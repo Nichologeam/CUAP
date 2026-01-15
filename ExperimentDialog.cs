@@ -110,14 +110,6 @@ public class ExperimentDialog : MonoBehaviour
     }
     private static void BackupTextbox(Archipelago.MultiClient.Net.Models.ItemInfo info)
     {
-        try
-        {
-            playercam = GameObject.Find("Main Camera").GetComponent<PlayerCamera>();
-            playercam.DoAlert("Received " + info.ItemName + " from " + info.Player + " (" + info.LocationDisplayName + ")", false);
-        }
-        catch
-        { 
-            // we're probably on the main menu, so don't bother.
-        }
+        APCanvas.DisplayArchipelagoNotification("Received " + info.ItemName + " from " + info.Player + "!",1);
     }
 }

@@ -26,7 +26,7 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
         DeathLinkText.text = ""; // remove the 1x in there, as this is actually an unused version of the speedup overlay.
         GameObject.Find("Main Camera/Canvas/TimeScaleShow").transform.SetAsLastSibling(); // overlay over top of everything else by moving to bottom of heirarchy
         DeathLinkText.transform.localPosition = Vector3.zero; // by default this is pushed to the left slightly for a sprite. i removed said sprite and the text is better centered.
-        if (!APGui.DeathlinkEnabled)
+        if (!APCanvas.DeathlinkEnabled)
         {
             Startup.Logger.LogWarning("Deathlink is disabled, destroying script.");
             DestroyImmediate(this); // we destroy the script this late so the text is set up for DepthChecks, which uses it regardless of deathlink being on
