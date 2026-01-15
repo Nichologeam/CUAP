@@ -23,6 +23,7 @@ public class CraftingChecks : MonoBehaviour
     public static bool freesamples = false;
     private int RecipeNum = 0;
     public static int CraftedRecipes = 0;
+    private bool removeBlueprints = false;
     private static HashSet<string> AppliedRecipes = new();
     private LocationScoutsPacket blueprintsPacket = new LocationScoutsPacket()
     {
@@ -394,25 +395,32 @@ public class CraftingChecks : MonoBehaviour
         var options = Client.SlotData["options"] as JObject;
         if (options.TryGetValue("RandomizeRecipes", out var recipesoption)) // check if recipe randomization is enabled.
         {
-            if (!Convert.ToBoolean(recipesoption))
+            if (Convert.ToInt16(recipesoption) == 1) // disabled
             {
                 Startup.Logger.LogWarning("Recipe Randomization is disabled, destroying script.");
                 DestroyImmediate(this);
                 return;
             }
-            else
+            else // enabled. both need to learn recupes, so we'll do that first
             {
                 foreach (var recipe in Recipes.recipes)
                 {
-                    recipe.INT = 999; // Unlearn every recipe upon first connecting. We will recieve them with items later.
+                    recipe.INT = 999; // Unlearn every recipe. We will recieve them with items later.
                 }
-                Client.Session.Socket.SendPacket(blueprintsPacket);
-                SetupAPBlueprint();
-                var loaded = AssetBundle.GetAllLoadedAssetBundles().FirstOrDefault(b => b.name == "apassets");
-                if (loaded == null) // only load the bundle if we haven't already
+                if (Convert.ToInt16(recipesoption) == 3) // blueprint locations enabled
                 {
-                    bundle = AssetBundle.LoadFromFile(Path.Combine(BepInEx.Paths.PluginPath, "CUAP", "apassets")); // load assetbundle
-                    aplogo = bundle.LoadAsset<Sprite>("aplogopixel"); // load custom blueprint asset replacement
+                    Client.Session.Socket.SendPacket(blueprintsPacket);
+                    SetupAPBlueprint();
+                    var loaded = AssetBundle.GetAllLoadedAssetBundles().FirstOrDefault(b => b.name == "apassets");
+                    if (loaded == null) // only load the bundle if we haven't already
+                    {
+                        bundle = AssetBundle.LoadFromFile(Path.Combine(BepInEx.Paths.PluginPath, "CUAP", "apassets")); // load assetbundle
+                        aplogo = bundle.LoadAsset<Sprite>("aplogopixel"); // load custom blueprint asset replacement
+                    }
+                }
+                else // blueprint locations aren't enabled. mark that for later
+                {
+                    removeBlueprints = true;
                 }
             }
         }
@@ -479,6 +487,11 @@ public class CraftingChecks : MonoBehaviour
                 .ToList();
             foreach (GameObject bp in blueprints)
             {
+                if (removeBlueprints) // settings make blueprints not needed. remove them
+                {
+                    Destroy(bp);
+                    continue;
+                }
                 bp.GetComponent<SpriteRenderer>().sprite = aplogo;
                 var blueprint = bp.GetComponent<BlueprintScript>();
                 var recipeId = blueprint.recipeIndex;
