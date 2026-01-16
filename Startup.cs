@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using CreepyUtil.Archipelago;
+using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,11 +9,12 @@ using UnityEngine.UI;
 
 namespace CUAP;
 
-[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.5.1.0")]
+[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.5.2.0")]
 public class Startup : BaseUnityPlugin
 {
     public static new ManualLogSource Logger;
     public static ApClient Client;
+    public static AssetBundle apassets;
     GameObject Handler;
     GameObject Console;
     GameObject Body;
@@ -22,10 +24,13 @@ public class Startup : BaseUnityPlugin
     private void Awake()
     {
         Logger = base.Logger;
-        Logger.LogMessage($"Casualties: Unknown Archipelago Plugin v0.5.1 loaded!");
-        Handler = new GameObject("Archipelago GUI Handler");
-        Handler.AddComponent<APCanvas>();
+        Logger.LogMessage($"Casualties: Unknown Archipelago Plugin v0.5.2 loaded!");
+        Handler = new GameObject("Archipelago Handler");
         DontDestroyOnLoad(Handler);
+        apassets = AssetBundle.LoadFromFile(Path.Combine(BepInEx.Paths.PluginPath, "CUAP", "apassets"));
+        var UI = Instantiate(apassets.LoadAsset<GameObject>("APCanvas"));
+        DontDestroyOnLoad(UI);
+        UI.AddComponent<APCanvas>();
     }
     private void Update()
     {

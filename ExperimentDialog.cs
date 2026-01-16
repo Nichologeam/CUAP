@@ -13,7 +13,7 @@ public class ExperimentDialog : MonoBehaviour
     private void OnEnable()
     {
         Client = APClientClass.Client;
-        PlayerTalker = GameObject.Find("Experiment/Body").GetComponent<Talker>();
+        PlayerTalker = gameObject.GetComponent<Talker>();
         Startup.Logger.LogMessage("Dialogue patches applied!");
     }
     public static void ProcessDialog(Archipelago.MultiClient.Net.Models.ItemInfo item)
@@ -68,13 +68,13 @@ public class ExperimentDialog : MonoBehaviour
                 PlayerTalker.brainDamaged || // Brain Damaged?
                 body.inWater) // Underwater?
             {
-                BackupTextbox(item); // Then don't bother having Experiment speak
+                GameObject.Find("Experiment/Body").GetComponent<ExperimentDialog>().BackupTextbox(item); // Then don't bother having Experiment speak
                 return;
             }
         }
         catch
         {
-            BackupTextbox(item); // One of those calls failed? Assume Experiment can't talk
+            GameObject.Find("Experiment/Body").GetComponent<ExperimentDialog>().BackupTextbox(item); // One of those calls failed? Assume Experiment can't talk
             return;
         }
         if (item.ItemName.EndsWith("Extender") || item.ItemName == "Progressive Layer")
@@ -107,8 +107,8 @@ public class ExperimentDialog : MonoBehaviour
             PlayerTalker.Talk(NormalItemDialog[UnityEngine.Random.Range(0, NormalItemDialog.Count + 1)], null, true, false);
         }
     }
-    private static void BackupTextbox(Archipelago.MultiClient.Net.Models.ItemInfo info)
+    void BackupTextbox(Archipelago.MultiClient.Net.Models.ItemInfo info)
     {
-        APCanvas.DisplayArchipelagoNotification("Received " + info.ItemName + " from " + info.Player + "!",1);
+        StartCoroutine(APCanvas.DisplayArchipelagoNotification("Received " + info.ItemName + " from " + info.Player + "!",1));
     }
 }

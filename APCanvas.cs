@@ -2,6 +2,7 @@
 using System.IO;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using static CUAP.APClientClass;
 
 namespace CUAP;
@@ -14,8 +15,9 @@ public class APCanvas : MonoBehaviour
     public TMP_InputField Ipporttext;
     public TMP_InputField Password;
     public TMP_InputField Slot;
+    public Button ConnectButton;
     public static bool DeathlinkEnabled = false;
-    public static TMP_Text GUIDescription;
+    public static TMP_Text Status;
     public static bool DisplayingMessage;
     public static bool InGame
     {
@@ -26,9 +28,16 @@ public class APCanvas : MonoBehaviour
         }
     }
 
-    private void Awake()
+    private void Start()
     {
-        GUIDescription = GameObject.Find("APCanvas/Canvas/Connected Background/Status").GetComponent<TMP_Text>();
+        ConnectionBackground = GameObject.Find("APCanvas(Clone)/Canvas/Connection Background"); // containing object for the connection ui
+        ConnectedBackground = GameObject.Find("APCanvas(Clone)/Canvas/Connected Background"); // containing object for the connected ui
+        Ipporttext = GameObject.Find("APCanvas(Clone)/Canvas/Connection Background/IPandPort").GetComponent<TMP_InputField>(); // address and port input
+        Slot = GameObject.Find("APCanvas(Clone)/Canvas/Connection Background/Slot").GetComponent<TMP_InputField>(); // slot name input
+        Password = GameObject.Find("APCanvas(Clone)/Canvas/Connection Background/Password").GetComponent<TMP_InputField>(); // password input
+        ConnectButton = GameObject.Find("APCanvas(Clone)/Canvas/Connection Background/Connect").GetComponent<Button>(); // connect to archipelago button
+        Status = GameObject.Find("APCanvas(Clone)/Canvas/Connected Background/Status").GetComponent<TMP_Text>(); // goal status tracker
+        ConnectButton.onClick.AddListener(OnConnectPressed); // run connect function when button is pressed
         if (!File.Exists("ApConnection.txt")) return; // Read saved slot information from file
         var fileText = File.ReadAllText("ApConnection.txt").Replace("\r", "").Split('\n');
         Ipporttext.text = fileText[0];
@@ -38,10 +47,16 @@ public class APCanvas : MonoBehaviour
 
     void OnGUI()
     {
+        if (Ipporttext is null) // some race condition nonsense can make Start fail to find input fields. just rerun Start if it happens.
+        {
+            Start();
+            return;
+        }
         if (!ShowGUI)
         {
             ConnectedBackground.SetActive(false);
             ConnectedBackground.SetActive(false);
+            return;
         }
         if (!IsConnected())
         {
@@ -75,13 +90,13 @@ public class APCanvas : MonoBehaviour
         var ipPortSplit = Ipporttext.text.Split(':');
         if (!int.TryParse(ipPortSplit[1], out var port))
         {
-            DisplayArchipelagoNotification($"[{ipPortSplit[1]}] is not a valid port",3);
+            StartCoroutine(DisplayArchipelagoNotification($"[{ipPortSplit[1]}] is not a valid port",3));
             return;
         }
         var error = TryConnect(port, Slot.text, ipPortSplit[0], Password.text);
         if (error is not null)
         {
-            DisplayArchipelagoNotification("Connection error: " + string.Join("\n", error),3);
+            StartCoroutine(DisplayArchipelagoNotification("Connection error: " + string.Join("\n", error), 3));
             return;
         }
         File.WriteAllText("ApConnection.txt", $"{Ipporttext}\n{Password}\n{Slot}");
@@ -94,55 +109,59 @@ public class APCanvas : MonoBehaviour
         if (selectedGoal == 1)
         {
             var maxDepth = (300 * DepthExtendersRecieved) + 300;
-            GUIDescription.text =
+            Status.text =
                 """
                 Goal: Reach Depth
                 Depth Extenders: <de>
                 Max Depth: <md>
                 """;
-            GUIDescription.text = GUIDescription.text.Replace("<de>", DepthExtendersRecieved.ToString());
-            GUIDescription.text = GUIDescription.text.Replace("<md>", maxDepth.ToString());
+            Status.text = Status.text.Replace("<de>", DepthExtendersRecieved.ToString());
+            Status.text = Status.text.Replace("<md>", maxDepth.ToString());
         }
         else if (selectedGoal == 2)
         {
-            GUIDescription.text =
+            Status.text =
                 """
                 Goal: Escape Overgrown
                 Layer Unlocks: <lu>
                 Deepest Layer: <dl>
                 """;
-            GUIDescription.text = GUIDescription.text.Replace("<lu>", DepthExtendersRecieved.ToString());
-            GUIDescription.text = GUIDescription.text.Replace("<dl>", LayerLocker.LayerIDToName[DepthExtendersRecieved]).Replace(" Unlock", "");
+            Status.text = Status.text.Replace("<lu>", DepthExtendersRecieved.ToString());
+            Status.text = Status.text.Replace("<dl>", LayerLocker.LayerIDToName[DepthExtendersRecieved]).Replace(" Unlock", "");
         }
         else if (selectedGoal == 3)
         {
-            GUIDescription.text =
+            Status.text =
                 """
                 Goal: Defeat Elder
                 Overgrown: <ou>
                 """;
-            GUIDescription.text = GUIDescription.text.Replace("<ou>", LayerUnlockDictionary.Contains("Overgrown Depths Unlock") ? "Unlocked" : "Locked");
+            Status.text = Status.text.Replace("<ou>", LayerUnlockDictionary.Contains("Overgrown Depths Unlock") ? "Unlocked" : "Locked");
         }
         else if (selectedGoal == 4)
         {
-            GUIDescription.text =
+            Status.text =
                 """
                 Goal: Craftsanity
                 Unlocked: <ru>
                 Crafted: <rc>
                 """;
-            GUIDescription.text = GUIDescription.text.Replace("<ru>", Recipes.recipes.Count + "/112");
-            GUIDescription.text = GUIDescription.text.Replace("<rc>", CraftingChecks.CraftedRecipes.ToString() + "/112");
+            Status.text = Status.text.Replace("<ru>", Recipes.recipes.Count + "/112");
+            Status.text = Status.text.Replace("<rc>", CraftingChecks.CraftedRecipes.ToString() + "/112");
         }
     }
     public static IEnumerator DisplayArchipelagoNotification(string text, int severity)
     {
         // display the given text in a popup. higher severity means more interruptive of gameplay.
         // items are lowest severity (1), hints are higher (2), and errors are highest (3).
+        if (!ShowGUI)
+        {
+            yield return 0; // wait until the GUI is allowed
+        }
         if (severity == 1)
         {
-            var ItemNotif = GameObject.Find("APCanvas/Canvas/Item Notification");
-            var ItemText = GameObject.Find("APCanvas/Canvas/Item Notification/Notification Message").GetComponent<TMP_Text>();
+            var ItemNotif = GameObject.Find("APCanvas(Clone)/Canvas/Item Notification");
+            var ItemText = GameObject.Find("APCanvas(Clone)/Canvas/Item Notification/Notification Message").GetComponent<TMP_Text>();
             ItemText.text = text;
             ItemNotif.SetActive(true);
             Sound.Play("laser", Vector2.zero, true, false, null, 1, 1, false, false);
@@ -151,8 +170,8 @@ public class APCanvas : MonoBehaviour
         }
         else if (severity == 2)
         {
-            var HintNotif = GameObject.Find("APCanvas/Canvas/Hint Notification");
-            var HintText = GameObject.Find("APCanvas/Canvas/Hint Notification/Notification Message").GetComponent<TMP_Text>();
+            var HintNotif = GameObject.Find("APCanvas(Clone)/Canvas/Hint Notification");
+            var HintText = GameObject.Find("APCanvas(Clone)/Canvas/Hint Notification/Notification Message").GetComponent<TMP_Text>();
             HintText.text = text;
             HintNotif.SetActive(true);
             Sound.Play("shuttleNotice", Vector2.zero, true, false, null, 1, 1, false, false);
@@ -161,8 +180,8 @@ public class APCanvas : MonoBehaviour
         }
         else if (severity == 3)
         {
-            var ErrorNotif = GameObject.Find("APCanvas/Canvas/Error Notification");
-            var ErrorText = GameObject.Find("APCanvas/Canvas/Error Notification/Notification Message").GetComponent<TMP_Text>();
+            var ErrorNotif = GameObject.Find("APCanvas(Clone)/Canvas/Error Notification");
+            var ErrorText = GameObject.Find("APCanvas(Clone)/Canvas/Error Notification/Notification Message").GetComponent<TMP_Text>();
             ErrorText.text = text;
             ErrorNotif.SetActive(true);
             yield return new WaitForSecondsRealtime(5);

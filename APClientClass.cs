@@ -40,7 +40,6 @@ public class APClientClass
                 "Casualties: Unknown", AllItems, (new Version(0, 6, 5)), requestSlotData: true);
             if (connectError is not null && connectError.Length > 0)
             {
-                Startup.Logger.LogError("There was an error connecting!" + connectError);
                 Disconnect();
                 return connectError;
             }
@@ -49,7 +48,6 @@ public class APClientClass
         }
         catch (Exception e)
         {
-            Startup.Logger.LogError("There was an error with Archipelago!" + e.Message);
             Disconnect();
             return [e.Message, e.StackTrace!];
         }
@@ -310,8 +308,7 @@ public class APClientClass
             }
             catch (Exception ex)
             {
-                Startup.Logger.LogError(ex.ToString());
-                APCanvas.DisplayArchipelagoNotification("Datapackage Error: " + ex.ToString(), 3);
+                Startup.Logger.LogError("Datapackage Error: " + ex.ToString());
             }
         }
         else if (packet is RetrievedPacket)
