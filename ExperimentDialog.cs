@@ -9,7 +9,6 @@ public class ExperimentDialog : MonoBehaviour
 {
     public static ApClient Client;
     private static Talker PlayerTalker;
-    private static PlayerCamera playercam;
 
     private void OnEnable()
     {
