@@ -528,12 +528,8 @@ public class CraftingChecks : MonoBehaviour
                 {
                     APClientClass.session.Socket.SendPacket(blueprintsPacket);
                     SetupAPBlueprint();
-                    var loaded = AssetBundle.GetAllLoadedAssetBundles().FirstOrDefault(b => b.name == "apassets");
-                    if (loaded == null) // only load the bundle if we haven't already
-                    {
-                        bundle = AssetBundle.LoadFromFile(Path.Combine(BepInEx.Paths.PluginPath, "CUAP", "apassets")); // load assetbundle
-                        aplogo = bundle.LoadAsset<Sprite>("aplogopixel"); // load custom blueprint asset replacement
-                    }
+                    bundle = AssetBundle.GetAllLoadedAssetBundles().FirstOrDefault(b => b.name == "apassets");
+                    aplogo = bundle.LoadAsset<Sprite>("aplogo200"); // load custom blueprint asset replacement
                 }
                 else // blueprint locations aren't enabled. mark that for later
                 {
