@@ -25,7 +25,7 @@ This mod is made for the V5PreTesting5 version of Casualties: Unknown, which can
 
 # **In-game Text Client**
 The in-game debug console now has various new Archipelago related commands. You can open the in-game debug console with `.
-- aptoggledeathlink [severity]: Enables or disables DeathLink. 'kill' kills Experiment. 'limbdamage' does a moderate amount of damage to a random limb.
+- apdeathlink [severity]: Enables or disables DeathLink. 'kill' kills Experiment. 'limbdamage' does a moderate amount of damage to a random limb.
 - apchat [text]: Send a chat message to Archipelago. Replaces the old Talk command system
 - aphint [item]: Alias for `apchat !hint`. Leave [item] empty for a hint status update.
 - aphintlocation [location]: Alias for `apchat !hint_location`

@@ -97,7 +97,7 @@ public class CommandPatch : MonoBehaviour
     }
     private void CreateAPCommands()
     {
-        ConsoleScript.Commands.Add(new Command("aptoggledeathlink", "Toggles DeathLink for the current game session.", delegate (string[] args)
+        ConsoleScript.Commands.Add(new Command("apdeathlink", "Toggles DeathLink for the current game session.", delegate (string[] args)
         {
             if (APClientClass.Client is null)
             {
@@ -131,7 +131,7 @@ public class CommandPatch : MonoBehaviour
                 try
                 {
                     body = GameObject.Find("Experiment/Body");
-                    Destroy(body.AddComponent<DeathlinkManager>());
+                    body.AddComponent<DeathlinkManager>();
                 }
                 catch
                 {
@@ -152,7 +152,11 @@ public class CommandPatch : MonoBehaviour
                 }
                 Console.LogToConsole("CUAP: DeathLink Enabled.");
             }
-        }, null, new ValueTuple<string, string>[]
+        }, new Dictionary<int, List<string>> {
+        {
+            0,
+            new List<string> {"kill","limbdamage"}
+        } }, new ValueTuple<string, string>[]
         {
             new ValueTuple<string, string>("severity", "How punishing DeathLink should be. Choices are 'kill' and 'limbdamage'")
         }));
