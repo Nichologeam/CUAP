@@ -17,7 +17,7 @@ This mod is made for the V5PreTesting5 version of Casualties: Unknown, which can
 8. [If Hosting] Open Archipelago and select 'Generate'
 9. [If Hosting] Upload the .zip file in the Output folder to [the Archipelago website](https://archipelago.gg/uploads) to host
 	- Alternatively, you can host on your own PC by selecting 'Host' in the Archipelago Launcher
-10. Launch the game normally and enter the room connection information in the top right
+10. Launch the game normally and enter the room connection information in the top left
 	- DeathLink is toggleable at any time using the game's console (see In-game Text Client below)
 11. If anything goes wrong while playing, please let me know. This is still in development and bugs may happen
 	- You can contact me in the AP After Dark Discord in the Casualties: Unkown thread in #future-game-design
