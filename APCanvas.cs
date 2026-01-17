@@ -67,21 +67,6 @@ public class APCanvas : MonoBehaviour
         {
             ConnectedBackground.SetActive(true);
             ConnectionBackground.SetActive(false);
-            try
-            {
-                if (InGame)
-                {
-                    ConnectedBackground.transform.position = new(0,0);
-                }
-                else
-                {
-                    ConnectedBackground.transform.position = new(0,-100);
-                }
-            }
-            catch
-            {
-                ConnectedBackground.transform.position = new(0, -100);
-            }
         }
     }
 
@@ -99,7 +84,7 @@ public class APCanvas : MonoBehaviour
             StartCoroutine(DisplayArchipelagoNotification("Connection error: " + string.Join("\n", error), 3));
             return;
         }
-        File.WriteAllText("ApConnection.txt", $"{Ipporttext}\n{Password}\n{Slot}");
+        File.WriteAllText("ApConnection.txt", $"{Ipporttext.text}\n{Password.text}\n{Slot.text}");
     }
 
     private void Update() => APClientClass.Update();
@@ -150,6 +135,10 @@ public class APCanvas : MonoBehaviour
             Status.text = Status.text.Replace("<rc>", CraftingChecks.CraftedRecipes.ToString() + "/112");
         }
     }
+    public void DisplayArchipelagoNotificationHelper(string text, int severity) // for places StartCoroutine can't be called
+    {
+        StartCoroutine(DisplayArchipelagoNotification(text, severity));
+    }
     public static IEnumerator DisplayArchipelagoNotification(string text, int severity)
     {
         // display the given text in a popup. higher severity means more interruptive of gameplay.
@@ -164,7 +153,7 @@ public class APCanvas : MonoBehaviour
             var ItemText = GameObject.Find("APCanvas(Clone)/Canvas/Item Notification/Notification Message").GetComponent<TMP_Text>();
             ItemText.text = text;
             ItemNotif.SetActive(true);
-            Sound.Play("laser", Vector2.zero, true, false, null, 1, 1, false, false);
+            Sound.Play("warning", Vector2.zero, true, false, null, 1f, 1f, false, false);
             yield return new WaitForSecondsRealtime(3);
             ItemNotif.SetActive(false);
         }
@@ -174,7 +163,7 @@ public class APCanvas : MonoBehaviour
             var HintText = GameObject.Find("APCanvas(Clone)/Canvas/Hint Notification/Notification Message").GetComponent<TMP_Text>();
             HintText.text = text;
             HintNotif.SetActive(true);
-            Sound.Play("shuttleNotice", Vector2.zero, true, false, null, 1, 1, false, false);
+            Sound.Play("shuttleNotice", Vector2.zero, true, false, null, 0.6f, 1f, false, false);
             yield return new WaitForSecondsRealtime(5);
             HintNotif.SetActive(false);
         }

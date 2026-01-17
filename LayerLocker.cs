@@ -1,4 +1,4 @@
-﻿using CreepyUtil.Archipelago;
+﻿using CreepyUtil.Archipelago.ApClient;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;

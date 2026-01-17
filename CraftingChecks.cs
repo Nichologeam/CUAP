@@ -1,4 +1,4 @@
-﻿using CreepyUtil.Archipelago;
+﻿using CreepyUtil.Archipelago.ApClient;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
@@ -269,6 +269,123 @@ public class CraftingChecks : MonoBehaviour
         {"Titanum multitool Recipe",16},
         {"Climbing rope Recipe",8},
     };
+    private static Dictionary<int, string> RecipeIDToCheckName = new Dictionary<int, string>()
+    {
+        {0,"Recipe - Foliage rope"},
+        // {1,"Recipe - Foliage"},
+        {2,"Recipe - String"},
+        {3,"Recipe - Canvas"},
+        {4,"Recipe - Wood scraps"},
+        {5,"Recipe - Ripped dressing"},
+        {6,"Recipe - Sterilized dressing"},
+        {7,"Recipe - Bio-chem fluid"},
+        {8,"Recipe - Opium"},
+        {9,"Recipe - Morphine"},
+        {10,"Recipe - Fentanyl"},
+        {11,"Recipe - Painkillers"},
+        {12,"Recipe - Neural booster"},
+        {13,"Recipe - Canteen"},
+        {14,"Recipe - Foliage bag"},
+        {15,"Recipe - Sling bag"},
+        {16,"Recipe - Scrap cube"},
+        {17,"Recipe - Scrap panel"},
+        {18,"Recipe - Scrap tube"},
+        {19,"Recipe - Nails"},
+        {20,"Recipe - Wood cube"},
+        {21,"Recipe - Wood panel"},
+        {22,"Recipe - Stick"},
+        {23,"Recipe - Flimsy knife"},
+        {24,"Recipe - Processed copper"},
+        {25,"Recipe - Bundle of wires"},
+        {26,"Recipe - Titanium slab"},
+        {27,"Recipe - Titanium sheet"},
+        {28,"Recipe - Titanium rod"},
+        {29,"Recipe - Alien blood"},
+        {30,"Recipe - Blood"},
+        {31,"Recipe - Makeshift wrench"},
+        {32,"Recipe - Wrench"},
+        {33,"Recipe - Crude cleaver"},
+        {34,"Recipe - Flammable powder"},
+        {35,"Recipe - Casing"},
+        {36,"Recipe - 9mm round"},
+        {37,"Recipe - 5.56 round"},
+        {38,"Recipe - 12-Gauge buckshot"},
+        {39,"Recipe - Magazine base"},
+        {40,"Recipe - Small magazine"},
+        {41,"Recipe - Rifle magazine"},
+        {42,"Recipe - Box of 12-Guage"},
+        {43,"Recipe - Dynamite"},
+        {44,"Recipe - Large carcass"},
+        {45,"Recipe - Circuit board"},
+        {46,"Recipe - Small battery"},
+        {47,"Recipe - Medium battery"},
+        {48,"Recipe - Large battery"},
+        {49,"Recipe - Flashlight"},
+        {50,"Recipe - Headlamp"},
+        {51,"Recipe - LCD screen"},
+        {52,"Recipe - Flexiglass"},
+        {53,"Recipe - Lightbulb"},
+        {54,"Recipe - Limb wraps"},
+        {55,"Recipe - Makeshift lamp"},
+        {56,"Recipe - Bicycle helmet"},
+        {57,"Recipe - Makeshift helmet"},
+        {58,"Recipe - Makeshift digging tool"},
+        {59,"Recipe - Makeshift rifle"},
+        {60,"Recipe - Mini laser drill"},
+        {61,"Recipe - Dressing"},
+        {62,"Recipe - Lantern"},
+        {63,"Recipe - Terrain scanner"},
+        {64,"Recipe - Advanced scuba diving gear"},
+        {65,"Recipe - Pickaxe"},
+        {66,"Recipe - Scaffolding pack"},
+        {67,"Recipe - Backpack"},
+        {68,"Recipe - Bowl of cereal"},
+        {69,"Recipe - Fat"},
+        {70,"Recipe - Soap"},
+        {71,"Recipe - Clotting mush"},
+        {72,"Recipe - Naltrexone"},
+        {73,"Recipe - Antidepressants"},
+        {74,"Recipe - Auto-injector"},
+        {75,"Recipe - Auto-auto-pump"},
+        {76,"Recipe - Antiseptic mush"},
+        {77,"Recipe - Plastic dressing"},
+        {78,"Recipe - Tourniquet"},
+        {79,"Recipe - Bone welding tool"},
+        {80,"Recipe - Tweezers"},
+        {81,"Recipe - Blood bag"},
+        {82,"Recipe - Antiseptic"},
+        {83,"Recipe - Relief cream"},
+        {84,"Recipe - Splint"},
+        {85,"Recipe - Bruise kit"},
+        {86,"Recipe - Carcass splint"},
+        {87,"Recipe - Makeshift L.R.D."},
+        {88,"Recipe - L.R.D."},
+        {89,"Recipe - L.R.D. Serum"},
+        {90,"Recipe - Produce juice"},
+        {91,"Recipe - Refined juice"},
+        {92,"Recipe - Drill repair kit"},
+        {93,"Recipe - Procoagulant"},
+        {94,"Recipe - Antiseptic bottle"},
+        {95,"Recipe - Firestarter"},
+        {96,"Recipe - Campfire"},
+        {97,"Recipe - Water"},
+        {98,"Recipe - Charcoal"},
+        {99,"Recipe - Bread"},
+        {100,"Recipe - Rye flour"},
+        {101,"Recipe - Torch"},
+        {102,"Recipe - Torch (relight)"},
+        {103,"Recipe - Nutrient bar"},
+        {104,"Recipe - Pemmican"},
+        {105,"Recipe - Foliage meal"},
+        {106,"Recipe - Burger"},
+        {107,"Recipe - Soup"},
+        {108,"Recipe - Ice pack"},
+        {109,"Recipe - Scarf"},
+        {110,"Recipe - Titanium pickaxe"},
+        {111,"Recipe - Titanium machete"},
+        {112,"Recipe - Titanium multitool"},
+        {113,"Recipe - Climbing rope"}
+    };
     private static Dictionary<string, int> CheckNameToRecipeID = new Dictionary<string, int>()
     {   // Same order as items.py, and the interal recipe order in-game
         {"Foliage rope Recipe",0},
@@ -409,7 +526,7 @@ public class CraftingChecks : MonoBehaviour
                 }
                 if (Convert.ToInt16(recipesoption) == 3) // blueprint locations enabled
                 {
-                    Client.Session.Socket.SendPacket(blueprintsPacket);
+                    APClientClass.session.Socket.SendPacket(blueprintsPacket);
                     SetupAPBlueprint();
                     var loaded = AssetBundle.GetAllLoadedAssetBundles().FirstOrDefault(b => b.name == "apassets");
                     if (loaded == null) // only load the bundle if we haven't already
@@ -430,7 +547,7 @@ public class CraftingChecks : MonoBehaviour
         }
         if (APClientClass.selectedGoal == 4)
         {
-            Client.Session.Socket.SendPacket(new GetPacket {Keys = new[]{"crafted_blueprints"}});
+            APClientClass.session.Socket.SendPacket(new GetPacket {Keys = new[]{"crafted_blueprints"}});
         }
     }
     private void Update()
@@ -460,7 +577,7 @@ public class CraftingChecks : MonoBehaviour
                 if (RecipeCraftedBefore.TryGetValue(i, out bool alreadyCrafted) && alreadyCrafted) continue; // has it been added before? if so, ignore
                 RecipeCraftedBefore[i] = true; // update the dictionary
                 CraftedRecipes++; // increase our local recipes crafted number
-                Client.Session.Socket.SendPacket(new SetPacket // save the data to AP in case of disconnects
+                APClientClass.session.Socket.SendPacket(new SetPacket // save the data to AP in case of disconnects
                 {
                     Key = "crafted_blueprints",
                     Operations = new[]
@@ -550,8 +667,8 @@ public class CraftingChecks : MonoBehaviour
 
     public static void SendBlueprintLocation(int recipeIndex)
     {
-        int CheckID = -966812696 + recipeIndex;
-        APClientClass.ChecksToSendQueue.Enqueue(CheckID);
+        RecipeIDToCheckName.TryGetValue(recipeIndex, out string CheckName);
+        APClientClass.ChecksToSendQueue.Enqueue(CheckName);
         AlreadySentChecks.Add(recipeIndex);
     }
 }

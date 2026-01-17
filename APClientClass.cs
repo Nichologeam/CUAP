@@ -4,11 +4,14 @@ using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Packets;
 using CreepyUtil.Archipelago;
+using CreepyUtil.Archipelago.ApClient;
+using HarmonyLib;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.UIElements.Collections;
 using static Archipelago.MultiClient.Net.Enums.ItemsHandlingFlags;
@@ -18,8 +21,8 @@ namespace CUAP;
 // heavily modified version of https://github.com/SWCreeperKing/PowerwashSimAP/blob/master/src/ApDirtClient.cs
 public class APClientClass
 {
-    private static List<long> ChecksToSend = [];
-    public static ConcurrentQueue<long> ChecksToSendQueue = [];
+    private static List<string> ChecksToSend = [];
+    public static ConcurrentQueue<string> ChecksToSendQueue = [];
     public static ApClient? Client;
     public static List<string> LayerUnlockDictionary = new List<string>();
     public static List<string> RecipeUnlockDictionary = new List<string>();
@@ -29,6 +32,8 @@ public class APClientClass
     public static int DepthExtendersRecieved = 0;
     private static bool datapackageprocessed = false;
     public static int selectedGoal;
+    static readonly FieldInfo SessionField = AccessTools.Field(typeof(ApClient), "Session"); // this got privated during a client update
+    public static ArchipelagoSession? session;
 
     public static string[]? TryConnect(int port, string slot, string address, string password)
     {
@@ -36,7 +41,7 @@ public class APClientClass
         {
             Client = new ApClient();
             Startup.Logger.LogMessage($"Attempting to connect to [{address}]:[{port}], with password: [{password}], on slot: [{slot}]");
-            var connectError = Client.TryConnect(new LoginInfo(port, slot, address, password), 0x3AF4F1BC,
+            var connectError = Client.TryConnect(new LoginInfo(port, slot, address, password),
                 "Casualties: Unknown", AllItems, (new Version(0, 6, 5)), requestSlotData: true);
             if (connectError is not null && connectError.Length > 0)
             {
@@ -65,7 +70,8 @@ public class APClientClass
     {
         var slotdata = Client?.SlotData!;
         Startup.Logger.LogMessage("Connnected to Archipelago!");
-        Client?.Session.Socket.SendPacket(new GetFullDataPackagePacket());
+        session = (ArchipelagoSession)SessionField.GetValue(Client);
+        session.Socket.SendPacket(new GetFullDataPackagePacket());
         if (slotdata != null && Client != null)
         {
             var options = Client.SlotData["options"] as JObject;
@@ -81,7 +87,7 @@ public class APClientClass
 
     public static bool IsConnected()
     {
-        return Client is not null && Client.IsConnected && Client.Session.Socket.Connected;
+        return Client is not null && Client.IsConnected;
     }
 
     public static void Update()
@@ -108,8 +114,8 @@ public class APClientClass
         APCanvas.UpdateGUIDescriptions();
         if (Client is null) return;
         Client.UpdateConnection();
-        if (Client?.Session?.Socket is null || !Client.IsConnected) return;
-        Client.Session.Socket.PacketReceived += Socket_PacketReceived;
+        if (session?.Socket is null || !Client.IsConnected) return;
+        session.Socket.PacketReceived += Socket_PacketReceived;
         NextSend -= Time.deltaTime;
         if (ChecksToSend.Any() && NextSend <= 0)
         {
@@ -259,7 +265,7 @@ public class APClientClass
                 var gamelist = data["games"];
                 JObject? games = gamelist as JObject;
                 if (games == null || Client == null) {Startup.Logger.LogError("'Games' is null!"); return;}
-                var allPlayers = Client.Session.Players.AllPlayers.ToList();
+                var allPlayers = Client.AllPlayers.ToList();
                 foreach (var player in allPlayers)
                 {
                     Startup.Logger.LogMessage($"Processing {player.Name}");
@@ -308,6 +314,7 @@ public class APClientClass
             }
             catch (Exception ex)
             {
+                GameObject.Find("APCanvas(Clone)").GetComponent<APCanvas>().DisplayArchipelagoNotificationHelper("Datapackage Error: " + ex.ToString(), 3);
                 Startup.Logger.LogError("Datapackage Error: " + ex.ToString());
             }
         }
@@ -330,8 +337,16 @@ public class APClientClass
     private static void SendChecks()
     {
         NextSend = 3;
-        Client?.SendLocations(ChecksToSend.ToArray());
-        ChecksToSend.Clear();
+        try
+        {
+            Client?.SendLocations(ChecksToSend.Select(n => n.ToString()).ToArray());
+            ChecksToSend.Clear();
+        }
+        catch (Exception ex)
+        {
+            GameObject.Find("APCanvas(Clone)").GetComponent<APCanvas>().DisplayArchipelagoNotificationHelper("SendChecks failed! " + ex.ToString(),3);
+            Disconnect();
+        }
     }
 }
 

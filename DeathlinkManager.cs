@@ -1,5 +1,5 @@
 ﻿using Archipelago.MultiClient.Net.Packets;
-using CreepyUtil.Archipelago;
+using CreepyUtil.Archipelago.ApClient;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -52,15 +52,23 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
         Client.OnDeathLinkPacketReceived += ProcessDeathLink;
     }
 
-    private void ProcessDeathLink(object sender, BouncedPacket e)
+    private void ProcessDeathLink(string senderName, string deathCause)
     {
         if (DeathlinkCooldown > 0)
         {
             return; // so, for some reason, OnDeathLinkPacketReceived is spammed about 350 ish times for each Deathlink sent.
             // This cooldown prevents 349 ish of those deathlinks from going though, as it entierly destroys Experiment if Large Limb Damage is on.
         }   
+        if (senderName == "" || senderName is null) // should never happen, realistically.
+        {
+            StartCoroutine(APCanvas.DisplayArchipelagoNotification("Received a DeathLink packet with no sender. Ignoring.", 3));
+            return;
+        }
         DeathlinkCooldown = 15;
-        ConstructMessage(e);
+        if (deathCause == "Died a generic (unknown) death" || deathCause == "" || deathCause is null)
+        {
+            DeathLinkText.text = senderName + " died.";
+        }
         if (DeathlinkSeverity)
         {
             DeathLinkText.text = DeathLinkText.text + " Your run has ended.";
@@ -79,37 +87,6 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
             Sound.Play("harmSting", Vector2.zero, true, false, null, 0.7f, 1f, false, false);
             DeathLinkText.text = DeathLinkText.text + " Damage done to " + limb.fullName + ".";
             DeathLinkText.autoSizeTextContainer = true; // fixes linewrapping off the screen
-        }
-    }
-
-    void ConstructMessage(BouncedPacket e)
-    {
-        var dlInfo = e.Data;
-        try
-        {
-            if (dlInfo.TryGetValue("cause", out JToken c)) // Was a deathlink cause included?
-            {
-                var cString = c.ToObject<string>();
-                if (cString == "")
-                {
-                    if (dlInfo.TryGetValue("source", out JToken s)) // No? Use the slot name
-                    {
-                        var sString = s.ToObject<string>();
-                        if (sString == "")
-                        {
-                            DeathLinkText.text = "DeathLink recieved."; // Both of those failed (somehow)? Use non-dynamic text.
-                            return;
-                        }
-                        DeathLinkText.text = sString + " died.";
-                        return;
-                    }
-                }
-                DeathLinkText.text = cString + ".";
-            }
-        }
-        catch (Exception err)
-        {
-            Debug.LogException(err); // debug.log so it shows in in-game console
         }
     }
 

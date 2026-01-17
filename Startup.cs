@@ -1,6 +1,6 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
-using CreepyUtil.Archipelago;
+using CreepyUtil.Archipelago.ApClient;
 using System.IO;
 using TMPro;
 using UnityEngine;
@@ -85,7 +85,6 @@ public class Startup : BaseUnityPlugin
         {
             if (Client is null || !(Client?.IsConnected ?? false))
             {
-                Startup.Logger.LogError("Archipelago disconnected mid run! Quitting to main menu to prevent breaking the client!");
                 GameObject.Find("World").GetComponent<WorldGeneration>().SaveAndExit();
                 PlayerCamera.main.ToMainMenu();
             }

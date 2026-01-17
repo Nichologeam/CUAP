@@ -1,4 +1,4 @@
-﻿using CreepyUtil.Archipelago;
+﻿using CreepyUtil.Archipelago.ApClient;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -11,19 +11,17 @@ namespace CUAP;
 public class DepthChecks : MonoBehaviour
 {
     public static ApClient Client;
-    public static ConcurrentQueue<long> CheckHandler;
     private WorldGeneration worldgen;
     private int RoundedMeters;
-    private int CheckID;
+    private string CheckName;
     private int GoalDepth;
-    private int GoalCheckID;
+    private string GoalCheckName;
     private TextMeshProUGUI DisplayText;
-    private List<int> AlreadySentChecks = new List<int>();
+    private List<string> AlreadySentChecks = new List<string>();
 
     private void OnEnable()
     {
         Client = APClientClass.Client;
-        CheckHandler = APClientClass.ChecksToSendQueue;
         worldgen = this.gameObject.GetComponent<WorldGeneration>();
         DisplayText = GameObject.Find("Main Camera/Canvas/TimeScaleShow/Text (TMP)").GetComponent<TextMeshProUGUI>();
         var options = Client.SlotData["options"] as JObject;
@@ -32,12 +30,12 @@ public class DepthChecks : MonoBehaviour
             if (APClientClass.selectedGoal == 1)
             {
                 GoalDepth = (int)goaldepthoption;
-                GoalCheckID = -966813196 + (GoalDepth / 100);
+                GoalCheckName = "Depth Milestone - " + GoalDepth + "m";
                 Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is " + GoalDepth + "m");
             }
             else if (APClientClass.selectedGoal == 2)
             {
-                GoalCheckID = -966813196 + (1500 / 100);
+                GoalCheckName = "Depth Milestone - 1500m";
                 Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is Escape Overgrown Depths");
                 GoalDepth = 1534;
             }
@@ -63,7 +61,7 @@ public class DepthChecks : MonoBehaviour
         // next is handling sending the checks
         if (RoundedMeters > GoalDepth && !worldgen.loadingObject.activeSelf) // fixes a bug with the order the game loads new layers internally
         {
-            CheckHandler.Enqueue(GoalCheckID); // goal location
+            APClientClass.ChecksToSendQueue.Enqueue(GoalCheckName); // goal location
             DisplayText.text = "You have reached your goal!";
             DisplayText.autoSizeTextContainer = true;
             Client.Goal();
@@ -71,14 +69,13 @@ public class DepthChecks : MonoBehaviour
         }
         if (RoundedMeters % 100 == 0)
         {
-            CheckID = RoundedMeters / 100;
-            CheckID = -966812869 + CheckID - 1; // don't ask me why the check id is a random negative number, best guess is an integer over/underflow
-            if (AlreadySentChecks.Contains(CheckID)) // whatever, just adds to the jank of this implimentation. for the immersion, for the love of the game!
+            CheckName = "Depth Milestone - " + RoundedMeters + "m";
+            if (AlreadySentChecks.Contains(CheckName))
             {
                 return; // Avoid spamming the server by not even attempting to send a check we already have sent.
             }
-            CheckHandler.Enqueue(CheckID);
-            AlreadySentChecks.Add(CheckID);
+            APClientClass.ChecksToSendQueue.Enqueue(CheckName);
+            AlreadySentChecks.Add(CheckName);
         }
     }
     IEnumerator CheckForDepthExtenders()

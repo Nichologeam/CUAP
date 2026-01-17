@@ -1,6 +1,6 @@
 ﻿using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Packets;
-using CreepyUtil.Archipelago;
+using CreepyUtil.Archipelago.ApClient;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -35,13 +35,13 @@ public class CommandPatch : MonoBehaviour
             Client.OnHintPrintJsonPacketReceived += PrintHintJSON;
         }
     }
-    private void PrintPlainJSON(object sender, PrintJsonPacket message)
+    private void PrintPlainJSON(PrintJsonPacket message)
     {
         if (LastGotMessage == message.Data[0].Text) { return; } // avoids spam
         Console.LogToConsole(message.Data[0].Text);
         LastGotMessage = message.Data[0].Text;
     }
-    private void PrintItemJSON(object sender, PrintJsonPacket message)
+    private void PrintItemJSON(PrintJsonPacket message)
     {
         var combinedText = message.Data;
         if (LastGotItemMessage == combinedText) return;
@@ -77,7 +77,7 @@ public class CommandPatch : MonoBehaviour
         // message.Data[4]/[6] is the finder's location ID
         // message.Data[5]/[7] is ")"
     }
-    private void PrintHintJSON(object sender, HintPrintJsonPacket message)
+    private void PrintHintJSON(HintPrintJsonPacket message)
     {
         var combinedText = message;
         if (LastGotHintMessage == combinedText || message.Found == true) return; // don't show found hints (less clutter)
@@ -105,7 +105,7 @@ public class CommandPatch : MonoBehaviour
             }
             if (APCanvas.DeathlinkEnabled)
             {
-                APClientClass.Client.Session.Socket.SendPacket(new ConnectUpdatePacket()
+                APClientClass.session.Socket.SendPacket(new ConnectUpdatePacket()
                 {
                     Tags = []
                 });
@@ -123,7 +123,7 @@ public class CommandPatch : MonoBehaviour
             }
             else
             {
-                APClientClass.Client.Session.Socket.SendPacket(new ConnectUpdatePacket()
+                APClientClass.session.Socket.SendPacket(new ConnectUpdatePacket()
                 {
                     Tags = ["DeathLink"]
                 });
