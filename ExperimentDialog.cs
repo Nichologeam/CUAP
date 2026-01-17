@@ -57,25 +57,7 @@ public class ExperimentDialog : MonoBehaviour
             {2,"You want me to go further " + item.Player + "? Aw..."},
             {3,"The end is in sight " + item.Player + "!"},
         };
-        try
-        {
-            Body body = GameObject.Find("Experiment/Body").GetComponent<Body>();
-            PlayerTalker = body.GetComponent<Talker>();
-            if (body.gameObject.GetComponent<MindwipeScript>() || // Are we Mindwiped?
-                !body.conscious || // Unconsious, Sleeping, or dying?
-                PlayerTalker.impairedSpeech || // Speech Impaired?
-                PlayerTalker.brainDamaged || // Brain Damaged?
-                body.inWater) // Underwater?
-            {
-                GameObject.Find("Experiment/Body").GetComponent<ExperimentDialog>().BackupTextbox(item); // Then don't bother having Experiment speak
-                return;
-            }
-        }
-        catch
-        {
-            GameObject.Find("Experiment/Body").GetComponent<ExperimentDialog>().BackupTextbox(item); // One of those calls failed? Assume Experiment can't talk
-            return;
-        }
+        GameObject.Find("Experiment/Body").GetComponent<ExperimentDialog>().BackupTextbox(item);
         if (item.ItemName.EndsWith("Extender") || item.ItemName == "Progressive Layer")
         {
             PlayerTalker.Talk(ExtenderItemDialog[UnityEngine.Random.Range(0, ExtenderItemDialog.Count + 1)], null, true, false);
