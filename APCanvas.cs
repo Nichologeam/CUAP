@@ -173,7 +173,7 @@ public class APCanvas : MonoBehaviour
             var ErrorText = GameObject.Find("APCanvas(Clone)/Canvas/Error Notification/Notification Message").GetComponent<TMP_Text>();
             ErrorText.text = text;
             ErrorNotif.SetActive(true);
-            yield return new WaitForSecondsRealtime(5);
+            yield return new WaitForSecondsRealtime(10);
             ErrorNotif.SetActive(false);
         }
     }
