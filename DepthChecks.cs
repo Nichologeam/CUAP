@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using System.Collections.Concurrent;
 using Newtonsoft.Json.Linq;
 using System.Collections;
 
@@ -17,7 +16,7 @@ public class DepthChecks : MonoBehaviour
     private int GoalDepth;
     private string GoalCheckName;
     private TextMeshProUGUI DisplayText;
-    private List<string> AlreadySentChecks = new List<string>();
+    public List<string> AlreadySentChecks = new List<string>();
 
     private void OnEnable()
     {

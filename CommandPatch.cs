@@ -277,6 +277,19 @@ public class CommandPatch : MonoBehaviour
         {
             new ValueTuple<string, string>("screenshot", "Whether to capture a screenshot to the CUAP folder.")
         }));
+        ConsoleScript.Commands.Add(new Command("apresetantispam", "Clears CUAP's copies of sent locations. Use this to resend broken checks.", delegate (string[] args)
+        {
+            if (APCanvas.InGame)
+            {
+                GameObject.Find("World").GetComponent<DepthChecks>().AlreadySentChecks.Clear();
+                // SkillChecks.alreadySentChecks.Clear();
+                try { GameObject.Find("Main Camera/Canvas/Moodles").GetComponent<Moodlesanity>().AlreadySentChecks.Clear(); }
+                catch { }
+                try { CraftingChecks.AlreadySentChecks.Clear(); }
+                catch { }
+            }
+            Console.LogToConsole("CUAP: Data cleared.");
+        }, null, Array.Empty<ValueTuple<string, string>>()));
     }
     public static IEnumerator CaptureScreenshot()
     {   // this is incredibly dumb, but it works

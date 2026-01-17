@@ -34,3 +34,4 @@ The in-game debug console now has various new Archipelago related commands. You 
 - apcheat: Alias for `apchat !getitem`
 - apalias [name]: Alias for `apchat !alias`
 - apreportbug: Opens a bug report in this GitHub repository. Optionally takes a screenshot as well.
+- apresetantispam: Clears local records of sent checks, allowing them to be sent again. Use this if a certain location isn't sending.

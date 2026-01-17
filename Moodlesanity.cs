@@ -10,7 +10,7 @@ public class Moodlesanity : MonoBehaviour
 {
     public static ApClient Client;
     private MoodleManager Moodles;
-    private List<string> AlreadySentChecks = new List<string>();
+    public List<string> AlreadySentChecks = new List<string>();
     private WorldGeneration worldgen;
     private static Dictionary<string, string> MoodleNametoCheckName = new Dictionary<string, string>()
     {   // In the same order as in locations.py and the game's EN.json
