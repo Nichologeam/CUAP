@@ -339,7 +339,7 @@ public class APClientClass
         NextSend = 3;
         try
         {
-            Client?.SendLocations(ChecksToSend.Select(n => n.ToString()).ToArray());
+            Client?.SendLocations(ChecksToSend.ToArray());
             ChecksToSend.Clear();
         }
         catch (Exception ex)
