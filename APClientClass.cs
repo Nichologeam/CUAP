@@ -345,6 +345,7 @@ public class APClientClass
         catch (Exception ex)
         {
             GameObject.Find("APCanvas(Clone)").GetComponent<APCanvas>().DisplayArchipelagoNotificationHelper("SendChecks failed! " + ex.ToString(),3);
+            Startup.Logger.LogError("SendChecks failed! " + ex.ToString());
             Disconnect();
         }
     }

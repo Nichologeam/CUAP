@@ -76,12 +76,14 @@ public class APCanvas : MonoBehaviour
         if (!int.TryParse(ipPortSplit[1], out var port))
         {
             StartCoroutine(DisplayArchipelagoNotification($"[{ipPortSplit[1]}] is not a valid port",3));
+            Startup.Logger.LogError($"[{ipPortSplit[1]}] is not a valid port");
             return;
         }
         var error = TryConnect(port, Slot.text, ipPortSplit[0], Password.text);
         if (error is not null)
         {
             StartCoroutine(DisplayArchipelagoNotification("Connection error: " + string.Join("\n", error), 3));
+            Startup.Logger.LogError("Connection error: " + string.Join("\n", error));
             return;
         }
         File.WriteAllText("ApConnection.txt", $"{Ipporttext.text}\n{Password.text}\n{Slot.text}");

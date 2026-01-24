@@ -62,6 +62,7 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
         if (senderName == "" || senderName is null) // should never happen, realistically.
         {
             StartCoroutine(APCanvas.DisplayArchipelagoNotification("Received a DeathLink packet with no sender. Ignoring.", 3));
+            Startup.Logger.LogWarning("Received a DeathLink packet with no sender. Ignoring.");
             return;
         }
         DeathlinkCooldown = 15;
