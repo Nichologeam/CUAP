@@ -147,11 +147,17 @@ public class APCanvas : MonoBehaviour
         // items are lowest severity (1), hints are higher (2), and errors are highest (3).
         if (!ShowGUI)
         {
-            yield return 0; // wait until the GUI is allowed
+            yield return 0; // wait until the GUI is active
+        }
+        var ItemNotif = GameObject.Find("APCanvas(Clone)/Canvas/Item Notification");
+        var HintNotif = GameObject.Find("APCanvas(Clone)/Canvas/Hint Notification");
+        var ErrorNotif = GameObject.Find("APCanvas(Clone)/Canvas/Error Notification");
+        if (ItemNotif.activeSelf || HintNotif.activeSelf || ErrorNotif.activeSelf)
+        {
+            yield return 0; // a message is already being displayed. wait for it to finish
         }
         if (severity == 1)
         {
-            var ItemNotif = GameObject.Find("APCanvas(Clone)/Canvas/Item Notification");
             var ItemText = GameObject.Find("APCanvas(Clone)/Canvas/Item Notification/Notification Message").GetComponent<TMP_Text>();
             ItemText.text = text;
             ItemNotif.SetActive(true);
@@ -161,7 +167,6 @@ public class APCanvas : MonoBehaviour
         }
         else if (severity == 2)
         {
-            var HintNotif = GameObject.Find("APCanvas(Clone)/Canvas/Hint Notification");
             var HintText = GameObject.Find("APCanvas(Clone)/Canvas/Hint Notification/Notification Message").GetComponent<TMP_Text>();
             HintText.text = text;
             HintNotif.SetActive(true);
@@ -171,7 +176,6 @@ public class APCanvas : MonoBehaviour
         }
         else if (severity == 3)
         {
-            var ErrorNotif = GameObject.Find("APCanvas(Clone)/Canvas/Error Notification");
             var ErrorText = GameObject.Find("APCanvas(Clone)/Canvas/Error Notification/Notification Message").GetComponent<TMP_Text>();
             ErrorText.text = text;
             ErrorNotif.SetActive(true);
