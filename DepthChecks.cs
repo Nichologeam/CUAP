@@ -30,22 +30,22 @@ public class DepthChecks : MonoBehaviour
             {
                 GoalDepth = (int)goaldepthoption;
                 GoalCheckName = "Depth Milestone - " + GoalDepth + "m";
-                Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is " + GoalDepth + "m");
+                Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: Reach " + GoalDepth + "m");
             }
             else if (APClientClass.selectedGoal == 2)
             {
                 GoalCheckName = "Depth Milestone - 1500m";
-                Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is Escape Overgrown Depths");
+                Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: Escape Overgrown Depths");
                 GoalDepth = 1534;
             }
             else if (APClientClass.selectedGoal == 3)
             {
-                Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is Defeat Elder Thornback");
+                Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: Defeat Elder Thornback");
                 GoalDepth = 999999; // not needed for this goal
             }
             else if (APClientClass.selectedGoal == 4)
             {
-                Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is Craftsanity");
+                Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: Craftsanity");
                 GoalDepth = 999999; // not needed for this goal
             }
         }
@@ -61,7 +61,7 @@ public class DepthChecks : MonoBehaviour
         if (RoundedMeters > GoalDepth && !worldgen.loadingObject.activeSelf) // fixes a bug with the order the game loads new layers internally
         {
             APClientClass.ChecksToSendQueue.Enqueue(GoalCheckName); // goal location
-            DisplayText.text = "You have reached your goal!";
+            DisplayText.text = "You have goaled! Congradulations!";
             DisplayText.autoSizeTextContainer = true;
             Client.Goal();
             Destroy(this); // no need for this script after the player goals, it would just spam goal every frame.
