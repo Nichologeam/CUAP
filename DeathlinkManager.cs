@@ -70,6 +70,10 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
         {
             DeathLinkText.text = senderName + " died.";
         }
+        else
+        {
+            DeathLinkText.text = deathCause;
+        }
         if (DeathlinkSeverity)
         {
             DeathLinkText.text = DeathLinkText.text + " Your run has ended.";
