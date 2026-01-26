@@ -28,6 +28,9 @@ public class APClientClass
     public static List<string> RecipeUnlockDictionary = new List<string>();
     public static Dictionary<int, Dictionary<long, string>> playerItemIdToName = new Dictionary<int, Dictionary<long, string>>();
     public static Dictionary<int, Dictionary<long, string>> playerLocIdToName = new Dictionary<int, Dictionary<long, string>>();
+    public static int MaxSTR;
+    public static int MaxRES;
+    public static int MaxINT;
     private static double NextSend = 4;
     public static int DepthExtendersRecieved = 0;
     private static bool datapackageprocessed = false;
@@ -172,17 +175,17 @@ public class APClientClass
                     string Skill = item.ItemName.Substring(12);
                     if (Skill == "STR")
                     {
-                        SkillChecks.apMaxStr++;
+                        MaxSTR++;
                         SkillChecks.playerSkills.UpdateExpBoundaries();
                     }
                     else if(Skill == "RES")
                     {
-                        SkillChecks.apMaxRes++;
+                        MaxRES++;
                         SkillChecks.playerSkills.UpdateExpBoundaries();
                     }
                     else if(Skill == "INT")
                     {
-                        SkillChecks.apMaxInt++;
+                        MaxINT++;
                         SkillChecks.playerSkills.UpdateExpBoundaries();
                     }
                 }

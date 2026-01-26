@@ -11,9 +11,6 @@ public class SkillChecks : MonoBehaviour
     public static ApClient Client;
     public static Skills playerSkills;
     private WorldGeneration worldgen;
-    public static int apMaxStr;
-    public static int apMaxRes;
-    public static int apMaxInt;
     // int sendStr = 60;
     // int sendRes = 60;
     // int sendInt = 60;
@@ -61,13 +58,13 @@ public class SkillChecks : MonoBehaviour
             StartCoroutine(ResetSkills());
             return;
         }
-        playerSkills.STR = apMaxStr;
-        playerSkills.expSTR = Skills.GetExperienceForLevel(apMaxStr - 1);
-        playerSkills.RES = apMaxRes;
-        playerSkills.expRES = Skills.GetExperienceForLevel(apMaxRes - 1);
+        playerSkills.STR = APClientClass.MaxSTR;
+        playerSkills.expSTR = Skills.GetExperienceForLevel(APClientClass.MaxSTR - 1);
+        playerSkills.RES = APClientClass.MaxRES;
+        playerSkills.expRES = Skills.GetExperienceForLevel(APClientClass.MaxRES - 1);
         if (TrapHandler.mindwipeActive) return;
-        playerSkills.INT = apMaxInt;
-        playerSkills.expINT = Skills.GetExperienceForLevel(apMaxInt - 1);
+        playerSkills.INT = APClientClass.MaxINT;
+        playerSkills.expINT = Skills.GetExperienceForLevel(APClientClass.MaxINT - 1);
         /* if (playerSkills.expSTR >= sendStr) // check if we reached a basegame level
         {
             sendStr = Skills.GetExperienceForLevel(playerSkills.STR + 1); // simulate level up without increasing stats
@@ -120,9 +117,9 @@ public class SkillChecks : MonoBehaviour
         // sendStr = 60;
         // sendRes = 60;
         // sendInt = 60;
-        playerSkills.STR = apMaxStr;
-        playerSkills.RES = apMaxRes;
-        playerSkills.INT = apMaxInt;
+        playerSkills.STR = APClientClass.MaxSTR;
+        playerSkills.RES = APClientClass.MaxRES;
+        playerSkills.INT = APClientClass.MaxINT;
         playerSkills.UpdateExpBoundaries();
         // playerSkills.maxSTR = sendStr;
         // playerSkills.maxRES = sendRes;
