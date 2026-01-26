@@ -61,7 +61,7 @@ public class DepthChecks : MonoBehaviour
         if (RoundedMeters > GoalDepth && !worldgen.loadingObject.activeSelf) // fixes a bug with the order the game loads new layers internally
         {
             APClientClass.ChecksToSendQueue.Enqueue(GoalCheckName); // goal location
-            DisplayText.text = "You have goaled! Congradulations!";
+            DisplayText.text = "You have goaled! Congratulations!";
             DisplayText.autoSizeTextContainer = true;
             Client.Goal();
             Destroy(this); // no need for this script after the player goals, it would just spam goal every frame.
