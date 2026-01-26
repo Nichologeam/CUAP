@@ -105,10 +105,7 @@ public class CommandPatch : MonoBehaviour
             }
             if (APCanvas.DeathlinkEnabled)
             {
-                APClientClass.session.Socket.SendPacket(new ConnectUpdatePacket()
-                {
-                    Tags = []
-                });
+                APClientClass.Client.Tags.SetTags();
                 APCanvas.DeathlinkEnabled = false;
                 try
                 {
@@ -123,10 +120,7 @@ public class CommandPatch : MonoBehaviour
             }
             else
             {
-                APClientClass.session.Socket.SendPacket(new ConnectUpdatePacket()
-                {
-                    Tags = ["DeathLink"]
-                });
+                APClientClass.Client.Tags.SetTags(CreepyUtil.Archipelago.ArchipelagoTag.DeathLink);
                 APCanvas.DeathlinkEnabled = true;
                 try
                 {
