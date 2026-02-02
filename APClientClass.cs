@@ -1,33 +1,29 @@
 #nullable enable
 using Archipelago.MultiClient.Net;
+using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Packets;
-using CreepyUtil.Archipelago;
-using CreepyUtil.Archipelago.ApClient;
-using HarmonyLib;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using UnityEngine;
 using UnityEngine.UIElements.Collections;
-using static Archipelago.MultiClient.Net.Enums.ItemsHandlingFlags;
+using BepInEx;
+using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 
 namespace CUAP;
 
 // heavily modified version of https://github.com/SWCreeperKing/PowerwashSimAP/blob/master/src/ApDirtClient.cs
 public class APClientClass
 {
-    private static List<string> ChecksToSend = [];
-    public static ConcurrentQueue<string> ChecksToSendQueue = [];
-    public static ApClient? Client;
+    public static List<long> ChecksToSend = [];
     public static List<string> LayerUnlockDictionary = new List<string>();
     public static List<string> RecipeUnlockDictionary = new List<string>();
     public static Dictionary<int, Dictionary<long, string>> playerItemIdToName = new Dictionary<int, Dictionary<long, string>>();
     public static Dictionary<int, Dictionary<long, string>> playerLocIdToName = new Dictionary<int, Dictionary<long, string>>();
+    public static Dictionary<string, object> slotdata = [];
     public static int MaxSTR;
     public static int MaxRES;
     public static int MaxINT;
@@ -35,24 +31,31 @@ public class APClientClass
     public static int DepthExtendersRecieved = 0;
     private static bool datapackageprocessed = false;
     public static int selectedGoal;
-    static readonly FieldInfo SessionField = AccessTools.Field(typeof(ApClient), "Session"); // this got privated during a client update
     public static ArchipelagoSession? session;
+    public static DeathLinkService? dlService;
 
-    public static string[]? TryConnect(int port, string slot, string address, string password)
+    public static string[]? TryConnect(string address, string slot, string? password)
     {
         try
         {
-            Client = new ApClient();
-            Startup.Logger.LogMessage($"Attempting to connect to [{address}]:[{port}], with password: [{password}], on slot: [{slot}]");
-            var connectError = Client.TryConnect(new LoginInfo(port, slot, address, password),
-                "Casualties: Unknown", AllItems, (new Version(0, 6, 5)), requestSlotData: true);
-            if (connectError is not null && connectError.Length > 0)
+            Startup.Logger.LogMessage($"Attempting to connect to [{address}], with password: [{password}], on slot: [{slot}]");
+            if (password.IsNullOrWhiteSpace())
+            {
+                password = null;
+            }
+            session = ArchipelagoSessionFactory.CreateSession(address);
+            session!.Items.ItemReceived += (item) => ThreadingHelper.Instance.StartSyncInvoke(() => ProcessItem(item)); // this has to be run on main thread or unity will hard crash
+            var loginResult = session.TryConnectAndLogin("Casualties: Unknown", slot, ItemsHandlingFlags.AllItems, (new Version(0, 6, 5)), password: password, requestSlotData: true);
+            
+            if (loginResult is LoginFailure failure)
             {
                 Disconnect();
-                return connectError;
+                return failure.Errors;
             }
-
-            HasConnected();
+            else if (loginResult is LoginSuccessful)
+            {
+                HasConnected();
+            }
         }
         catch (Exception e)
         {
@@ -65,32 +68,154 @@ public class APClientClass
 
     public static void Disconnect()
     {
-        Client?.TryDisconnect();
-        Client = null;
+        session?.Socket.DisconnectAsync();
+        session = null;
     }
 
     public static void HasConnected()
     {
-        var slotdata = Client?.SlotData!;
+        slotdata = session!.DataStorage.GetSlotData(session.Players.ActivePlayer.Slot);
         Startup.Logger.LogMessage("Connnected to Archipelago!");
-        session = (ArchipelagoSession)SessionField.GetValue(Client);
+        dlService = session.CreateDeathLinkService();
         session.Socket.SendPacket(new GetFullDataPackagePacket());
-        if (slotdata != null && Client != null)
+        GameObject.Find("Console(Clone)").GetComponent<CommandPatch>().Subscribe();
+        if (slotdata != null && session != null)
         {
-            var options = Client.SlotData["options"] as JObject;
-            if (options != null)
+            if (slotdata.TryGetValue("Goal", out var goal))
             {
-                if (options.TryGetValue("Goal", out var goal))
+                selectedGoal = Convert.ToInt32(goal);
+            }
+        }
+    }
+
+    private static void ProcessItem(ReceivedItemsHelper helper)
+    {
+        try
+        {
+            var item = helper.DequeueItem();
+            if (item is null)
+            {
+                Startup.Logger.LogWarning("ProcessItem called without any items in the queue!");
+                return;
+            }
+            Startup.Logger.LogMessage("Received " + item.ItemName);
+            if ((bool)(item!.ItemName.EndsWith(" Unlock"))) // <layername> Unlock item. Add it to the list of unlocked layers.
+            {
+                LayerUnlockDictionary.Add(item.ItemName);
+            }
+            if (item.ItemName == ("Progressive Layer"))
+            {
+                DepthExtendersRecieved++; // reusing this since it would be unused in Overgrown Depths goal
+            }
+            if ((bool)(item!.ItemName.EndsWith(" Trap")) || item!.ItemName == "Fellow Experiment") // Trap item. Send off to the TrapHandler to deal with.
+            {
+                try
                 {
-                    selectedGoal = Convert.ToInt32(goal);
+                    TrapHandler Traps = GameObject.Find("Experiment/Body").GetComponent<TrapHandler>();
+                    Traps.ProcessTraps(item.ItemName, item.Player.Name);
+                }
+                catch
+                {
+                    return; // we're on the main menu
                 }
             }
+            if ((bool)(item!.ItemName.EndsWith(" Recipe"))) // Recipe item. Add it to the list of unlocked recipes.
+            {
+                RecipeUnlockDictionary.Add(item.ItemName);
+                try
+                {
+                    if (CraftingChecks.freesamples)
+                    {
+                        UnityEngine.Object.Instantiate(Resources.Load<GameObject>(CraftingChecks.CheckNameToItem.Get(item.ItemName)),
+                        GameObject.Find("Experiment/Body").transform.position, Quaternion.identity);
+                    }
+                }
+                catch
+                {
+                    return; // we're on the main menu
+                }
+            }
+            if (item.ItemName == "Depth Extender")
+            {
+                DepthExtendersRecieved++;
+            }
+            if (item.ItemName.StartsWith("Progressive ") && item.ItemName != "Progressive Layer")
+            {
+                string Skill = item.ItemName.Substring(12);
+                if (Skill == "STR")
+                {
+                    MaxSTR++;
+                    if (!APCanvas.InGame) // we're on the main menu
+                    {
+                        return;
+                    }
+                    SkillChecks.playerSkills.UpdateExpBoundaries();
+                }
+                else if (Skill == "RES")
+                {
+                    MaxRES++;
+                    if (!APCanvas.InGame) // we're on the main menu
+                    {
+                        return;
+                    }
+                    SkillChecks.playerSkills.UpdateExpBoundaries();
+                }
+                else if (Skill == "INT")
+                {
+                    MaxINT++;
+                    if (!APCanvas.InGame) // we're on the main menu
+                    {
+                        return;
+                    }
+                    SkillChecks.playerSkills.UpdateExpBoundaries();
+                }
+            }
+            if (item.ItemName == "Hope")
+            {
+                try
+                {
+                    var plr = GameObject.Find("Experiment/Body");
+                    plr.GetComponent<Body>().happiness += 3;
+                    Sound.Play("moodup", plr.transform.position, true);
+                }
+                catch
+                {
+                    return;
+                }
+            }
+            if (item.ItemName == "Despair")
+            {
+                try
+                {
+                    var plr = GameObject.Find("Experiment/Body");
+                    plr.GetComponent<Body>().happiness -= 1;
+                    Sound.Play("mooddown", plr.transform.position, true);
+                }
+                catch
+                {
+                    return;
+                }
+            }
+            try
+            {
+                ExperimentDialog.ProcessDialog(item);
+            }
+            catch
+            {
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
+            Startup.Logger.LogError("ProcessItem Error: " + ex.Message + ex.StackTrace);
+            APCanvas.EnqueueArchipelagoNotification("ProcessItem Error: " + ex.Message + ex.StackTrace,3);
+            return;
         }
     }
 
     public static bool IsConnected()
     {
-        return Client is not null && Client.IsConnected;
+        return session is not null && session.Socket.Connected;
     }
 
     public static void Update()
@@ -115,129 +240,13 @@ public class APClientClass
             APCanvas.ShowGUI = true; // default true
         }
         APCanvas.UpdateGUIDescriptions();
-        if (Client is null) return;
-        Client.UpdateConnection();
-        if (session?.Socket is null || !Client.IsConnected) return;
+        if (session is null) return;
+        if (session?.Socket is null || !session.Socket.Connected) return;
         session.Socket.PacketReceived += Socket_PacketReceived;
         NextSend -= Time.deltaTime;
         if (ChecksToSend.Any() && NextSend <= 0)
         {
             SendChecks();
-        }
-
-        var rawNewItems = Client.GetOutstandingItems().ToArray();
-        if (rawNewItems.Any())
-        {
-            foreach (var item in rawNewItems)
-            {
-                if ((bool)(item!.ItemName.EndsWith(" Unlock"))) // <layername> Unlock item. Add it to the list of unlocked layers.
-                {
-                    LayerUnlockDictionary.Add(item.ItemName);
-                }
-                if (item.ItemName == ("Progressive Layer"))
-                {
-                    DepthExtendersRecieved++; // reusing this since it would be unused in Overgrown Depths goal
-                }
-                if ((bool)(item!.ItemName.EndsWith(" Trap")) || item!.ItemName == "Fellow Experiment") // Trap item. Send off to the TrapHandler to deal with.
-                {
-                    try
-                    {
-                        TrapHandler Traps = GameObject.Find("Experiment/Body").GetComponent<TrapHandler>();
-                        Traps.ProcessTraps(item.ItemName, item.Player.Name);
-                    }
-                    catch
-                    {
-                        continue;
-                    }
-                }
-                if ((bool)(item!.ItemName.EndsWith(" Recipe"))) // Recipe item. Add it to the list of unlocked recipes.
-                {
-                    RecipeUnlockDictionary.Add(item.ItemName);
-                    try
-                    {
-                        if (CraftingChecks.freesamples)
-                        {
-                            UnityEngine.Object.Instantiate(Resources.Load<GameObject>(CraftingChecks.CheckNameToItem.Get(item.ItemName)),
-                            GameObject.Find("Experiment/Body").transform.position, Quaternion.identity);
-                        }
-                    }
-                    catch
-                    {
-                        continue; // we're on the main menu
-                    }
-                }
-                if (item.ItemName == "Depth Extender")
-                {
-                    DepthExtendersRecieved++;
-                }
-                if (item.ItemName.StartsWith("Progressive ") && item.ItemName != "Progressive Layer")
-                {
-                    string Skill = item.ItemName.Substring(12);
-                    if (Skill == "STR")
-                    {
-                        MaxSTR++;
-                        SkillChecks.playerSkills.UpdateExpBoundaries();
-                    }
-                    else if(Skill == "RES")
-                    {
-                        MaxRES++;
-                        SkillChecks.playerSkills.UpdateExpBoundaries();
-                    }
-                    else if(Skill == "INT")
-                    {
-                        MaxINT++;
-                        SkillChecks.playerSkills.UpdateExpBoundaries();
-                    }
-                }
-                if (item.ItemName == "Hope")
-                {
-                    try
-                    {
-                        var plr = GameObject.Find("Experiment/Body");
-                        plr.GetComponent<Body>().happiness += 3;
-                        Sound.Play("moodup", plr.transform.position, true);
-                    }
-                    catch
-                    {
-                        continue;
-                    }
-                }
-                if (item.ItemName == "Despair")
-                {
-                    try
-                    {
-                        var plr = GameObject.Find("Experiment/Body");
-                        plr.GetComponent<Body>().happiness -= 1;
-                        Sound.Play("mooddown", plr.transform.position, true);
-                    }
-                    catch
-                    {
-                        continue;
-                    }
-                }
-                try
-                {
-                    if ((bool)(item!.ItemName.EndsWith(" Trap")) || item!.ItemName == "Fellow Experiment")
-                    {
-                        continue;
-                    }
-                    ExperimentDialog.ProcessDialog(item);
-                }
-                catch
-                {
-                    continue;
-                }
-            }
-            var newItems = rawNewItems
-                          .Where(item => item?.Flags != 0)
-                          .Select(item => item?.ItemName!)
-                          .ToArray();
-        }
-
-        while (!ChecksToSendQueue.IsEmpty)
-        {
-            ChecksToSendQueue.TryDequeue(out var location);
-            ChecksToSend.Add(location);
         }
     }
 
@@ -246,14 +255,15 @@ public class APClientClass
         if (packet is LocationInfoPacket)
         {
             var items = packet.ToJObject()["locations"]?.ToObject<List<NetworkItem>>();
-            if (items != null && Client != null)
+            if (items != null && session != null)
             {
                 foreach (var item in items)
                 {
                     playerItemIdToName.TryGetValue(item.Player, out Dictionary<long, string> blueprintitemidtoname);
                     blueprintitemidtoname.TryGetValue(item.Item, out string itemname);
                     CraftingChecks.BlueprintToItemName.Add(item.Location - 22318500, itemname);
-                    CraftingChecks.BlueprintToPlayerName.Add(item.Location - 22318500, Client.PlayerNames != null && item.Player >= 0 ? Client.PlayerNames[item.Player] : $"Unknown Player (id:{item.Player})");
+                    CraftingChecks.BlueprintToPlayerName.Add(item.Location - 22318500, 
+                        session.Players != null && item.Player >= 0 ? session.Players.GetPlayerName(item.Player) : $"Unknown Player (id:{item.Player})");
                 }
             }
         }
@@ -267,8 +277,8 @@ public class APClientClass
                 if (data == null) {Startup.Logger.LogError("'data' is null!"); return;}
                 var gamelist = data["games"];
                 JObject? games = gamelist as JObject;
-                if (games == null || Client == null) {Startup.Logger.LogError("'Games' is null!"); return;}
-                var allPlayers = Client.AllPlayers.ToList();
+                if (games == null || session == null) {Startup.Logger.LogError("'Games' is null!"); return;}
+                var allPlayers = session.Players.AllPlayers;
                 foreach (var player in allPlayers)
                 {
                     Startup.Logger.LogMessage($"Processing {player.Name}");
@@ -317,7 +327,7 @@ public class APClientClass
             }
             catch (Exception ex)
             {
-                GameObject.Find("APCanvas(Clone)").GetComponent<APCanvas>().DisplayArchipelagoNotificationHelper("Datapackage Error: " + ex.ToString(), 3);
+                APCanvas.EnqueueArchipelagoNotification("Datapackage Error: " + ex.ToString(),3);
                 Startup.Logger.LogError("Datapackage Error: " + ex.ToString());
             }
         }
@@ -327,7 +337,7 @@ public class APClientClass
             if (data == null) { Startup.Logger.LogError("'data' is null!"); return; }
             var keylist = data["keys"];
             JObject? keys = keylist as JObject;
-            if (keys == null || Client == null) { Startup.Logger.LogError("'keys' is null!"); return; }
+            if (keys == null || session == null) { Startup.Logger.LogError("'keys' is null!"); return; }
             var token = keys["crafted_blueprints"];
             if (token != null && token.Type != JTokenType.Null)
             {
@@ -337,17 +347,17 @@ public class APClientClass
         }
     }
 
-    private static void SendChecks()
+    private static async void SendChecks()
     {
         NextSend = 3;
         try
         {
-            Client?.SendLocations(ChecksToSend.ToArray());
+            await session!.Locations.CompleteLocationChecksAsync(ChecksToSend.ToArray());
             ChecksToSend.Clear();
         }
         catch (Exception ex)
         {
-            GameObject.Find("APCanvas(Clone)").GetComponent<APCanvas>().DisplayArchipelagoNotificationHelper("SendChecks failed! " + ex.ToString(),3);
+            APCanvas.EnqueueArchipelagoNotification("SendChecks failed! " + ex.ToString(),3);
             Startup.Logger.LogError("SendChecks failed! " + ex.ToString());
             Disconnect();
         }

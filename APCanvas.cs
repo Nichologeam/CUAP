@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEngine;
@@ -9,6 +10,7 @@ namespace CUAP;
 
 public class APCanvas : MonoBehaviour
 {
+    public static APCanvas instance;
     public static bool ShowGUI = true;
     public GameObject ConnectionBackground;
     public GameObject ConnectedBackground;
@@ -16,9 +18,20 @@ public class APCanvas : MonoBehaviour
     public TMP_InputField Password;
     public TMP_InputField Slot;
     public Button ConnectButton;
+    private static GameObject ItemNotif;
+    private static TMP_Text ItemText;
+    private static bool ItemProcessing;
+    private static GameObject HintNotif;
+    private static TMP_Text HintText;
+    private static bool HintProcessing;
+    private static GameObject ErrorNotif;
+    private static TMP_Text ErrorText;
+    private static bool ErrorProcessing;
+    private static Queue<string> ItemQueue = new Queue<string>();
+    private static Queue<string> HintQueue = new Queue<string>();
+    private static Queue<string> ErrorQueue = new Queue<string>();
     public static bool DeathlinkEnabled = false;
     public static TMP_Text Status;
-    public static bool DisplayingMessage;
     public static bool InGame
     {
         get
@@ -30,6 +43,7 @@ public class APCanvas : MonoBehaviour
 
     private void Start()
     {
+        instance = this;
         ConnectionBackground = GameObject.Find("APCanvas(Clone)/Canvas/Connection Background"); // containing object for the connection ui
         ConnectedBackground = GameObject.Find("APCanvas(Clone)/Canvas/Connected Background"); // containing object for the connected ui
         Ipporttext = GameObject.Find("APCanvas(Clone)/Canvas/Connection Background/IPandPort").GetComponent<TMP_InputField>(); // address and port input
@@ -38,6 +52,12 @@ public class APCanvas : MonoBehaviour
         ConnectButton = GameObject.Find("APCanvas(Clone)/Canvas/Connection Background/Connect").GetComponent<Button>(); // connect to archipelago button
         Status = GameObject.Find("APCanvas(Clone)/Canvas/Connected Background/Status").GetComponent<TMP_Text>(); // goal status tracker
         ConnectButton.onClick.AddListener(OnConnectPressed); // run connect function when button is pressed
+        ItemNotif = GameObject.Find("APCanvas(Clone)/Canvas/Item Notification");
+        ItemText = GameObject.Find("APCanvas(Clone)/Canvas/Item Notification/Notification Message").GetComponent<TMP_Text>();
+        HintNotif = GameObject.Find("APCanvas(Clone)/Canvas/Hint Notification");
+        HintText = GameObject.Find("APCanvas(Clone)/Canvas/Hint Notification/Notification Message").GetComponent<TMP_Text>();
+        ErrorNotif = GameObject.Find("APCanvas(Clone)/Canvas/Error Notification");
+        ErrorText = GameObject.Find("APCanvas(Clone)/Canvas/Error Notification/Notification Message").GetComponent<TMP_Text>();
         if (!File.Exists("ApConnection.txt")) return; // Read saved slot information from file
         var fileText = File.ReadAllText("ApConnection.txt").Replace("\r", "").Split('\n');
         Ipporttext.text = fileText[0];
@@ -72,17 +92,22 @@ public class APCanvas : MonoBehaviour
 
     void OnConnectPressed()
     {
+        if (!Ipporttext.text.Contains(":") && !Ipporttext.text.Equals("localhost"))
+        {
+            EnqueueArchipelagoNotification($"No server port was given.",3);
+            Startup.Logger.LogError($"No server port was given.");
+        }
         var ipPortSplit = Ipporttext.text.Split(':');
         if (!int.TryParse(ipPortSplit[1], out var port))
         {
-            StartCoroutine(DisplayArchipelagoNotification($"[{ipPortSplit[1]}] is not a valid port",3));
+            EnqueueArchipelagoNotification($"[{ipPortSplit[1]}] is not a valid port.",3);
             Startup.Logger.LogError($"[{ipPortSplit[1]}] is not a valid port");
             return;
         }
-        var error = TryConnect(port, Slot.text, ipPortSplit[0], Password.text);
+        var error = TryConnect(Ipporttext.text, Slot.text, Password.text);
         if (error is not null)
         {
-            StartCoroutine(DisplayArchipelagoNotification("Connection error: " + string.Join("\n", error), 3));
+            EnqueueArchipelagoNotification("Connection error: " + string.Join("\n", error),3);
             Startup.Logger.LogError("Connection error: " + string.Join("\n", error));
             return;
         }
@@ -133,54 +158,73 @@ public class APCanvas : MonoBehaviour
                 Unlocked: <ru>
                 Crafted: <rc>
                 """;
-            Status.text = Status.text.Replace("<ru>", Recipes.recipes.Count + "/112");
-            Status.text = Status.text.Replace("<rc>", CraftingChecks.CraftedRecipes.ToString() + "/112");
+            Status.text = Status.text.Replace("<ru>", Recipes.recipes.Count + "/120");
+            Status.text = Status.text.Replace("<rc>", CraftingChecks.CraftedRecipes.ToString() + "/120");
         }
     }
-    public void DisplayArchipelagoNotificationHelper(string text, int severity) // for places StartCoroutine can't be called
+    public static void EnqueueArchipelagoNotification(string text, int severity)
     {
-        StartCoroutine(DisplayArchipelagoNotification(text, severity));
+        switch(severity)
+        {
+            case 1:
+                ItemQueue.Enqueue(text);
+                if (!ItemProcessing)
+                {
+                    ItemProcessing = true;
+                    instance.StartCoroutine(ProcessItemQueue());
+                }
+                break;
+            case 2:
+                HintQueue.Enqueue(text);
+                if (!HintProcessing)
+                {
+                    HintProcessing = true;
+                    instance.StartCoroutine(ProcessHintQueue());
+                }
+                break;
+            case 3:
+                ErrorQueue.Enqueue(text);
+                if (!ErrorProcessing)
+                {
+                    ErrorProcessing = true;
+                    instance.StartCoroutine(ProcessErrorQueue());
+                }
+                break;
+        }
     }
-    public static IEnumerator DisplayArchipelagoNotification(string text, int severity)
+    private static IEnumerator ProcessItemQueue()
     {
-        // display the given text in a popup. higher severity means more interruptive of gameplay.
-        // items are lowest severity (1), hints are higher (2), and errors are highest (3).
-        if (!ShowGUI)
+        while (ItemQueue.Count > 0)
         {
-            yield return 0; // wait until the GUI is active
-        }
-        var ItemNotif = GameObject.Find("APCanvas(Clone)/Canvas/Item Notification");
-        var HintNotif = GameObject.Find("APCanvas(Clone)/Canvas/Hint Notification");
-        var ErrorNotif = GameObject.Find("APCanvas(Clone)/Canvas/Error Notification");
-        if (ItemNotif.activeSelf || HintNotif.activeSelf || ErrorNotif.activeSelf)
-        {
-            yield return 0; // a message is already being displayed. wait for it to finish
-        }
-        if (severity == 1)
-        {
-            var ItemText = GameObject.Find("APCanvas(Clone)/Canvas/Item Notification/Notification Message").GetComponent<TMP_Text>();
-            ItemText.text = text;
+            ItemText.text = ItemQueue.Dequeue();
             ItemNotif.SetActive(true);
-            Sound.Play("warning", Vector2.zero, true, false, null, 1f, 1f, false, false);
-            yield return new WaitForSecondsRealtime(3);
+            Sound.Play("warning", Vector2.zero, true, false, null, 1.2f, 1f, false, false);
+            yield return new WaitForSeconds(3);
             ItemNotif.SetActive(false);
         }
-        else if (severity == 2)
+        ItemProcessing = false;
+    }
+    private static IEnumerator ProcessHintQueue()
+    {
+        while (HintQueue.Count > 0)
         {
-            var HintText = GameObject.Find("APCanvas(Clone)/Canvas/Hint Notification/Notification Message").GetComponent<TMP_Text>();
-            HintText.text = text;
+            HintText.text = HintQueue.Dequeue();
             HintNotif.SetActive(true);
             Sound.Play("shuttleNotice", Vector2.zero, true, false, null, 0.6f, 1f, false, false);
-            yield return new WaitForSecondsRealtime(5);
+            yield return new WaitForSeconds(5);
             HintNotif.SetActive(false);
         }
-        else if (severity == 3)
+        HintProcessing = false;
+    }
+    private static IEnumerator ProcessErrorQueue()
+    {
+        while (ErrorQueue.Count > 0)
         {
-            var ErrorText = GameObject.Find("APCanvas(Clone)/Canvas/Error Notification/Notification Message").GetComponent<TMP_Text>();
-            ErrorText.text = text;
+            ErrorText.text = ErrorQueue.Dequeue();
             ErrorNotif.SetActive(true);
-            yield return new WaitForSecondsRealtime(10);
+            yield return new WaitForSeconds(10);
             ErrorNotif.SetActive(false);
         }
+        ErrorProcessing = false;
     }
 }

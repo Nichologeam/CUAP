@@ -1,6 +1,6 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
-using CreepyUtil.Archipelago.ApClient;
+using Archipelago.MultiClient.Net;
 using System.IO;
 using TMPro;
 using UnityEngine;
@@ -9,11 +9,11 @@ using UnityEngine.UI;
 
 namespace CUAP;
 
-[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.5.5.0")]
+[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.6.0.1")]
 public class Startup : BaseUnityPlugin
 {
     public static new ManualLogSource Logger;
-    public static ApClient Client;
+    public static ArchipelagoSession Client;
     public static AssetBundle apassets;
     GameObject Handler;
     GameObject Console;
@@ -24,7 +24,7 @@ public class Startup : BaseUnityPlugin
     private void Awake()
     {
         Logger = base.Logger;
-        Logger.LogMessage($"Casualties: Unknown Archipelago Plugin v0.5.5 loaded!");
+        Logger.LogMessage($"Casualties: Unknown Archipelago Plugin v0.6.0-pre1 loaded!");
         Handler = new GameObject("Archipelago Handler");
         DontDestroyOnLoad(Handler);
         apassets = AssetBundle.LoadFromFile(Path.Combine(BepInEx.Paths.PluginPath, "CUAP", "apassets"));
@@ -40,8 +40,8 @@ public class Startup : BaseUnityPlugin
             try
             {
                 ScrollableText.ForceClose(); // skip intoductory story
-                Client = APClientClass.Client;
-                if (Client is null || !(Client?.IsConnected ?? false)) // we aren't connected. disable the start run buttons.
+                Client = APClientClass.session;
+                if (Client is null || !Client.Socket.Connected) // we aren't connected. disable the start run buttons.
                 {
                     GameObject.Find("Canvas/Button").GetComponent<Button>().interactable = false; // Start Run button
                     GameObject.Find("Canvas/Button (7)").GetComponent<Button>().interactable = false; // Continue button
@@ -62,18 +62,16 @@ public class Startup : BaseUnityPlugin
                 """
                 <alpha=#11><i>...of both Casualties: Unknown and CUAP.<alpha=#FF></i>
 
-
-                Bug reports on the Discord server would be appreciated.
-                <size=16><alpha=#11>Either the Orsoniks' Studio #art or AP After Dark #future-game-design threads.<alpha=#FF><size=20>
-
+                Bug reports on the Discord servers would be appreciated.
+                <size=16><alpha=#11>Either the Orsoniks' Studio #art or AP: After Dark #future-game-design threads.<alpha=#FF><size=20>
 
                 Keep a look-out for:<alpha=#55>
                 - Bugs with the crafting system
                 - Incorrectly sending checks
-                - Errors in the BepInEx console
+                - Errors, both onscreen and in the BepInEx console
                 - Nonfuctional .yaml settings
                 - Glitches
-                <size=16><alpha=#11>You can also directly create issues on the CUAP Github repository.
+                <size=16><alpha=#11>You can also directly create issues on the CUAP Github repository, or by using `apreportbug` in the debug console.
                 """;
             }
             catch
@@ -83,7 +81,7 @@ public class Startup : BaseUnityPlugin
         }
         else if (SceneManager.GetActiveScene().name == "SampleScene")
         {
-            if (Client is null || !(Client?.IsConnected ?? false))
+            if (Client is null || !Client.Socket.Connected)
             {
                 GameObject.Find("World").GetComponent<WorldGeneration>().SaveAndExit();
                 PlayerCamera.main.ToMainMenu();

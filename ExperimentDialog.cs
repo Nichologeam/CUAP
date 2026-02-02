@@ -1,4 +1,4 @@
-﻿using CreepyUtil.Archipelago.ApClient;
+﻿using Archipelago.MultiClient.Net;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,17 +6,17 @@ namespace CUAP;
 
 public class ExperimentDialog : MonoBehaviour
 {
-    public static ApClient Client;
+    public static ArchipelagoSession Client;
     private static Talker PlayerTalker;
 
     private void OnEnable()
     {
-        Client = APClientClass.Client;
+        Client = APClientClass.session;
         PlayerTalker = gameObject.GetComponent<Talker>();
         Startup.Logger.LogMessage("Dialogue patches applied!");
     }
     public static void ProcessDialog(Archipelago.MultiClient.Net.Models.ItemInfo item)
-    {   // annoyingly ItemInfo does not contain a definition for ItemClassification, so I can't check it directly. This is a decent workaround.
+    {   
         Dictionary<int, string> NormalItemDialog = new Dictionary<int, string>()
         {   
             {0,"I recieved a " + item.ItemName + " from " + item.Player + "."},
@@ -57,18 +57,18 @@ public class ExperimentDialog : MonoBehaviour
             {2,"You want me to go further " + item.Player + "? Aw..."},
             {3,"The end is in sight " + item.Player + "!"},
         };
-        GameObject.Find("Experiment/Body").GetComponent<ExperimentDialog>().BackupTextbox(item);
-        if (item.ItemName.EndsWith("Extender") || item.ItemName == "Progressive Layer")
+        GameObject.Find("Experiment/Body").GetComponent<ExperimentDialog>().CompanionTextbox(item);
+        if (item.Flags.HasFlag(Archipelago.MultiClient.Net.Enums.ItemFlags.Advancement) && !item.ItemName.EndsWith("Unlock")) // progression (not layer unlock)
         {
             PlayerTalker.Talk(ExtenderItemDialog[UnityEngine.Random.Range(0, ExtenderItemDialog.Count + 1)], null, true, false);
             return;
         }
-        if (item.ItemName.EndsWith("Recipe")) // recipe item
+        if (item.Flags.HasFlag(Archipelago.MultiClient.Net.Enums.ItemFlags.NeverExclude)) // useful
         {
             PlayerTalker.Talk(RecipeItemDialog[UnityEngine.Random.Range(0, RecipeItemDialog.Count + 1)], null, true, false);
             return;
         }
-        if (item.ItemName.EndsWith("Unlock")) // new layer
+        if (item.ItemName.EndsWith("Unlock")) // progression (layer unlock)
         {
             PlayerTalker.Talk(LayerItemDialog[UnityEngine.Random.Range(0, LayerItemDialog.Count + 1)], null, true, false);
             return;
@@ -88,8 +88,8 @@ public class ExperimentDialog : MonoBehaviour
             PlayerTalker.Talk(NormalItemDialog[UnityEngine.Random.Range(0, NormalItemDialog.Count + 1)], null, true, false);
         }
     }
-    void BackupTextbox(Archipelago.MultiClient.Net.Models.ItemInfo info)
+    void CompanionTextbox(Archipelago.MultiClient.Net.Models.ItemInfo info)
     {
-        StartCoroutine(APCanvas.DisplayArchipelagoNotification("Received " + info.ItemName + " from " + info.Player + "!",1));
+        APCanvas.EnqueueArchipelagoNotification("Received " + info.ItemName + " from " + info.Player + "!",1);
     }
 }

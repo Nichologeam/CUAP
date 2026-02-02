@@ -1,6 +1,5 @@
-﻿using Archipelago.MultiClient.Net.Models;
-using Archipelago.MultiClient.Net.Packets;
-using CreepyUtil.Archipelago.ApClient;
+﻿using Archipelago.MultiClient.Net;
+using Archipelago.MultiClient.Net.MessageLog.Messages;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,12 +11,12 @@ namespace CUAP;
 
 public class CommandPatch : MonoBehaviour
 {
-    public static ApClient Client;
+    public static ArchipelagoSession Client;
     public static ConsoleScript Console;
     private GameObject body;
-    private string LastGotMessage;
-    private JsonMessagePart[] LastGotItemMessage;
-    private HintPrintJsonPacket LastGotHintMessage;
+    private LogMessage LastGotMessage;
+    private ItemSendLogMessage LastGotItemMessage;
+    private HintItemSendLogMessage LastGotHintMessage;
 
     private void OnEnable()
     {
@@ -25,87 +24,75 @@ public class CommandPatch : MonoBehaviour
         Startup.Logger.LogMessage("Console has been patched!");
         CreateAPCommands();
     }
-    private void Update()
+    public void Subscribe()
     {
-        Client = APClientClass.Client;
+        Client = APClientClass.session;
         if (Client is not null)
         {
-            Client.OnServerMessagePacketReceived += PrintPlainJSON;
-            Client.OnItemLogPacketReceived += PrintItemJSON;
-            Client.OnHintPrintJsonPacketReceived += PrintHintJSON;
+            Client.MessageLog.OnMessageReceived += message =>
+            {
+                switch (message)
+                {
+                    case HintItemSendLogMessage hint:
+                        PrintHintJSON(hint);
+                        break;
+
+                    case ItemSendLogMessage item:
+                        PrintItemJSON(item);
+                        break;
+
+                    default:
+                        PrintPlainJSON(message);
+                        break;
+                }
+            };
         }
     }
-    private void PrintPlainJSON(PrintJsonPacket message)
+    private void PrintPlainJSON(LogMessage message)
     {
-        if (LastGotMessage == message.Data[0].Text) { return; } // avoids spam
-        Console.LogToConsole(message.Data[0].Text);
-        LastGotMessage = message.Data[0].Text;
+        if (LastGotMessage == message) { return; } // avoids spam
+        Console.LogToConsole(message.ToString());
+        LastGotMessage = message;
     }
-    private void PrintItemJSON(PrintJsonPacket message)
+    private void PrintItemJSON(ItemSendLogMessage message)
     {
-        var combinedText = message.Data;
-        if (LastGotItemMessage == combinedText) return;
-        LastGotItemMessage = combinedText;
+        if (LastGotItemMessage == message) return;
+        LastGotItemMessage = message;
         string constructedMessage = "";
-        if (message.Data[1].Text == " sent ") // multiworld item (8 properties)
-        { // this is probably needlessly overcomplicated, but it works
-            var sendPlrName = (Client.PlayerNames[Convert.ToInt32(message.Data[0].Text)]);
-            var recPlrName = (Client.PlayerNames[Convert.ToInt32(message.Data[4].Text)]);
-            APClientClass.playerItemIdToName.TryGetValue(Convert.ToInt32(message.Data[4].Text), out Dictionary<long, string> recPlrItemIds);
-            recPlrItemIds.TryGetValue(Convert.ToInt64(message.Data[2].Text), out string sentItemName);
-            APClientClass.playerLocIdToName.TryGetValue(Convert.ToInt32(message.Data[0].Text), out Dictionary<long, string> sendPlrLocIds);
-            sendPlrLocIds.TryGetValue(Convert.ToInt64(message.Data[6].Text), out string foundLocName);
-            constructedMessage = sendPlrName + message.Data[1].Text + sentItemName + message.Data[3].Text + recPlrName + message.Data[5].Text + foundLocName + message.Data[7].Text;
-        }
-        else if (message.Data[1].Text == " found their ") // local item (6 properties)
+        if (message.Receiver != message.Sender) // not a local item
         {
-            var plrName = (Client.PlayerNames[Convert.ToInt32(message.Data[0].Text)]);
-            APClientClass.playerItemIdToName.TryGetValue(Convert.ToInt32(message.Data[0].Text), out Dictionary<long, string> plrItemIds);
-            plrItemIds.TryGetValue(Convert.ToInt64(message.Data[2].Text), out string itemName);
-            APClientClass.playerLocIdToName.TryGetValue(Convert.ToInt32(message.Data[0].Text), out Dictionary<long, string> plrLocIds);
-            plrLocIds.TryGetValue(Convert.ToInt64(message.Data[4].Text), out string locName);
-            constructedMessage = plrName + message.Data[1].Text + itemName + message.Data[3].Text + locName + message.Data[5].Text;
+            constructedMessage = $"{message.Sender} sent {message.Item.ItemName} to {message.Receiver} ({message.Item.LocationName})";
+        }
+        else if (message.Sender == message.Receiver) // player found their own item
+        {
+            constructedMessage = message.IsReceiverTheActivePlayer 
+                ? $"You found your {message.Item.ItemName} ({message.Item.LocationName})" // true (it is the casualties player)
+                : $"{message.Receiver} found their {message.Item.ItemName} ({message.Item.LocationName})"; // false (it's someone else)
         }
         Console.LogToConsole(constructedMessage);
-        // message.Data[local]/[multiworld]
-        // message.Data[0]/[0] is finding player ID
-        // message.Data[1]/[1] is either " sent " or " found their "
-        // message.Data[2]/[2] is receiving item ID
-        // message.Data[n]/[3] is " to "
-        // message.Data[n]/[4] is receiving player ID
-        // message.Data[3]/[5] is " ("
-        // message.Data[4]/[6] is the finder's location ID
-        // message.Data[5]/[7] is ")"
     }
-    private void PrintHintJSON(HintPrintJsonPacket message)
+    private void PrintHintJSON(HintItemSendLogMessage hint)
     {
-        var combinedText = message;
-        if (LastGotHintMessage == combinedText || message.Found == true) return; // don't show found hints (less clutter)
-        LastGotHintMessage = combinedText;
-        var recPlrName = (Client.PlayerNames[message.ReceivingPlayer]);
-        NetworkItem item = message.Item;
-        var fndPlrName = (Client.PlayerNames[item.Player]);
-        APClientClass.playerItemIdToName.TryGetValue(message.ReceivingPlayer, out Dictionary<long, string> plrItemIds);
-        plrItemIds.TryGetValue(item.Item, out string itemName);
-        APClientClass.playerLocIdToName.TryGetValue(item.Player, out Dictionary<long, string> plrLocIds);
-        plrLocIds.TryGetValue(item.Location, out string locName);
-        Console.LogToConsole(recPlrName + "'s " + itemName + " is at " + locName + " in " + fndPlrName + "'s world.");
-        StartCoroutine(APCanvas.DisplayArchipelagoNotification(recPlrName + "'s " + itemName + " is at " + fndPlrName + "'s " + locName + ".",2));
-        // message.Data[0] is receiving player ID
-        // message.Data[1] is the NetworkItem
-        // message.Data[2] is if the hint has been found
+        if (LastGotHintMessage == hint || hint.IsFound == true) return; // don't show found hints (less clutter)
+        LastGotHintMessage = hint;
+        Console.LogToConsole($"{hint.Receiver}'s {hint.Item.ItemName} is at {hint.Sender}'s {hint.Item.LocationName}.");
+        APCanvas.EnqueueArchipelagoNotification($"{hint.Receiver}'s {hint.Item.ItemName} is at {hint.Sender}'s {hint.Item.LocationName}.",2);
     }
     private void CreateAPCommands()
     {
         ConsoleScript.Commands.Add(new Command("apdeathlink", "Toggles DeathLink for the current game session.", delegate (string[] args)
         {
-            if (APClientClass.Client is null)
+            if (APClientClass.session is null)
             {
-                throw new Exception("Archipelago isn't connected.");
+                throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
+            }
+            if (APClientClass.dlService is null)
+            {
+                throw new Exception("DeathLinkService is null! This shouldn't happen, yell at me on Discord or Github if it does!");
             }
             if (APCanvas.DeathlinkEnabled)
             {
-                APClientClass.Client.Tags.SetTags();
+                APClientClass.dlService.DisableDeathLink();
                 APCanvas.DeathlinkEnabled = false;
                 try
                 {
@@ -120,7 +107,7 @@ public class CommandPatch : MonoBehaviour
             }
             else
             {
-                APClientClass.Client.Tags.SetTags(CreepyUtil.Archipelago.ArchipelagoTag.DeathLink);
+                APClientClass.dlService.EnableDeathLink();
                 APCanvas.DeathlinkEnabled = true;
                 try
                 {
@@ -156,16 +143,16 @@ public class CommandPatch : MonoBehaviour
         }));
         ConsoleScript.Commands.Add(new Command("apchat", "Sends a message to Archipelago chat.", delegate (string[] args)
         {
-            if (APClientClass.Client is null)
+            if (APClientClass.session is null)
             {
-                throw new Exception("Archipelago isn't connected.");
+                throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
             }
             if (args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
             {
                 throw new Exception("No chat message was given.");
             }
             string chatMessage = string.Join(" ", args.Skip(1));
-            APClientClass.Client.Say(chatMessage);
+            Client.Say(chatMessage);
             Console.LogToConsole("CUAP: Chat message sent.");
         }, null, new ValueTuple<string, string>[]
         {
@@ -173,9 +160,9 @@ public class CommandPatch : MonoBehaviour
         }));
         ConsoleScript.Commands.Add(new Command("aphint", "Alias for !hint command.", delegate (string[] args)
         {
-            if (APClientClass.Client is null)
+            if (APClientClass.session is null)
             {
-                throw new Exception("Archipelago isn't connected.");
+                throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
             }
             if (args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
             {
@@ -192,9 +179,9 @@ public class CommandPatch : MonoBehaviour
         }));
         ConsoleScript.Commands.Add(new Command("aphintlocation", "Alias for !hint_location command.", delegate (string[] args)
         {
-            if (APClientClass.Client is null)
+            if (APClientClass.session is null)
             {
-                throw new Exception("Archipelago isn't connected.");
+                throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
             }
             if (args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
             {
@@ -209,27 +196,27 @@ public class CommandPatch : MonoBehaviour
         }));
         ConsoleScript.Commands.Add(new Command("aprelease", "Alias for !release command.", delegate (string[] args)
         {
-            if (APClientClass.Client is null)
+            if (APClientClass.session is null)
             {
-                throw new Exception("Archipelago isn't connected.");
+                throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
             }
             Client.Say("!release");
             Console.LogToConsole("CUAP: Release requested.");
         }, null, Array.Empty<ValueTuple<string, string>>()));
         ConsoleScript.Commands.Add(new Command("apcollect", "Alias for !collect command.", delegate (string[] args)
         {
-            if (APClientClass.Client is null)
+            if (APClientClass.session is null)
             {
-                throw new Exception("Archipelago isn't connected.");
+                throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
             }
             Client.Say("!collect");
             Console.LogToConsole("CUAP: Collect requested.");
         }, null, Array.Empty<ValueTuple<string, string>>()));
         ConsoleScript.Commands.Add(new Command("apcheat", "Alias for !getitem command.", delegate (string[] args)
         {
-            if (APClientClass.Client is null)
+            if (APClientClass.session is null)
             {
-                throw new Exception("Archipelago isn't connected.");
+                throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
             }
             if (args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
             {
@@ -244,9 +231,9 @@ public class CommandPatch : MonoBehaviour
         }));
         ConsoleScript.Commands.Add(new Command("apalias", "Alias for !alias command.", delegate (string[] args)
         {
-            if (APClientClass.Client is null)
+            if (APClientClass.session is null)
             {
-                throw new Exception("Archipelago isn't connected.");
+                throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
             }
             if (args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
             {

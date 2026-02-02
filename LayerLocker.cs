@@ -1,13 +1,13 @@
-﻿using CreepyUtil.Archipelago.ApClient;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Archipelago.MultiClient.Net;
 
 namespace CUAP;
 
 public class LayerLocker : MonoBehaviour
 {
-    public static ApClient Client;
+    public static ArchipelagoSession Client;
     private List<string> LayerHandler = new List<string>();
     private string SelectedLayer;
     private int LayerId = -1;
@@ -32,7 +32,7 @@ public class LayerLocker : MonoBehaviour
 
     private void OnEnable()
     {
-        Client = APClientClass.Client;
+        Client = APClientClass.session;
         worldgen = this.gameObject.GetComponent<WorldGeneration>();
         Startup.Logger.LogMessage("LayerLocker Enabled!");
     }

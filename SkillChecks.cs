@@ -1,4 +1,4 @@
-﻿using CreepyUtil.Archipelago.ApClient;
+﻿using Archipelago.MultiClient.Net;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
@@ -8,7 +8,7 @@ namespace CUAP;
 
 public class SkillChecks : MonoBehaviour
 {
-    public static ApClient Client;
+    public static ArchipelagoSession Client;
     public static Skills playerSkills;
     private WorldGeneration worldgen;
     // int sendStr = 60;
@@ -35,8 +35,8 @@ public class SkillChecks : MonoBehaviour
     }; */
     private void OnEnable()
     {
-        Client = APClientClass.Client;
-        var options = Client.SlotData["options"] as JObject;
+        Client = APClientClass.session;
+        var options = APClientClass.slotdata;
         if (options.TryGetValue("Skillsanity", out var skillsanityoption)) // check if skillsanity is enabled.
         {
             if (!Convert.ToBoolean(skillsanityoption))

@@ -1,15 +1,15 @@
-﻿using CreepyUtil.Archipelago.ApClient;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System.Collections;
 using HarmonyLib;
+using Archipelago.MultiClient.Net;
 
 namespace CUAP;
 
 public class TrapHandler : MonoBehaviour
 {
-    public static ApClient Client;
+    public static ArchipelagoSession Client;
     private Body Vitals;
     private WorldGeneration worldgen;
     private PlayerCamera plrcam;
@@ -25,7 +25,7 @@ public class TrapHandler : MonoBehaviour
 
     private void OnEnable()
     {
-        Client = APClientClass.Client;
+        Client = APClientClass.session;
         Vitals = this.gameObject.GetComponent<Body>();
         worldgen = GameObject.Find("World").GetComponent<WorldGeneration>();
         plrcam = GameObject.Find("Main Camera").GetComponent<PlayerCamera>();

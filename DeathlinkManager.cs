@@ -1,7 +1,6 @@
-﻿using Archipelago.MultiClient.Net.Packets;
-using CreepyUtil.Archipelago.ApClient;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using Archipelago.MultiClient.Net;
+using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
+using BepInEx;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -10,7 +9,8 @@ namespace CUAP;
 
 public class DeathlinkManager : MonoBehaviour // To be placed on the player's Body gameObject.
 {
-    public static ApClient Client = APClientClass.Client;
+    public static ArchipelagoSession Client;
+    private DeathLinkService dlService;
     private TextMeshProUGUI DeathLinkText;
     private Body Vitals;
     private float DeathlinkCooldown;
@@ -32,7 +32,8 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
             DestroyImmediate(this); // we destroy the script this late so the text is set up for DepthChecks, which uses it regardless of deathlink being on
             return;
         }
-        Client = APClientClass.Client;
+        Client = APClientClass.session;
+        dlService = APClientClass.dlService;
         Startup.Logger.LogMessage("DeathlinkManager is monitoring Vitals...");
     }
     private void Update()
@@ -49,30 +50,30 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
             DeathLinkText.text = "";
             DeathlinkCooldown = -2; // This makes it only empty the text once. There's probably a much better way to do this, but I don't really care.
         }
-        Client.OnDeathLinkPacketReceived += ProcessDeathLink;
+        dlService.OnDeathLinkReceived += ProcessDeathLink;
     }
 
-    private void ProcessDeathLink(string senderName, string deathCause)
+    private void ProcessDeathLink(DeathLink dlPacket)
     {
         if (DeathlinkCooldown > 0)
         {
             return; // so, for some reason, OnDeathLinkPacketReceived is spammed about 350 ish times for each Deathlink sent.
             // This cooldown prevents 349 ish of those deathlinks from going though, as it entierly destroys Experiment if Large Limb Damage is on.
         }   
-        if (senderName == "" || senderName is null) // should never happen, realistically.
+        if (dlPacket.Source.IsNullOrWhiteSpace()) // should never happen, realistically.
         {
-            StartCoroutine(APCanvas.DisplayArchipelagoNotification("Received a DeathLink packet with no sender. Ignoring.", 3));
+            APCanvas.EnqueueArchipelagoNotification("Received a DeathLink packet with no sender. Ignoring.",3);
             Startup.Logger.LogWarning("Received a DeathLink packet with no sender. Ignoring.");
             return;
         }
         DeathlinkCooldown = 15;
-        if (deathCause == "Died a generic (unknown) death" || deathCause == "" || deathCause is null)
+        if (dlPacket.Cause.IsNullOrWhiteSpace())
         {
-            DeathLinkText.text = senderName + " died.";
+            DeathLinkText.text = dlPacket.Source + " died.";
         }
         else
         {
-            DeathLinkText.text = deathCause;
+            DeathLinkText.text = dlPacket.Cause;
         }
         if (DeathlinkSeverity)
         {
@@ -99,34 +100,37 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
     {
         Dictionary<int, string> DrownDeathMessages = new Dictionary<int, string>()
         {
-            {0,Client.PlayerName + " is part canine, not fish."},
-            {1,Client.PlayerName + " was too heavy to swim."},
-            {2,Client.PlayerName + " forgot their scuba gear."},
-            {3,Client.PlayerName + " forgot the importance of oxygen."}
+            {0,Client.Players.ActivePlayer.Alias + " is part canine, not fish."},
+            {1,Client.Players.ActivePlayer.Alias + " was too heavy to swim."},
+            {2,Client.Players.ActivePlayer.Alias + " forgot their scuba gear."},
+            {3,Client.Players.ActivePlayer.Alias + " forgot the importance of oxygen."}
         };
         Dictionary<int, string> BloodyDeathMessages = new Dictionary<int, string>()
         {
-            {0,Client.PlayerName + " fell off."},
-            {1,Client.PlayerName + " ran out of bandages."},
-            {2,Client.PlayerName + " couldn't stop the bleeding."}
+            {0,Client.Players.ActivePlayer.Alias + " fell off."},
+            {1,Client.Players.ActivePlayer.Alias + " ran out of bandages."},
+            {2,Client.Players.ActivePlayer.Alias + " couldn't stop the bleeding."}
         };
         Dictionary<int, string> GenericDeathMessages = new Dictionary<int, string>()
         {
-            {0,Client.PlayerName + " became a statistic."},
-            {1,"Casualties: Unknown + " + Client.PlayerName},
-            {2,Client.PlayerName + " met the same fate."}
+            {0,Client.Players.ActivePlayer.Alias + " became a statistic."},
+            {1,"Casualties: Unknown + " + Client.Players.ActivePlayer.Alias},
+            {2,Client.Players.ActivePlayer.Alias + " met the same fate."}
         };
         if (Vitals.inWater)
         {
-            Client.SendDeathLink(DrownDeathMessages[UnityEngine.Random.Range(0, DrownDeathMessages.Count)]);
+            DeathLink dlToSend = new DeathLink(Client.Players.ActivePlayer.Alias, DrownDeathMessages[UnityEngine.Random.Range(0, DrownDeathMessages.Count)]);
+            dlService.SendDeathLink(dlToSend);
         }
         else if (Vitals.totalBleedSpeed > 0.02f) // I know this value seems low, but it is the same value the game uses for the bloody death screen
         {
-            Client.SendDeathLink(BloodyDeathMessages[UnityEngine.Random.Range(0, BloodyDeathMessages.Count)]);
+            DeathLink dlToSend = new DeathLink(Client.Players.ActivePlayer.Alias, BloodyDeathMessages[UnityEngine.Random.Range(0, BloodyDeathMessages.Count)]);
+            dlService.SendDeathLink(dlToSend);
         }
         else
         {
-            Client.SendDeathLink(GenericDeathMessages[UnityEngine.Random.Range(0, GenericDeathMessages.Count)]);
+            DeathLink dlToSend = new DeathLink(Client.Players.ActivePlayer.Alias, GenericDeathMessages[UnityEngine.Random.Range(0, GenericDeathMessages.Count)]);
+            dlService.SendDeathLink(dlToSend);
         }
     }
 }

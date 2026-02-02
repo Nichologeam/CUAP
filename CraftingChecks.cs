@@ -1,4 +1,4 @@
-﻿using CreepyUtil.Archipelago.ApClient;
+﻿using Archipelago.MultiClient.Net;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
@@ -8,7 +8,6 @@ using Archipelago.MultiClient.Net.Packets;
 using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Enums;
 using UnityEngine.UIElements.Collections;
-using System.IO;
 
 namespace CUAP;
 
@@ -16,7 +15,7 @@ public class CraftingChecks : MonoBehaviour
 {
     AssetBundle bundle;
     private Sprite aplogo;
-    public static ApClient Client;
+    public static ArchipelagoSession Client;
     private static List<string> RecievedRecipes;
     public static List<int> AlreadySentChecks = new List<int>();
     private int lastFrameRecipeCount = 0;
@@ -24,6 +23,7 @@ public class CraftingChecks : MonoBehaviour
     private int RecipeNum = 0;
     public static int CraftedRecipes = 0;
     private bool removeBlueprints = false;
+    private static readonly long startingRecipeID = 22318500;
     private static HashSet<string> AppliedRecipes = new();
     private LocationScoutsPacket blueprintsPacket = new LocationScoutsPacket()
     {
@@ -37,7 +37,7 @@ public class CraftingChecks : MonoBehaviour
     public static Dictionary<string, string> CheckNameToItem = new Dictionary<string, string>()
     {
         {"Foliage rope Recipe","rope"},
-        // {"Foliage Recipe", "foliage"} Technically exists in the game files, but is impossible to craft right now
+        {"Foliage Recipe", "foliage"},
         {"String Recipe","string"},
         {"Canvas Recipe","canvas"},
         {"Wood scraps Recipe","woodscraps"},
@@ -66,10 +66,12 @@ public class CraftingChecks : MonoBehaviour
         {"Titanium sheet Recipe","titaniumsheet"},
         {"Titanium rod Recipe","titaniumrod"},
         {"Alien blood Recipe","alienblood"},
+        {"Saline Recipe","saline"},
         {"Blood Recipe","blood"},
         {"Makeshift wrench Recipe","makeshiftwrench"},
         {"Wrench Recipe","wrench"},
         {"Crude cleaver Recipe","crudecleaver"},
+        {"Machete Recipe","machete"},
         {"Flammable powder Recipe","flammablepowder"},
         {"Casing Recipe","casing"},
         {"9mm round Recipe","9mmround"},
@@ -104,6 +106,9 @@ public class CraftingChecks : MonoBehaviour
         {"Pickaxe Recipe","pickaxe"},
         {"Scaffolding pack Recipe","scaffoldingpack"},
         {"Backpack Recipe","bigpack"},
+        {"Duffel bag Recipe","duffelbag"},
+        {"Material pouch Recipe","materialpouch"},
+        {"Belt Recipe","belt"},
         {"Bowl of cereal Recipe","bowlofcereal"},
         {"Fat Recipe","fat"},
         {"Soap Recipe","soap"},
@@ -118,6 +123,7 @@ public class CraftingChecks : MonoBehaviour
         {"Bone welding tool Recipe","boneweldingtool"},
         {"Tweezers Recipe","tweezers"},
         {"Blood bag Recipe","bloodbag"},
+        {"Saline bottle Recipe","saline"},
         {"Antiseptic Recipe","disinfectant"},
         {"Relief cream Recipe","reliefcream"},
         {"Splint Recipe","splint"},
@@ -155,7 +161,7 @@ public class CraftingChecks : MonoBehaviour
     private static Dictionary<string, int> RecipeToINTRequirement = new Dictionary<string, int>()
     {
         {"Foliage rope Recipe",1},
-        // {"Foliage Recipe",4}, Technically exists in the game files, but is impossible to craft right now
+        {"Foliage Recipe",4},
         {"String Recipe",5},
         {"Canvas Recipe",2},
         {"Wood scraps Recipe",3},
@@ -184,10 +190,12 @@ public class CraftingChecks : MonoBehaviour
         {"Titanium sheet Recipe",15},
         {"Titanium rod Recipe",15},
         {"Alien blood Recipe",2},
+        {"Saline Recipe",9},
         {"Blood Recipe",8},
         {"Makeshift wrench Recipe",9},
         {"Wrench Recipe",12},
         {"Crude cleaver Recipe",9},
+        {"Machete Recipe",12},
         {"Flammable powder Recipe",8},
         {"Casing Recipe",10},
         {"9mm round Recipe",12},
@@ -222,6 +230,9 @@ public class CraftingChecks : MonoBehaviour
         {"Pickaxe Recipe",12},
         {"Scaffolding pack Recipe",14},
         {"Backpack Recipe",13},
+        {"Duffel bag Recipe",11},
+        {"Material pouch Recipe",10},
+        {"Belt Recipe",10},
         {"Bowl of cereal Recipe",2},
         {"Fat Recipe",8},
         {"Soap Recipe",8},
@@ -236,6 +247,7 @@ public class CraftingChecks : MonoBehaviour
         {"Bone welding tool Recipe",14},
         {"Tweezers Recipe",9},
         {"Blood bag Recipe",12},
+        {"Saline bottle Recipe",11},
         {"Antiseptic Recipe",9},
         {"Relief cream Recipe",9},
         {"Splint Recipe",8},
@@ -269,247 +281,136 @@ public class CraftingChecks : MonoBehaviour
         {"Titanum multitool Recipe",16},
         {"Climbing rope Recipe",8},
     };
-    private static Dictionary<int, string> RecipeIDToCheckName = new Dictionary<int, string>()
-    {
-        {0,"Recipe - Foliage rope"},
-        // {1,"Recipe - Foliage"},
-        {2,"Recipe - String"},
-        {3,"Recipe - Canvas"},
-        {4,"Recipe - Wood scraps"},
-        {5,"Recipe - Ripped dressing"},
-        {6,"Recipe - Sterilized dressing"},
-        {7,"Recipe - Bio-chem fluid"},
-        {8,"Recipe - Opium"},
-        {9,"Recipe - Morphine"},
-        {10,"Recipe - Fentanyl"},
-        {11,"Recipe - Painkillers"},
-        {12,"Recipe - Neural booster"},
-        {13,"Recipe - Canteen"},
-        {14,"Recipe - Foliage bag"},
-        {15,"Recipe - Sling bag"},
-        {16,"Recipe - Scrap cube"},
-        {17,"Recipe - Scrap panel"},
-        {18,"Recipe - Scrap tube"},
-        {19,"Recipe - Nails"},
-        {20,"Recipe - Wood cube"},
-        {21,"Recipe - Wood panel"},
-        {22,"Recipe - Stick"},
-        {23,"Recipe - Flimsy knife"},
-        {24,"Recipe - Processed copper"},
-        {25,"Recipe - Bundle of wires"},
-        {26,"Recipe - Titanium slab"},
-        {27,"Recipe - Titanium sheet"},
-        {28,"Recipe - Titanium rod"},
-        {29,"Recipe - Alien blood"},
-        {30,"Recipe - Blood"},
-        {31,"Recipe - Makeshift wrench"},
-        {32,"Recipe - Wrench"},
-        {33,"Recipe - Crude cleaver"},
-        {34,"Recipe - Flammable powder"},
-        {35,"Recipe - Casing"},
-        {36,"Recipe - 9mm round"},
-        {37,"Recipe - 5.56 round"},
-        {38,"Recipe - 12-Gauge buckshot"},
-        {39,"Recipe - Magazine base"},
-        {40,"Recipe - Small magazine"},
-        {41,"Recipe - Rifle magazine"},
-        {42,"Recipe - Box of 12-Guage"},
-        {43,"Recipe - Dynamite"},
-        {44,"Recipe - Large carcass"},
-        {45,"Recipe - Circuit board"},
-        {46,"Recipe - Small battery"},
-        {47,"Recipe - Medium battery"},
-        {48,"Recipe - Large battery"},
-        {49,"Recipe - Flashlight"},
-        {50,"Recipe - Headlamp"},
-        {51,"Recipe - LCD screen"},
-        {52,"Recipe - Flexiglass"},
-        {53,"Recipe - Lightbulb"},
-        {54,"Recipe - Limb wraps"},
-        {55,"Recipe - Makeshift lamp"},
-        {56,"Recipe - Bicycle helmet"},
-        {57,"Recipe - Makeshift helmet"},
-        {58,"Recipe - Makeshift digging tool"},
-        {59,"Recipe - Makeshift rifle"},
-        {60,"Recipe - Mini laser drill"},
-        {61,"Recipe - Dressing"},
-        {62,"Recipe - Lantern"},
-        {63,"Recipe - Terrain scanner"},
-        {64,"Recipe - Advanced scuba diving gear"},
-        {65,"Recipe - Pickaxe"},
-        {66,"Recipe - Scaffolding pack"},
-        {67,"Recipe - Backpack"},
-        {68,"Recipe - Bowl of cereal"},
-        {69,"Recipe - Fat"},
-        {70,"Recipe - Soap"},
-        {71,"Recipe - Clotting mush"},
-        {72,"Recipe - Naltrexone"},
-        {73,"Recipe - Antidepressants"},
-        {74,"Recipe - Auto-injector"},
-        {75,"Recipe - Auto-auto-pump"},
-        {76,"Recipe - Antiseptic mush"},
-        {77,"Recipe - Plastic dressing"},
-        {78,"Recipe - Tourniquet"},
-        {79,"Recipe - Bone welding tool"},
-        {80,"Recipe - Tweezers"},
-        {81,"Recipe - Blood bag"},
-        {82,"Recipe - Antiseptic"},
-        {83,"Recipe - Relief cream"},
-        {84,"Recipe - Splint"},
-        {85,"Recipe - Bruise kit"},
-        {86,"Recipe - Carcass splint"},
-        {87,"Recipe - Makeshift L.R.D."},
-        {88,"Recipe - L.R.D."},
-        {89,"Recipe - L.R.D. Serum"},
-        {90,"Recipe - Produce juice"},
-        {91,"Recipe - Refined juice"},
-        {92,"Recipe - Drill repair kit"},
-        {93,"Recipe - Procoagulant"},
-        {94,"Recipe - Antiseptic bottle"},
-        {95,"Recipe - Firestarter"},
-        {96,"Recipe - Campfire"},
-        {97,"Recipe - Water"},
-        {98,"Recipe - Charcoal"},
-        {99,"Recipe - Bread"},
-        {100,"Recipe - Rye flour"},
-        {101,"Recipe - Torch"},
-        {102,"Recipe - Torch (relight)"},
-        {103,"Recipe - Nutrient bar"},
-        {104,"Recipe - Pemmican"},
-        {105,"Recipe - Foliage meal"},
-        {106,"Recipe - Burger"},
-        {107,"Recipe - Soup"},
-        {108,"Recipe - Ice pack"},
-        {109,"Recipe - Scarf"},
-        {110,"Recipe - Titanium pickaxe"},
-        {111,"Recipe - Titanium machete"},
-        {112,"Recipe - Titanium multitool"},
-        {113,"Recipe - Climbing rope"}
-    };
-    private static Dictionary<string, int> CheckNameToRecipeID = new Dictionary<string, int>()
+    private static List<string> CheckNameToRecipeID = new List<string>()
     {   // Same order as items.py, and the interal recipe order in-game
-        {"Foliage rope Recipe",0},
-        // {"Foliage Recipe",1}, Technically exists in the game files, but is impossible to craft right now
-        {"String Recipe",2},
-        {"Canvas Recipe",3},
-        {"Wood scraps Recipe",4},
-        {"Ripped dressing Recipe",5},
-        {"Sterilized dressing Recipe",6},
-        {"Bio-chem fluid Recipe",7},
-        {"Opium Recipe",8},
-        {"Morphine Recipe",9},
-        {"Fentanyl Recipe",10},
-        {"Painkillers Recipe",11},
-        {"Neural booster Recipe",12},
-        {"Canteen Recipe",13},
-        {"Foliage bag Recipe",14},
-        {"Sling bag Recipe",15},
-        {"Scrap cube Recipe",16},
-        {"Scrap panel Recipe",17},
-        {"Scrap tube Recipe",18},
-        {"Nails Recipe",19},
-        {"Wood cube Recipe",20},
-        {"Wood panel Recipe",21},
-        {"Stick Recipe",22},
-        {"Flimsy knife Recipe",23},
-        {"Processed copper Recipe",24},
-        {"Bundle of wires Recipe",25},
-        {"Titanium slab Recipe",26},
-        {"Titanium sheet Recipe",27},
-        {"Titanium rod Recipe",28},
-        {"Alien blood Recipe",29},
-        {"Blood Recipe",30},
-        {"Makeshift wrench Recipe",31},
-        {"Wrench Recipe",32},
-        {"Crude cleaver Recipe",33},
-        {"Flammable powder Recipe",34},
-        {"Casing Recipe",35},
-        {"9mm round Recipe",36},
-        {"5.56 round Recipe",37},
-        {"12-Gauge buckshot Recipe",38},
-        {"Magazine base Recipe",39},
-        {"Small magazine Recipe",40},
-        {"Rifle magazine Recipe",41},
-        {"Box of 12-Guage Recipe",42},
-        {"Dynamite Recipe",43},
-        {"Large carcass Recipe",44},
-        {"Circuit board Recipe",45},
-        {"Small battery Recipe",46},
-        {"Medium battery Recipe",47},
-        {"Large battery Recipe",48},
-        {"Flashlight Recipe",49},
-        {"Headlamp Recipe",50},
-        {"LCD screen Recipe",51},
-        {"Flexiglass Recipe",52},
-        {"Lightbulb Recipe",53},
-        {"Limb wraps Recipe",54},
-        {"Makeshift lamp Recipe",55},
-        {"Bicycle helmet Recipe",56},
-        {"Makeshift helmet Recipe",57},
-        {"Makeshift digging tool Recipe",58},
-        {"Makeshift rifle Recipe",59},
-        {"Mini laser drill Recipe",60},
-        {"Dressing Recipe",61},
-        {"Lantern Recipe",62},
-        {"Terrain scanner Recipe",63},
-        {"Advanced scuba diving gear Recipe",64},
-        {"Pickaxe Recipe",65},
-        {"Scaffolding pack Recipe",66},
-        {"Backpack Recipe",67},
-        {"Bowl of cereal Recipe",68},
-        {"Fat Recipe",69},
-        {"Soap Recipe",70},
-        {"Clotting mush Recipe",71},
-        {"Naltrexone Recipe",72},
-        {"Antidepressants Recipe",73},
-        {"Auto-injector Recipe",74},
-        {"Auto-auto-pump Recipe",75},
-        {"Antiseptic mush Recipe",76},
-        {"Plastic dressing Recipe",77},
-        {"Tourniquet Recipe",78},
-        {"Bone welding tool Recipe",79},
-        {"Tweezers Recipe",80},
-        {"Blood bag Recipe",81},
-        {"Antiseptic Recipe",82},
-        {"Relief cream Recipe",83},
-        {"Splint Recipe",84},
-        {"Bruise kit Recipe",85},
-        {"Carcass splint Recipe",86},
-        {"Makeshift L.R.D. Recipe",87},
-        {"L.R.D. Recipe",88},
-        {"L.R.D. Serum Recipe",89},
-        {"Produce juice Recipe",90},
-        {"Refined juice Recipe",91},
-        {"Drill repair kit Recipe",92},
-        {"Procoagulant Recipe",93},
-        {"Antiseptic bottle Recipe",94},
-        {"Firestarter Recipe",95},
-        {"Campfire Recipe",96},
-        {"Water Recipe",97},
-        {"Charcoal Recipe",98},
-        {"Bread Recipe",99},
-        {"Rye flour Recipe",100},
-        {"Torch Recipe",101},
-        {"Torch (relight) Recipe",102},
-        {"Nutrient bar Recipe",103},
-        {"Pemmican Recipe",104},
-        {"Foliage meal Recipe",105},
-        {"Burger Recipe",106},
-        {"Soup Recipe",107},
-        {"Ice pack Recipe",108},
-        {"Scarf Recipe",109},
-        {"Titanium pickaxe Recipe",110},
-        {"Titanium machete Recipe",111},
-        {"Titanum multitool Recipe",112},
-        {"Climbing rope Recipe",113},
+        "Foliage rope Recipe",
+        "Foliage Recipe",
+        "String Recipe",
+        "Canvas Recipe",
+        "Wood scraps Recipe",
+        "Ripped dressing Recipe",
+        "Sterilized dressing Recipe",
+        "Bio-chem fluid Recipe",
+        "Opium Recipe",
+        "Morphine Recipe",
+        "Fentanyl Recipe",
+        "Painkillers Recipe",
+        "Neural booster Recipe",
+        "Canteen Recipe",
+        "Foliage bag Recipe",
+        "Sling bag Recipe",
+        "Scrap cube Recipe",
+        "Scrap panel Recipe",
+        "Scrap tube Recipe",
+        "Nails Recipe",
+        "Wood cube Recipe",
+        "Wood panel Recipe",
+        "Stick Recipe",
+        "Flimsy knife Recipe",
+        "Processed copper Recipe",
+        "Bundle of wires Recipe",
+        "Titanium slab Recipe",
+        "Titanium sheet Recipe",
+        "Titanium rod Recipe",
+        "Alien blood Recipe",
+        "Saline Recipe",
+        "Blood Recipe",
+        "Makeshift wrench Recipe",
+        "Wrench Recipe",
+        "Crude cleaver Recipe",
+        "Machete Recipe",
+        "Flammable powder Recipe",
+        "Casing Recipe",
+        "9mm round Recipe",
+        "5.56 round Recipe",
+        "12-Gauge buckshot Recipe",
+        "Magazine base Recipe",
+        "Small magazine Recipe",
+        "Rifle magazine Recipe",
+        "Box of 12-Guage Recipe",
+        "Dynamite Recipe",
+        "Large carcass Recipe",
+        "Circuit board Recipe",
+        "Small battery Recipe",
+        "Medium battery Recipe",
+        "Large battery Recipe",
+        "Flashlight Recipe",
+        "Headlamp Recipe",
+        "LCD screen Recipe",
+        "Flexiglass Recipe",
+        "Lightbulb Recipe",
+        "Limb wraps Recipe",
+        "Makeshift lamp Recipe",
+        "Bicycle helmet Recipe",
+        "Makeshift helmet Recipe",
+        "Makeshift digging tool Recipe",
+        "Makeshift rifle Recipe",
+        "Mini laser drill Recipe",
+        "Dressing Recipe",
+        "Lantern Recipe",
+        "Terrain scanner Recipe",
+        "Advanced scuba diving gear Recipe",
+        "Pickaxe Recipe",
+        "Scaffolding pack Recipe",
+        "Backpack Recipe",
+        "Duffel Bag Recipe",
+        "Material Pouch Recipe",
+        "Belt Recipe",
+        "Bowl of cereal Recipe",
+        "Fat Recipe",
+        "Soap Recipe",
+        "Clotting mush Recipe",
+        "Naltrexone Recipe",
+        "Antidepressants Recipe",
+        "Auto-injector Recipe",
+        "Auto-auto-pump Recipe",
+        "Antiseptic mush Recipe",
+        "Plastic dressing Recipe",
+        "Tourniquet Recipe",
+        "Bone welding tool Recipe",
+        "Tweezers Recipe",
+        "Blood bag Recipe",
+        "Saline Bottle Recipe",
+        "Antiseptic Recipe",
+        "Relief cream Recipe",
+        "Splint Recipe",
+        "Bruise kit Recipe",
+        "Carcass splint Recipe",
+        "Makeshift L.R.D. Recipe",
+        "L.R.D. Recipe",
+        "L.R.D. Serum Recipe",
+        "Produce juice Recipe",
+        "Refined juice Recipe",
+        "Drill repair kit Recipe",
+        "Procoagulant Recipe",
+        "Antiseptic bottle Recipe",
+        "Firestarter Recipe",
+        "Campfire Recipe",
+        "Water Recipe",
+        "Charcoal Recipe",
+        "Bread Recipe",
+        "Rye flour Recipe",
+        "Torch Recipe",
+        "Torch (relight) Recipe",
+        "Nutrient bar Recipe",
+        "Pemmican Recipe",
+        "Foliage meal Recipe",
+        "Burger Recipe",
+        "Soup Recipe",
+        "Ice pack Recipe",
+        "Scarf Recipe",
+        "Titanium pickaxe Recipe",
+        "Titanium machete Recipe",
+        "Titanium multitool Recipe",
+        "Climbing rope Recipe",
     };
     public static Dictionary<int, bool> RecipeCraftedBefore = new Dictionary<int, bool>();
 
     private void OnEnable()
     {
-        Client = APClientClass.Client;
+        Client = APClientClass.session;
         RecievedRecipes = APClientClass.RecipeUnlockDictionary;
-        var options = Client.SlotData["options"] as JObject;
+        var options = APClientClass.slotdata;
         if (options.TryGetValue("RandomizeRecipes", out var recipesoption)) // check if recipe randomization is enabled.
         {
             if (Convert.ToInt16(recipesoption) == 1) // disabled
@@ -518,7 +419,7 @@ public class CraftingChecks : MonoBehaviour
                 DestroyImmediate(this);
                 return;
             }
-            else // enabled. both need to learn recupes, so we'll do that first
+            else // enabled. both need to learn recipes, so we'll do that first
             {
                 foreach (var recipe in Recipes.recipes)
                 {
@@ -543,7 +444,7 @@ public class CraftingChecks : MonoBehaviour
         }
         if (APClientClass.selectedGoal == 4)
         {
-            APClientClass.session.Socket.SendPacket(new GetPacket {Keys = new[]{"crafted_blueprints"}});
+            Client.Socket.SendPacket(new GetPacket {Keys = new[]{"crafted_blueprints"}});
         }
     }
     private void Update()
@@ -553,7 +454,7 @@ public class CraftingChecks : MonoBehaviour
             foreach (string gotrecipe in RecievedRecipes)
             {
                 if (!AppliedRecipes.Add(gotrecipe)) continue; // already in the list
-                CheckNameToRecipeID.TryGetValue(gotrecipe, out int recipeToLearn); // get the recipe we're learning
+                var recipeToLearn = CheckNameToRecipeID.IndexOf(gotrecipe); // get the recipe we're learning
                 RecipeToINTRequirement.TryGetValue(gotrecipe, out int recipeRequiredINT); // get its int requried to craft
                 Recipes.recipes[recipeToLearn].INT = recipeRequiredINT; // set the int to the vanilla value
                 Recipes.recipes[recipeToLearn].specialKnown = true; // force it visible
@@ -566,7 +467,7 @@ public class CraftingChecks : MonoBehaviour
         }
         if (APClientClass.selectedGoal == 4)
         {
-            for (int i = 0; i < Recipes.recipes.Count; i++)
+            for (int i = 0; i < Recipes.recipes.Count; i++) // >>> FIX: Why are we doing this every frame? I get this is unused code, but still... <<<
             {
                 var recipe = Recipes.recipes[i]; // check each recipe. the order of recipes in Recipes.recipes will always match RecipeCraftedBefore
                 if (!recipe.hasMadeBefore) continue; // have we made it before? if not, ignore
@@ -591,7 +492,7 @@ public class CraftingChecks : MonoBehaviour
             }
             if (RecipeCraftedBefore.Count == Recipes.recipes.Count && CraftedRecipes == Recipes.recipes.Count) // we have all the recipes and have crafted them all
             {
-                Client.Goal();
+                Client.SetGoalAchieved();
             }
         }
         try
@@ -663,8 +564,8 @@ public class CraftingChecks : MonoBehaviour
 
     public static void SendBlueprintLocation(int recipeIndex)
     {
-        RecipeIDToCheckName.TryGetValue(recipeIndex, out string CheckName);
-        APClientClass.ChecksToSendQueue.Enqueue(CheckName);
+        var CheckID = recipeIndex + startingRecipeID;
+        APClientClass.ChecksToSend.Add(CheckID);
         AlreadySentChecks.Add(recipeIndex);
     }
 }
