@@ -116,6 +116,7 @@ public class Startup : BaseUnityPlugin
                 Body.AddComponent<TrapHandler>();
                 Body.AddComponent<ExperimentDialog>();
                 Body.AddComponent<SkillChecks>();
+                Body.AddComponent<LimbUnlocks>();
                 WorldGen = GameObject.Find("World");
                 WorldGen.AddComponent<DepthChecks>();
                 WorldGen.AddComponent<LayerLocker>();

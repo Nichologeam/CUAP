@@ -139,6 +139,16 @@ public class APClientClass
             {
                 DepthExtendersRecieved++;
             }
+            if (item.ItemName == "Progressive Left Arm")
+            {
+                LimbUnlocks.instance.leftArmUnlocks++;
+                LimbUnlocks.instance.RestoreLimbs();
+            }
+            if (item.ItemName == "Progressive Right Arm")
+            {
+                LimbUnlocks.instance.rightArmUnlocks++;
+                LimbUnlocks.instance.RestoreLimbs();
+            }
             if (item.ItemName.StartsWith("Progressive ") && item.ItemName != "Progressive Layer")
             {
                 string Skill = item.ItemName.Substring(12);
