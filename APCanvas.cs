@@ -92,17 +92,20 @@ public class APCanvas : MonoBehaviour
 
     void OnConnectPressed()
     {
-        if (!Ipporttext.text.Contains(":") && !Ipporttext.text.Equals("localhost"))
+        if (!Ipporttext.text.Equals("localhost"))
         {
-            EnqueueArchipelagoNotification($"Connection error: No server port was given.",3);
-            Startup.Logger.LogError($"Connection error: No server port was given.");
-        }
-        var ipPortSplit = Ipporttext.text.Split(':');
-        if (!int.TryParse(ipPortSplit[1], out var port))
-        {
-            EnqueueArchipelagoNotification($"Connection error: [{ipPortSplit[1]}] is not a valid port.",3);
-            Startup.Logger.LogError($"Connection error: [{ipPortSplit[1]}] is not a valid port");
-            return;
+            if (!Ipporttext.text.Contains(":"))
+            {
+                EnqueueArchipelagoNotification($"Connection error: No server port was given.", 3);
+                Startup.Logger.LogError($"Connection error: No server port was given.");
+            }
+            var ipPortSplit = Ipporttext.text.Split(':');
+            if (!int.TryParse(ipPortSplit[1], out var port))
+            {
+                EnqueueArchipelagoNotification($"Connection error: [{ipPortSplit[1]}] is not a valid port.", 3);
+                Startup.Logger.LogError($"Connection error: [{ipPortSplit[1]}] is not a valid port");
+                return;
+            }
         }
         var error = TryConnect(Ipporttext.text, Slot.text, Password.text);
         if (error is not null)
