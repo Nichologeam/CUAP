@@ -119,7 +119,7 @@ public class Moodlesanity : MonoBehaviour
         "overweight3",
         "sad0",
         "gloomy1",
-        "depressed2",
+        "depression2",
         "miserable3",
         "trauma1",
         "trauma2",
