@@ -3,6 +3,7 @@ using UnityEngine;
 using TMPro;
 using System.Collections;
 using Archipelago.MultiClient.Net;
+using System;
 
 namespace CUAP;
 
@@ -12,7 +13,7 @@ public class DepthChecks : MonoBehaviour
     private WorldGeneration worldgen;
     private int RoundedMeters;
     private long CheckID;
-    private int GoalDepth;
+    private long GoalDepth;
     private long GoalCheckID;
     private TextMeshProUGUI DisplayText;
     public List<long> AlreadySentChecks = [];
@@ -23,11 +24,11 @@ public class DepthChecks : MonoBehaviour
         worldgen = this.gameObject.GetComponent<WorldGeneration>();
         DisplayText = GameObject.Find("Main Camera/Canvas/TimeScaleShow/Text (TMP)").GetComponent<TextMeshProUGUI>();
         var options = APClientClass.slotdata;
-        if (options.TryGetValue("GoalDepth", out var goaldepthoption)) // fetch and store the goal depth. will always be sent even if goal isn't Reach Depth
+        if (options.TryGetValue("GoalDepth", out object goaldepthoption)) // fetch and store the goal depth. will always be sent even if goal isn't Reach Depth
         {
             if (APClientClass.selectedGoal == 1)
             {
-                GoalDepth = (int)goaldepthoption;
+                GoalDepth = (long)goaldepthoption;
                 GoalCheckID = 22318000 + (GoalDepth / 100);
                 Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: Reach " + GoalDepth + "m");
             }
@@ -40,12 +41,12 @@ public class DepthChecks : MonoBehaviour
             else if (APClientClass.selectedGoal == 3)
             {
                 Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: Defeat Elder Thornback");
-                GoalDepth = 999999; // not needed for this goal
+                GoalDepth = long.MaxValue; // not needed for this goal
             }
             else if (APClientClass.selectedGoal == 4)
             {
                 Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: Craftsanity");
-                GoalDepth = 999999; // not needed for this goal
+                GoalDepth = long.MaxValue; // not needed for this goal
             }
         }
     }
