@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 namespace CUAP;
@@ -275,6 +276,30 @@ public class CommandPatch : MonoBehaviour
             }
             Console.LogToConsole("CUAP: Data cleared.");
         }, null, Array.Empty<ValueTuple<string, string>>()));
+        ConsoleScript.Commands.Add(new Command("apsetskill", "Force set a skill to a certain level. Only works if Skillsanity is enabled.", delegate (string[] args)
+        {
+            Console.CheckArgumentCount(args, 2);
+            if (args[1] == "STR")
+            {
+                APClientClass.MaxSTR = Convert.ToInt16(args[2]);
+            }
+            if (args[1] == "RES")
+            {
+                APClientClass.MaxRES = Convert.ToInt16(args[2]);
+            }
+            if (args[1] == "INT")
+            {
+                APClientClass.MaxINT = Convert.ToInt16(args[2]);
+            }
+        }, new Dictionary<int, List<string>> {
+        {
+            0,
+            new List<string> {"STR","RES","INT"}
+        } }, new ValueTuple<string, string>[]
+        {
+            new ValueTuple<string, string>("skill", "Which skill to change the level of."),
+            new ValueTuple<string, string>("level", "What level to set the skill to.")
+        }));
     }
     public static IEnumerator CaptureScreenshot()
     {   // this is incredibly dumb, but it works

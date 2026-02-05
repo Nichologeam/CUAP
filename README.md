@@ -51,5 +51,7 @@ The in-game debug console now has various new Archipelago-related commands. You 
 - apcollect: Alias for `apchat !collect`
 - apcheat: Alias for `apchat !getitem`
 - apalias [name]: Alias for `apchat !alias`
+### **Debug Commands**
 - apreportbug: Opens a bug report in this GitHub repository. Optionally takes a screenshot as well
 - apresetantispam: Clears local records of sent checks, allowing them to be sent again. Use this if a certain location isn't sending
+- apsetskill: Forces Skillsanity's received skills to be a certain value. Use this if your skills desync from what you've actually received
