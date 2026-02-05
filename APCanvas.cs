@@ -94,14 +94,14 @@ public class APCanvas : MonoBehaviour
     {
         if (!Ipporttext.text.Contains(":") && !Ipporttext.text.Equals("localhost"))
         {
-            EnqueueArchipelagoNotification($"No server port was given.",3);
-            Startup.Logger.LogError($"No server port was given.");
+            EnqueueArchipelagoNotification($"Connection error: No server port was given.",3);
+            Startup.Logger.LogError($"Connection error: No server port was given.");
         }
         var ipPortSplit = Ipporttext.text.Split(':');
         if (!int.TryParse(ipPortSplit[1], out var port))
         {
-            EnqueueArchipelagoNotification($"[{ipPortSplit[1]}] is not a valid port.",3);
-            Startup.Logger.LogError($"[{ipPortSplit[1]}] is not a valid port");
+            EnqueueArchipelagoNotification($"Connection error: [{ipPortSplit[1]}] is not a valid port.",3);
+            Startup.Logger.LogError($"Connection error: [{ipPortSplit[1]}] is not a valid port");
             return;
         }
         var error = TryConnect(Ipporttext.text, Slot.text, Password.text);
@@ -201,6 +201,7 @@ public class APCanvas : MonoBehaviour
             Sound.Play("warning", Vector2.zero, true, false, null, 1.2f, 1f, false, false);
             yield return new WaitForSeconds(3);
             ItemNotif.SetActive(false);
+            yield return 0; // one frame of downtime to make it clearer that the next item is a new one
         }
         ItemProcessing = false;
     }
