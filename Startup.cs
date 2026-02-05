@@ -86,15 +86,18 @@ public class Startup : BaseUnityPlugin
                 GameObject.Find("World").GetComponent<WorldGeneration>().SaveAndExit();
                 PlayerCamera.main.ToMainMenu();
             }
-            try
+            if (APClientClass.selectedGoal == 3) // elder thornback goal
             {
-                var elder = GameObject.Find("thornbackelder(Clone)");
-                if (elder.GetComponent<ElderThornback>()) return;
-                elder.AddComponent<ElderThornback>();
-            }
-            catch
-            {
-                return;
+                try
+                {
+                    var elder = GameObject.Find("thornbackelder(Clone)");
+                    if (elder.GetComponent<ElderThornback>()) return;
+                    elder.AddComponent<ElderThornback>();
+                }
+                catch
+                {
+                    return;
+                }
             }
         }
     }
