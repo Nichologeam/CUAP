@@ -133,11 +133,11 @@ class SkillSending
     // Note: Not immune to players goaling on collect-enabled servers, or running !collect manually, but all locations are still reachable.
     private static int GetSkillsanityLevelFromCheckedLocations(long baseLocationID, int maxLevel = 15)
     {
-        for (int level = 1; level <= maxLevel; level++)
+        for (int level = 0; level < maxLevel; level++)
         {
             if (!Client.Locations.AllLocationsChecked.Contains(baseLocationID + level)) // we don't have this one
             {
-                return level - 1; // return that we have the one before it
+                return level; // return that we have the one before it
             }
         }
         return maxLevel; // we have all of them
