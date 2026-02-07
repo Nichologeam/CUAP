@@ -36,9 +36,6 @@ public class Startup : BaseUnityPlugin
         apHarmony = new Harmony("nichologeam.cuap.harmony");
         apHarmony.PatchAll();
         Logger.LogMessage($"Harmony patches applied!");
-        APCanvas.UpdateSkillsanityValues(0, 60);
-        APCanvas.UpdateSkillsanityValues(1, 60);
-        APCanvas.UpdateSkillsanityValues(2, 60);
     }
     private void Update()
     {

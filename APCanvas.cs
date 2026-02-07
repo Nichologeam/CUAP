@@ -68,6 +68,9 @@ public class APCanvas : MonoBehaviour
         HintText = GameObject.Find("APCanvas(Clone)/Canvas/Hint Notification/Notification Message").GetComponent<TMP_Text>();
         ErrorNotif = GameObject.Find("APCanvas(Clone)/Canvas/Error Notification");
         ErrorText = GameObject.Find("APCanvas(Clone)/Canvas/Error Notification/Notification Message").GetComponent<TMP_Text>();
+        APCanvas.UpdateSkillsanityValues(0, 60);
+        APCanvas.UpdateSkillsanityValues(1, 60);
+        APCanvas.UpdateSkillsanityValues(2, 60);
         if (!File.Exists("ApConnection.txt")) return; // Read saved slot information from file
         var fileText = File.ReadAllText("ApConnection.txt").Replace("\r", "").Split('\n');
         Ipporttext.text = fileText[0];
