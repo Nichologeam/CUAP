@@ -11,13 +11,19 @@ namespace CUAP;
 public class APCanvas : MonoBehaviour
 {
     public static APCanvas instance;
-    public static bool ShowGUI = true;
+    public static bool ShowMainGUI = true;
+    public static bool ShowSkillTracker = false;
+    public static bool skillsanityEnabled = true;
     public GameObject ConnectionBackground;
     public GameObject ConnectedBackground;
     public TMP_InputField Ipporttext;
     public TMP_InputField Password;
     public TMP_InputField Slot;
     public Button ConnectButton;
+    private GameObject SkillsanityTracker;
+    private static TMP_Text SkillsanitySTR;
+    private static TMP_Text SkillsanityRES;
+    private static TMP_Text SkillsanityINT;
     private static GameObject ItemNotif;
     private static TMP_Text ItemText;
     private static bool ItemProcessing;
@@ -46,6 +52,10 @@ public class APCanvas : MonoBehaviour
         instance = this;
         ConnectionBackground = GameObject.Find("APCanvas(Clone)/Canvas/Connection Background"); // containing object for the connection ui
         ConnectedBackground = GameObject.Find("APCanvas(Clone)/Canvas/Connected Background"); // containing object for the connected ui
+        SkillsanityTracker = GameObject.Find("APCanvas(Clone)/Canvas/Skillsanity"); // containing object for the skillsanity tracker
+        SkillsanitySTR = GameObject.Find("APCanvas(Clone)/Canvas/Skillsanity/STR").GetComponent<TMP_Text>();
+        SkillsanityRES = GameObject.Find("APCanvas(Clone)/Canvas/Skillsanity/RES").GetComponent<TMP_Text>();
+        SkillsanityINT = GameObject.Find("APCanvas(Clone)/Canvas/Skillsanity/INT").GetComponent<TMP_Text>();
         Ipporttext = GameObject.Find("APCanvas(Clone)/Canvas/Connection Background/IPandPort").GetComponent<TMP_InputField>(); // address and port input
         Slot = GameObject.Find("APCanvas(Clone)/Canvas/Connection Background/Slot").GetComponent<TMP_InputField>(); // slot name input
         Password = GameObject.Find("APCanvas(Clone)/Canvas/Connection Background/Password").GetComponent<TMP_InputField>(); // password input
@@ -72,7 +82,15 @@ public class APCanvas : MonoBehaviour
             Start();
             return;
         }
-        if (!ShowGUI)
+        if (!ShowSkillTracker || !skillsanityEnabled)
+        {
+            SkillsanityTracker.SetActive(false);
+        }
+        if (ShowSkillTracker)
+        {
+            SkillsanityTracker.SetActive(true);
+        }
+        if (!ShowMainGUI)
         {
             ConnectedBackground.SetActive(false);
             ConnectedBackground.SetActive(false);
@@ -163,6 +181,46 @@ public class APCanvas : MonoBehaviour
                 """;
             Status.text = Status.text.Replace("<ru>", Recipes.recipes.Count + "/120");
             Status.text = Status.text.Replace("<rc>", CraftingChecks.CraftedRecipes.ToString() + "/120");
+        }
+    }
+    public static void UpdateSkillsanityValues(int skill, float newExp)
+    {
+        switch (skill)
+        {
+            case 0: // STR
+                if (newExp == -1)
+                {
+                    SkillsanitySTR.text = $"STR: All checks sent!";
+                }
+                else
+                {
+                    SkillsanitySTR.text = $"STR: {newExp} exp to next check";
+                }
+                break;
+            case 1: // RES
+                if (newExp == -1)
+                {
+                    SkillsanityRES.text = $"RES: All checks sent!";
+                }
+                else
+                {
+                    SkillsanityRES.text = $"RES: {newExp} exp to next check";
+                }
+                break;
+            case 2: // INT
+                if (newExp == -1)
+                {
+                    SkillsanityINT.text = $"INT: All checks sent!";
+                }
+                else
+                {
+                    SkillsanityINT.text = $"INT: {newExp} exp to next check";
+                }
+                break;
+            default: // none of the above?
+                Startup.Logger.LogError($"Skillsanity Error: UpdateSkillsanityValues was called with an invalid skill ({skill})");
+                EnqueueArchipelagoNotification($"Skillsanity Error: UpdateSkillsanityValues was called with invald skill ({skill})",3);
+                break;
         }
     }
     public static void EnqueueArchipelagoNotification(string text, int severity)

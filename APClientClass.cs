@@ -159,7 +159,7 @@ public class APClientClass
                     {
                         return;
                     }
-                    SkillChecks.playerSkills.UpdateExpBoundaries();
+                    SkillReceiving.playerSkills.UpdateExpBoundaries();
                 }
                 else if (Skill == "RES")
                 {
@@ -168,7 +168,7 @@ public class APClientClass
                     {
                         return;
                     }
-                    SkillChecks.playerSkills.UpdateExpBoundaries();
+                    SkillReceiving.playerSkills.UpdateExpBoundaries();
                 }
                 else if (Skill == "INT")
                 {
@@ -177,7 +177,7 @@ public class APClientClass
                     {
                         return;
                     }
-                    SkillChecks.playerSkills.UpdateExpBoundaries();
+                    SkillReceiving.playerSkills.UpdateExpBoundaries();
                 }
             }
             if (item.ItemName == "Hope")
@@ -234,20 +234,24 @@ public class APClientClass
         {
             if (GameObject.Find("Console(Clone)").GetComponent<ConsoleScript>().active) // console is pulled down (client makes it difficult to read)
             {
-                APCanvas.ShowGUI = false;
+                APCanvas.ShowMainGUI = false;
+                APCanvas.ShowSkillTracker = false;
             }
             else if (GameObject.Find("Main Camera/Canvas/WoundView").activeSelf) // woundview is open (client covers it)
             {
-                APCanvas.ShowGUI = false;
+                APCanvas.ShowMainGUI = false;
+                APCanvas.ShowSkillTracker = true;
             }
             else
             {
-                APCanvas.ShowGUI = true;
+                APCanvas.ShowMainGUI = true;
+                APCanvas.ShowSkillTracker = false;
             }
         }
         catch
         {
-            APCanvas.ShowGUI = true; // default true
+            APCanvas.ShowMainGUI = true; // default true
+            APCanvas.ShowSkillTracker = false;
         }
         APCanvas.UpdateGUIDescriptions();
         if (session is null) return;

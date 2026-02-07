@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using HarmonyLib;
 
 namespace CUAP;
 
@@ -15,6 +16,7 @@ public class Startup : BaseUnityPlugin
     public static new ManualLogSource Logger;
     public static ArchipelagoSession Client;
     public static AssetBundle apassets;
+    private static Harmony apHarmony;
     GameObject Handler;
     GameObject Console;
     GameObject Body;
@@ -31,6 +33,12 @@ public class Startup : BaseUnityPlugin
         var UI = Instantiate(apassets.LoadAsset<GameObject>("APCanvas"));
         DontDestroyOnLoad(UI);
         UI.AddComponent<APCanvas>();
+        apHarmony = new Harmony("nichologeam.cuap.harmony");
+        apHarmony.PatchAll();
+        Logger.LogMessage($"Harmony patches applied!");
+        APCanvas.UpdateSkillsanityValues(0, 60);
+        APCanvas.UpdateSkillsanityValues(1, 60);
+        APCanvas.UpdateSkillsanityValues(2, 60);
     }
     private void Update()
     {
@@ -115,7 +123,7 @@ public class Startup : BaseUnityPlugin
                 Body.AddComponent<DeathlinkManager>();
                 Body.AddComponent<TrapHandler>();
                 Body.AddComponent<ExperimentDialog>();
-                Body.AddComponent<SkillChecks>();
+                Body.AddComponent<SkillReceiving>();
                 Body.AddComponent<LimbUnlocks>();
                 WorldGen = GameObject.Find("World");
                 WorldGen.AddComponent<DepthChecks>();
