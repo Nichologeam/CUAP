@@ -10,7 +10,7 @@ using HarmonyLib;
 
 namespace CUAP;
 
-[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.6.0.2")]
+[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.6.0.3")]
 public class Startup : BaseUnityPlugin
 {
     public static new ManualLogSource Logger;
@@ -26,7 +26,7 @@ public class Startup : BaseUnityPlugin
     private void Awake()
     {
         Logger = base.Logger;
-        Logger.LogMessage($"Casualties: Unknown Archipelago Plugin v0.6.0-pre2 loaded!");
+        Logger.LogMessage($"Casualties: Unknown Archipelago Plugin v0.6.0-pre3 loaded!");
         Handler = new GameObject("Archipelago Handler");
         DontDestroyOnLoad(Handler);
         apassets = AssetBundle.LoadFromFile(Path.Combine(BepInEx.Paths.PluginPath, "CUAP", "apassets"));
