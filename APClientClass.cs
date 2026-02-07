@@ -29,6 +29,8 @@ public class APClientClass
     public static int MaxINT;
     private static double NextSend = 4;
     public static int DepthExtendersRecieved = 0;
+    public static int leftArmUnlocks;
+    public static int rightArmUnlocks;
     private static bool datapackageprocessed = false;
     public static int selectedGoal;
     public static ArchipelagoSession? session;
@@ -141,12 +143,20 @@ public class APClientClass
             }
             if (item.ItemName == "Progressive Left Arm")
             {
-                LimbUnlocks.instance.leftArmUnlocks++;
+                leftArmUnlocks++;
+                if (!APCanvas.InGame) // we're on the main menu
+                {
+                    return;
+                }
                 LimbUnlocks.instance.RestoreLimbs();
             }
             if (item.ItemName == "Progressive Right Arm")
             {
-                LimbUnlocks.instance.rightArmUnlocks++;
+                rightArmUnlocks++;
+                if (!APCanvas.InGame) // we're on the main menu
+                {
+                    return;
+                }
                 LimbUnlocks.instance.RestoreLimbs();
             }
             if (item.ItemName.StartsWith("Progressive ") && item.ItemName != "Progressive Layer")

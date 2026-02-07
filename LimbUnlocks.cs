@@ -6,17 +6,13 @@ namespace CUAP;
 
 public class LimbUnlocks : MonoBehaviour
 {
-    private ArchipelagoSession Client;
     public static LimbUnlocks instance;
     private Body vitals;
     private Limb[] limbs;
-    public int leftArmUnlocks;
-    public int rightArmUnlocks;
 
     private void Start()
     {
         instance = this;
-        Client = APClientClass.session;
         vitals = this.gameObject.GetComponent<Body>();
         limbs = vitals.limbs;
         var options = APClientClass.slotdata;
@@ -29,6 +25,7 @@ public class LimbUnlocks : MonoBehaviour
                 return;
             }
             AmputateAllLimbs();
+            RestoreLimbs();
         }
     }
 
@@ -44,8 +41,8 @@ public class LimbUnlocks : MonoBehaviour
 
     public void RestoreLimbs()
     {
-        RestoreArm(3, leftArmUnlocks);  // Left arm (F)
-        RestoreArm(6, rightArmUnlocks); // Right arm (B)
+        RestoreArm(3, APClientClass.leftArmUnlocks);  // Left arm (F)
+        RestoreArm(6, APClientClass.rightArmUnlocks); // Right arm (B)
     }
     // this technically breaks if you get more than 3 progressive arm items, but you would need to be using the server console or !getitem for that to happen anyway
     private void RestoreArm(int startLimb, int unlocks)
