@@ -32,6 +32,7 @@ public class APCanvas : MonoBehaviour
     private static bool HintProcessing;
     private static GameObject ErrorNotif;
     private static TMP_Text ErrorText;
+    public static TMP_Text versionTag;
     private static bool ErrorProcessing;
     private static Queue<string> ItemQueue = new Queue<string>();
     private static Queue<string> HintQueue = new Queue<string>();
@@ -61,6 +62,7 @@ public class APCanvas : MonoBehaviour
         Password = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background/Password").GetComponent<TMP_InputField>(); // password input
         ConnectButton = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background/Connect").GetComponent<Button>(); // connect to archipelago button
         Status = GameObject.Find("APCanvas(Clone)/APCanvas/Connected Background/Status").GetComponent<TMP_Text>(); // goal status tracker
+        versionTag = GameObject.Find("APCanvas(Clone)/APCanvas/Version Tag").GetComponent<TMP_Text>();
         ConnectButton.onClick.AddListener(OnConnectPressed); // run connect function when button is pressed
         ItemNotif = GameObject.Find("APCanvas(Clone)/APCanvas/Item Notification");
         ItemText = GameObject.Find("APCanvas(Clone)/APCanvas/Item Notification/Notification Message").GetComponent<TMP_Text>();
