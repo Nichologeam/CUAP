@@ -50,24 +50,24 @@ public class APCanvas : MonoBehaviour
     private void Start()
     {
         instance = this;
-        ConnectionBackground = GameObject.Find("APCanvas(Clone)/Canvas/Connection Background"); // containing object for the connection ui
-        ConnectedBackground = GameObject.Find("APCanvas(Clone)/Canvas/Connected Background"); // containing object for the connected ui
-        SkillsanityTracker = GameObject.Find("APCanvas(Clone)/Canvas/Skillsanity"); // containing object for the skillsanity tracker
-        SkillsanitySTR = GameObject.Find("APCanvas(Clone)/Canvas/Skillsanity/STR").GetComponent<TMP_Text>();
-        SkillsanityRES = GameObject.Find("APCanvas(Clone)/Canvas/Skillsanity/RES").GetComponent<TMP_Text>();
-        SkillsanityINT = GameObject.Find("APCanvas(Clone)/Canvas/Skillsanity/INT").GetComponent<TMP_Text>();
-        Ipporttext = GameObject.Find("APCanvas(Clone)/Canvas/Connection Background/IPandPort").GetComponent<TMP_InputField>(); // address and port input
-        Slot = GameObject.Find("APCanvas(Clone)/Canvas/Connection Background/Slot").GetComponent<TMP_InputField>(); // slot name input
-        Password = GameObject.Find("APCanvas(Clone)/Canvas/Connection Background/Password").GetComponent<TMP_InputField>(); // password input
-        ConnectButton = GameObject.Find("APCanvas(Clone)/Canvas/Connection Background/Connect").GetComponent<Button>(); // connect to archipelago button
-        Status = GameObject.Find("APCanvas(Clone)/Canvas/Connected Background/Status").GetComponent<TMP_Text>(); // goal status tracker
+        ConnectionBackground = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background"); // containing object for the connection ui
+        ConnectedBackground = GameObject.Find("APCanvas(Clone)/APCanvas/Connected Background"); // containing object for the connected ui
+        SkillsanityTracker = GameObject.Find("APCanvas(Clone)/APCanvas/Skillsanity"); // containing object for the skillsanity tracker
+        SkillsanitySTR = GameObject.Find("APCanvas(Clone)/APCanvas/Skillsanity/STR").GetComponent<TMP_Text>();
+        SkillsanityRES = GameObject.Find("APCanvas(Clone)/APCanvas/Skillsanity/RES").GetComponent<TMP_Text>();
+        SkillsanityINT = GameObject.Find("APCanvas(Clone)/APCanvas/Skillsanity/INT").GetComponent<TMP_Text>();
+        Ipporttext = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background/IPandPort").GetComponent<TMP_InputField>(); // address and port input
+        Slot = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background/Slot").GetComponent<TMP_InputField>(); // slot name input
+        Password = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background/Password").GetComponent<TMP_InputField>(); // password input
+        ConnectButton = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background/Connect").GetComponent<Button>(); // connect to archipelago button
+        Status = GameObject.Find("APCanvas(Clone)/APCanvas/Connected Background/Status").GetComponent<TMP_Text>(); // goal status tracker
         ConnectButton.onClick.AddListener(OnConnectPressed); // run connect function when button is pressed
-        ItemNotif = GameObject.Find("APCanvas(Clone)/Canvas/Item Notification");
-        ItemText = GameObject.Find("APCanvas(Clone)/Canvas/Item Notification/Notification Message").GetComponent<TMP_Text>();
-        HintNotif = GameObject.Find("APCanvas(Clone)/Canvas/Hint Notification");
-        HintText = GameObject.Find("APCanvas(Clone)/Canvas/Hint Notification/Notification Message").GetComponent<TMP_Text>();
-        ErrorNotif = GameObject.Find("APCanvas(Clone)/Canvas/Error Notification");
-        ErrorText = GameObject.Find("APCanvas(Clone)/Canvas/Error Notification/Notification Message").GetComponent<TMP_Text>();
+        ItemNotif = GameObject.Find("APCanvas(Clone)/APCanvas/Item Notification");
+        ItemText = GameObject.Find("APCanvas(Clone)/APCanvas/Item Notification/Notification Message").GetComponent<TMP_Text>();
+        HintNotif = GameObject.Find("APCanvas(Clone)/APCanvas/Hint Notification");
+        HintText = GameObject.Find("APCanvas(Clone)/APCanvas/Hint Notification/Notification Message").GetComponent<TMP_Text>();
+        ErrorNotif = GameObject.Find("APCanvas(Clone)/APCanvas/Error Notification");
+        ErrorText = GameObject.Find("APCanvas(Clone)/APCanvas/Error Notification/Notification Message").GetComponent<TMP_Text>();
         APCanvas.UpdateSkillsanityValues(0, 60);
         APCanvas.UpdateSkillsanityValues(1, 60);
         APCanvas.UpdateSkillsanityValues(2, 60);
