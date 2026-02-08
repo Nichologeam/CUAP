@@ -378,16 +378,16 @@ public class Moodlesanity : MonoBehaviour
         Moodle[] moodleComponents = Moodles.GetComponentsInChildren<Moodle>();
         foreach (Moodle mood in moodleComponents) // For each moodle, send its check.
         {
+            if (AlreadySentChecks.Contains(mood.type))
+            {
+                continue; // Avoid spamming the server by not even attempting to send a check we already have sent.
+            }
+            if (mood.type == "lowimmunity1" && worldgen.loadingObject.activeSelf)
+            {
+                continue; // There's a bug where Experiment is Immunocompromised for the first few frames during worldgen. This if statement makes the check not send in that case.
+            }
             if (!questboardMode) // normal mode
             {
-                if (AlreadySentChecks.Contains(mood.type))
-                {
-                    continue; // Avoid spamming the server by not even attempting to send a check we already have sent.
-                }
-                if (mood.type == "lowimmunity1" && worldgen.loadingObject.activeSelf)
-                {
-                    continue; // There's a bug where Experiment is Immunocompromised for the first few frames during worldgen. This if statement makes the check not send in that case.
-                }
                 var moodleIndex = MoodleInternalNameList.IndexOf(mood.type);
                 if (moodleIndex == -1) // couldn't find it. try secondary method
                 {
@@ -397,6 +397,7 @@ public class Moodlesanity : MonoBehaviour
                     {
                         Startup.Logger.LogError($"Moodle {mood.type} is not in the Moodlesanity index list!");
                         APCanvas.EnqueueArchipelagoNotification($"Moodlesanity Error! Moodle {mood.type} is not in the Moodlesanity index list!", 3);
+                        AlreadySentChecks.Add(mood.type);
                         continue;
                     }
                 }
@@ -411,6 +412,7 @@ public class Moodlesanity : MonoBehaviour
                 {
                     Startup.Logger.LogError($"Could not find assocaited check for moodle {mood.type}!");
                     APCanvas.EnqueueArchipelagoNotification($"Moodlesanity Error! Could not find assocaited check for moodle {mood.type}!", 3);
+                    AlreadySentChecks.Add(mood.type);
                     continue;
                 }
                 if (questsAvailable.Contains(checkName))
