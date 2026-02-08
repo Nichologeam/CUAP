@@ -24,6 +24,16 @@ public class APCanvas : MonoBehaviour
     private static TMP_Text SkillsanitySTR;
     private static TMP_Text SkillsanityRES;
     private static TMP_Text SkillsanityINT;
+    private GameObject MoodlesanityQuestboard;
+    private static Image Moodle1Image;
+    private static TMP_Text Moodle1Text;
+    private static Image Moodle2Image;
+    private static TMP_Text Moodle2Text;
+    private static Image Moodle3Image;
+    private static TMP_Text Moodle3Text;
+    private static Image Moodle4Image;
+    private static TMP_Text Moodle4Text;
+    private static int UnlockedSlots = 1;
     private static GameObject ItemNotif;
     private static TMP_Text ItemText;
     private static bool ItemProcessing;
@@ -57,6 +67,15 @@ public class APCanvas : MonoBehaviour
         SkillsanitySTR = GameObject.Find("APCanvas(Clone)/APCanvas/Skillsanity/STR").GetComponent<TMP_Text>();
         SkillsanityRES = GameObject.Find("APCanvas(Clone)/APCanvas/Skillsanity/RES").GetComponent<TMP_Text>();
         SkillsanityINT = GameObject.Find("APCanvas(Clone)/APCanvas/Skillsanity/INT").GetComponent<TMP_Text>();
+        MoodlesanityQuestboard = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard"); // containing object for the moodlesanity quests
+        Moodle1Image = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard/Moodle Image 1").GetComponent<Image>();
+        Moodle1Text = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard/Moodle Name 1").GetComponent<TMP_Text>();
+        Moodle2Image = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard/Moodle Image 2").GetComponent<Image>();
+        Moodle2Text = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard/Moodle Name 2").GetComponent<TMP_Text>();
+        Moodle3Image = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard/Moodle Image 3").GetComponent<Image>();
+        Moodle3Text = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard/Moodle Name 3").GetComponent<TMP_Text>();
+        Moodle4Image = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard/Moodle Image 4").GetComponent<Image>();
+        Moodle4Text = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard/Moodle Name 4").GetComponent<TMP_Text>();
         Ipporttext = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background/IPandPort").GetComponent<TMP_InputField>(); // address and port input
         Slot = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background/Slot").GetComponent<TMP_InputField>(); // slot name input
         Password = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background/Password").GetComponent<TMP_InputField>(); // password input
@@ -70,9 +89,9 @@ public class APCanvas : MonoBehaviour
         HintText = GameObject.Find("APCanvas(Clone)/APCanvas/Hint Notification/Notification Message").GetComponent<TMP_Text>();
         ErrorNotif = GameObject.Find("APCanvas(Clone)/APCanvas/Error Notification");
         ErrorText = GameObject.Find("APCanvas(Clone)/APCanvas/Error Notification/Notification Message").GetComponent<TMP_Text>();
-        APCanvas.UpdateSkillsanityValues(0, 60);
-        APCanvas.UpdateSkillsanityValues(1, 60);
-        APCanvas.UpdateSkillsanityValues(2, 60);
+        UpdateSkillsanityValues(0, 60);
+        UpdateSkillsanityValues(1, 60);
+        UpdateSkillsanityValues(2, 60);
         if (!File.Exists("ApConnection.txt")) return; // Read saved slot information from file
         var fileText = File.ReadAllText("ApConnection.txt").Replace("\r", "").Split('\n');
         Ipporttext.text = fileText[0];
@@ -95,10 +114,12 @@ public class APCanvas : MonoBehaviour
         {
             SkillsanityTracker.SetActive(true);
         }
+        MoodlesanityQuestboard.SetActive(InGame);
         if (!ShowMainGUI)
         {
             ConnectedBackground.SetActive(false);
             ConnectedBackground.SetActive(false);
+            MoodlesanityQuestboard.SetActive(false);
             return;
         }
         if (!IsConnected())
@@ -226,6 +247,44 @@ public class APCanvas : MonoBehaviour
                 Startup.Logger.LogError($"Skillsanity Error: UpdateSkillsanityValues was called with an invalid skill ({skill})");
                 EnqueueArchipelagoNotification($"Skillsanity Error: UpdateSkillsanityValues was called with invald skill ({skill})",3);
                 break;
+        }
+    }
+    public static void UpdateQuestboard(bool unlockingSlot = false)
+    {// if you think this looks bad, the basegame moodle code is worse
+        if (unlockingSlot)
+        {
+            UnlockedSlots++;
+        }
+        if (!InGame) return;
+        CheckIfOutOfSlots();
+        Moodle1Text.text = Moodlesanity.questsAvailable[0].Replace("Moodlesanity - ","");
+        Moodle1Image.sprite = Resources.Load<Sprite>($"moodles/{Moodlesanity.CheckToInternalMoodID.GetValueOrDefault(Moodlesanity.questsAvailable[0])}");
+        Debug.Log($"Moodle/{Moodlesanity.CheckToInternalMoodID.GetValueOrDefault(Moodlesanity.questsAvailable[0])}");
+        if (UnlockedSlots < 2 || !(Moodlesanity.questsAvailable.Count >= 2)) return;
+        Moodle2Text.text = Moodlesanity.questsAvailable[1].Replace("Moodlesanity - ", "");
+        Moodle2Image.sprite = Resources.Load<Sprite>($"moodles/{Moodlesanity.CheckToInternalMoodID.GetValueOrDefault(Moodlesanity.questsAvailable[1])}");
+        if (UnlockedSlots < 3 || !(Moodlesanity.questsAvailable.Count >= 3)) return;
+        Moodle3Text.text = Moodlesanity.questsAvailable[2].Replace("Moodlesanity - ", "");
+        Moodle3Image.sprite = Resources.Load<Sprite>($"moodles/{Moodlesanity.CheckToInternalMoodID.GetValueOrDefault(Moodlesanity.questsAvailable[2])}");
+        if (UnlockedSlots < 4 || !(Moodlesanity.questsAvailable.Count >= 4)) return;
+        Moodle4Text.text = Moodlesanity.questsAvailable[3].Replace("Moodlesanity - ", "");
+        Moodle4Image.sprite = Resources.Load<Sprite>($"moodles/{Moodlesanity.CheckToInternalMoodID.GetValueOrDefault(Moodlesanity.questsAvailable[3])}");
+    }
+    private static void CheckIfOutOfSlots()
+    {
+        if (UnlockedSlots > Moodlesanity.questsAvailable.Count)
+        {
+            Moodle1Text.text = "Out of quests!";
+            Moodle1Image.sprite = Startup.apassets.LoadAsset<Sprite>("aplogo200");
+            if (UnlockedSlots < 2) return;
+            Moodle2Text.text = "Out of quests!";
+            Moodle2Image.sprite = Startup.apassets.LoadAsset<Sprite>("aplogo200");
+            if (UnlockedSlots < 3) return;
+            Moodle3Text.text = "Out of quests!";
+            Moodle3Image.sprite = Startup.apassets.LoadAsset<Sprite>("aplogo200");
+            if (UnlockedSlots < 4) return;
+            Moodle4Text.text = "Out of quests!";
+            Moodle4Image.sprite = Startup.apassets.LoadAsset<Sprite>("aplogo200");
         }
     }
     public static void EnqueueArchipelagoNotification(string text, int severity)

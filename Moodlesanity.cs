@@ -1,7 +1,8 @@
 ﻿using Archipelago.MultiClient.Net;
-using System;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
-using System.Reflection;
+using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace CUAP;
@@ -12,8 +13,12 @@ public class Moodlesanity : MonoBehaviour
     private MoodleManager Moodles;
     public List<string> AlreadySentChecks = new List<string>();
     private WorldGeneration worldgen;
+    public static bool questboardMode = false;
+    private static List<string> questboardList = [];
+    public static List<string> questsAvailable = [];
+    public static int maxQuests = 14;
     private static readonly long startingMoodleId = 22318200;
-    private static List<string> MoodleNameList = new List<string>()
+    private static List<string> MoodleInternalNameList = new List<string>()
     {   // In the same order as in locations.py and the game's EN.json
         "braindamage3",
         "braindamage2",
@@ -60,8 +65,8 @@ public class Moodlesanity : MonoBehaviour
         "dislocation",
         "brokenneck1",
         "brokenribs1",
-        "dislocatedjaw1",
-        "dislocatedspine1",
+        "dislocatedjaw",
+        "dislocatedspine",
         "infected0",
         "infected1",
         "infected2",
@@ -164,6 +169,180 @@ public class Moodlesanity : MonoBehaviour
         "impendingdoom1",
         "horrified3",
     };
+    private static Dictionary<string, string> InternalMoodNameToCheck = new Dictionary<string, string>()
+    {
+        {"braindamage3","Moodlesanity - Comatose"},
+        {"braindamage2","Moodlesanity - Severe neurophysiological deterioration"},
+        {"braindamage1","Moodlesanity - Neurological damage"},
+        {"braindamage0","Moodlesanity - Cognitive impairment"},
+        {"cantbreathe3","Moodlesanity - Respiratory arrest"},
+        {"thoraxdestroyed3","Moodlesanity - Lung failure"},
+        {"oxygen0","Moodlesanity - Hypoxemic"},
+        {"oxygen1","Moodlesanity - Very hypoxemic"},
+        {"oxygen2","Moodlesanity - Asphyxiating"},
+        {"cardiacarrest3","Moodlesanity - Cardiac arrest"},
+        {"pain0","Moodlesanity - Discomfort"},
+        {"pain1","Moodlesanity - Pain"},
+        {"pain2","Moodlesanity - Severe pain"},
+        {"pain3","Moodlesanity - Agony"},
+        {"shock3","Moodlesanity - Shock"},
+        {"overdose0","Moodlesanity - Opiated"},
+        {"overdose1","Moodlesanity - Drugged"},
+        {"overdose2","Moodlesanity - Highly drugged"},
+        {"overdose3","Moodlesanity - Fatal opioid overdose"},
+        {"withdrawl0","Moodlesanity - Opioid craving"},
+        {"withdrawl1","Moodlesanity - Withdrawl"},
+        {"withdrawl2","Moodlesanity - Severe withdrawl"},
+        {"withdrawl3","Moodlesanity - Dying of withdrawl"},
+        {"drugoverdose3","Moodlesanity - Drug overdose"},
+        {"bleeding0","Moodlesanity - Minor bleeding"},
+        {"bleeding1","Moodlesanity - Bleeding"},
+        {"bleeding2","Moodlesanity - Heavy bleeding"},
+        {"bleeding3","Moodlesanity - Catastrophic bleeding"},
+        {"internalBleed1","Moodlesanity - Internal bleeding"},
+        {"lowbloodvolume0","Moodlesanity - Pale"},
+        {"lowbloodvolume1","Moodlesanity - Hypovolemic"},
+        {"lowbloodvolume2","Moodlesanity - Critically hypovolemic"},
+        {"lowbloodvolume3","Moodlesanity - Exsanguinated"},
+        {"highbloodvolume0","Moodlesanity - Bloated"},
+        {"highbloodvolume1","Moodlesanity - Hypervolemic"},
+        {"highbloodvolume2","Moodlesanity - Critically hypervolemic"},
+        {"highbloodvolume3","Moodlesanity - Lethally hypervolemic"},
+        {"exertion0","Moodlesanity - Slightly exerted"},
+        {"exertion1","Moodlesanity - Exerted"},
+        {"exertion2","Moodlesanity - Highly exerted"},
+        {"exertion3","Moodlesanity - Totally exhausted"},
+        {"brokenbone0","Moodlesanity - Fractured bone"},
+        {"brokenbone1","Moodlesanity - Fractured bone"},
+        {"brokenbone2","Moodlesanity - Fractured bone"},
+        {"brokenbone3","Moodlesanity - Fractured bone"},
+        {"dislocation0","Moodlesanity - Dislocated joint"},
+        {"dislocation1","Moodlesanity - Dislocated joint"},
+        {"dislocation2","Moodlesanity - Dislocated joint"},
+        {"dislocation3","Moodlesanity - Dislocated joint"},
+        {"brokenneck1","Moodlesanity - Fractured neck"},
+        {"brokenribs1","Moodlesanity - Fractured ribs"},
+        {"dislocatedjaw0","Moodlesanity - Dislocated jaw"},
+        {"dislocatedjaw1","Moodlesanity - Dislocated jaw"},
+        {"dislocatedjaw2","Moodlesanity - Dislocated jaw"},
+        {"dislocatedjaw3","Moodlesanity - Dislocated jaw"},
+        {"dislocatedspine0","Moodlesanity - Dislocated spine"},
+        {"dislocatedspine1","Moodlesanity - Dislocated spine"},
+        {"dislocatedspine2","Moodlesanity - Dislocated spine"},
+        {"dislocatedspine3","Moodlesanity - Dislocated spine"},
+        {"infected0","Moodlesanity - Infection"},
+        {"infected1","Moodlesanity - Painful infection"},
+        {"infected2","Moodlesanity - Severe infection"},
+        {"infected3","Moodlesanity - Life-threatening infection"},
+        {"sepsis1","Moodlesanity - Sepsis"},
+        {"sepsis2","Moodlesanity - Severe sepsis"},
+        {"sepsis3","Moodlesanity - Septic shock"},
+        {"concussion3","Moodlesanity - Concussed"},
+        {"unconscious3","Moodlesanity - Unconscious"},
+        {"confused3","Moodlesanity - Incapacitated"},
+        {"asleep4","Moodlesanity - Sleeping"},
+        {"confused0","Moodlesanity - Confused"},
+        {"confused1","Moodlesanity - Very confused"},
+        {"confused2","Moodlesanity - Fainting"},
+        {"tired0","Moodlesanity - Drowsy"},
+        {"tired1","Moodlesanity - Tired"},
+        {"tired2","Moodlesanity - Very tired"},
+        {"tired3","Moodlesanity - Half-asleep"},
+        {"hunger0","Moodlesanity - Peckish"},
+        {"hunger1","Moodlesanity - Hungry"},
+        {"hunger2","Moodlesanity - Very hungry"},
+        {"hunger3","Moodlesanity - Starving"},
+        {"hunger4","Moodlesanity - Satiated"},
+        {"hunger5","Moodlesanity - Full"},
+        {"thirst0","Moodlesanity - Thirsty"},
+        {"thirst1","Moodlesanity - Dehydrated"},
+        {"thirst2","Moodlesanity - Parched"},
+        {"thirst3","Moodlesanity - Desiccated"},
+        {"overhydrated0","Moodlesanity - Slaked"},
+        {"overhydrated1","Moodlesanity - Overhydrated"},
+        {"overhydrated2","Moodlesanity - Water-intoxicated"},
+        {"sick0","Moodlesanity - Queasy"},
+        {"sick1","Moodlesanity - Nauseous"},
+        {"sick2","Moodlesanity - Sick"},
+        {"sick3","Moodlesanity - Grossly sick"},
+        {"hot0","Moodlesanity - Warm"},
+        {"hot1","Moodlesanity - Hot"},
+        {"hot2","Moodlesanity - Hyperthermia"},
+        {"hot3","Moodlesanity - Heatstroke"},
+        {"cold0","Moodlesanity - Chilly"},
+        {"cold1","Moodlesanity - Cold"},
+        {"cold2","Moodlesanity - Hypothermia"},
+        {"cold3","Moodlesanity - Freezing to death"},
+        {"wet0","Moodlesanity - Damp"},
+        {"wet1","Moodlesanity - Wet"},
+        {"wet2","Moodlesanity - Soaked"},
+        {"wet3","Moodlesanity - Water-logged"},
+        {"underweight0","Moodlesanity - Underweight"},
+        {"underweight1","Moodlesanity - Skinny"},
+        {"underweight2","Moodlesanity - Malnourished"},
+        {"underweight3","Moodlesanity - Emaciated"},
+        {"overweight0","Moodlesanity - Chubby"},
+        {"overweight1","Moodlesanity - Overweight"},
+        {"overweight2","Moodlesanity - Fat"},
+        {"overweight3","Moodlesanity - Obese"},
+        {"sad0","Moodlesanity - Feeling down"},
+        {"gloomy1","Moodlesanity - Gloomy"},
+        {"depression2","Moodlesanity - Depressed"},
+        {"miserable3","Moodlesanity - Miserable"},
+        {"trauma1","Moodlesanity - Scared"},
+        {"trauma2","Moodlesanity - Traumatized"},
+        {"trauma3","Moodlesanity - Shell shocked"},
+        {"happy4","Moodlesanity - Satisfied"},
+        {"happy5","Moodlesanity - Excited"},
+        {"happy6","Moodlesanity - Happy"},
+        {"happy7","Moodlesanity - Gleeful"},
+        {"impairedspeech0","Moodlesanity - Impaired speech"},
+        {"hearingloss0","Moodlesanity - Impaired hearing"},
+        {"hearingloss1","Moodlesanity - Hearing loss"},
+        {"hearingloss2","Moodlesanity - Severe hearing loss"},
+        {"autopump4","Moodlesanity - Life support"},
+        {"autopump5","Moodlesanity - Life support"},
+        {"autopump6","Moodlesanity - Life support"},
+        {"autopump7","Moodlesanity - Life support"},
+        {"encumbered0","Moodlesanity - Heavy load"},
+        {"encumbered1","Moodlesanity - Encumbered"},
+        {"encumbered2","Moodlesanity - Very encumbered"},
+        {"encumbered3","Moodlesanity - Hampered"},
+        {"irradiated0","Moodlesanity - Uncomfortable"},
+        {"irradiated1","Moodlesanity - Radiation sickness"},
+        {"irradiated2","Moodlesanity - Severe radiation sickness"},
+        {"irradiated3","Moodlesanity - Chernobyl wannabe"},
+        {"energized5","Moodlesanity - Energized"},
+        {"hemothorax1","Moodlesanity - Hemothorax"},
+        {"hollow0","Moodlesanity - Hollow"},
+        {"badsleep0","Moodlesanity - Bad sleep"},
+        {"lastleg8","Moodlesanity - Last stand"},
+        {"dirty0","Moodlesanity - Dirty"},
+        {"dirty1","Moodlesanity - Very dirty"},
+        {"fightorflight0","Moodlesanity - Adrenaline"},
+        {"fightorflight1","Moodlesanity - Adrenaline"},
+        {"tachycardia0","Moodlesanity - Tachycardia"},
+        {"tachycardia1","Moodlesanity - Tachycardia"},
+        {"bradycardia0","Moodlesanity - Bradycardia"},
+        {"bradycardia1","Moodlesanity - Bradycardia"},
+        {"rnrs0","Moodlesanity - Rapid neuron regeneration sickness"},
+        {"rippedjaw3","Moodlesanity - Disfigured"},
+        {"rippedeye2","Moodlesanity - Half-blind"},
+        {"rippedeye3","Moodlesanity - Blind"},
+        {"lowimmunity1","Moodlesanity - Immunocompromised"},
+        {"highimmunity5","Moodlesanity - Immunocompetent"},
+        {"amputation3","Moodlesanity - Amputated"},
+        {"clawdamage0","Moodlesanity - Dulled claws"},
+        {"clawdamage1","Moodlesanity - Broken claws"},
+        {"keratinbooster5","Moodlesanity - Boosted regrowth"},
+        {"impendingdoom1","Moodlesantiy - Sense of impending doom"},
+        {"horrified3","Moodlesanity - HORRIFIED"},
+    };
+    public static Dictionary<string, string> CheckToInternalMoodID = InternalMoodNameToCheck.GroupBy(kv => kv.Value)
+    .ToDictionary(
+        g => g.Key,
+        g => Regex.Replace(g.First().Key, @"\d+$", "") // remove numbers
+    );
 
     private void OnEnable()
     {
@@ -173,11 +352,23 @@ public class Moodlesanity : MonoBehaviour
         var options = APClientClass.slotdata;
         if (options.TryGetValue("Moodlesanity", out var moodlesanityoption)) // check if moodlesanity is enabled.
         {
-            if (!Convert.ToBoolean(moodlesanityoption))
+            if ((long)moodlesanityoption == 1)
             {
                 Startup.Logger.LogWarning("Moodlesanity is disabled, destroying script.");
                 DestroyImmediate(this);
                 return;
+            }
+            if ((long)moodlesanityoption == 2) // questboard
+            {
+                questboardMode = true;
+                options.TryGetValue("QuestboardOrder", out object list);
+                if (list is JArray jArray) // always will be true
+                {
+                    questboardList = jArray
+                    .Select(jv => jv.ToString())
+                    .ToList();
+                }
+                RefreshMaxQuests(false);
             }
         }
         Startup.Logger.LogMessage("Moodlesanity is monitoring moodles...");
@@ -187,28 +378,68 @@ public class Moodlesanity : MonoBehaviour
         Moodle[] moodleComponents = Moodles.GetComponentsInChildren<Moodle>();
         foreach (Moodle mood in moodleComponents) // For each moodle, send its check.
         {
-            if (AlreadySentChecks.Contains(mood.type))
+            if (!questboardMode) // normal mode
             {
-                continue; // Avoid spamming the server by not even attempting to send a check we already have sent.
-            }
-            if (mood.type == "lowimmunity1" && worldgen.loadingObject.activeSelf)
-            {
-                continue; // There's a bug where Experiment is Immunocompromised for the first few frames during worldgen. This if statement makes the check not send in that case.
-            }
-            var moodleIndex = MoodleNameList.IndexOf(mood.type);
-            if (moodleIndex == -1) // couldn't find it. try secondary method
-            {
-                string baseName = System.Text.RegularExpressions.Regex.Replace(mood.type, @"\d+$", ""); // remove the number at the end
-                moodleIndex = MoodleNameList.FindIndex(name => System.Text.RegularExpressions.Regex.Replace(name, @"\d+$", "") == baseName);
-                if (moodleIndex == -1) // still not found? throw error
+                if (AlreadySentChecks.Contains(mood.type))
                 {
-                    Startup.Logger.LogError($"Moodle {mood.type} is not in the Moodlesanity index list!");
-                    APCanvas.EnqueueArchipelagoNotification($"Moodlesanity Error! Moodle {mood.type} is not in the Moodlesanity index list!",3);
+                    continue; // Avoid spamming the server by not even attempting to send a check we already have sent.
+                }
+                if (mood.type == "lowimmunity1" && worldgen.loadingObject.activeSelf)
+                {
+                    continue; // There's a bug where Experiment is Immunocompromised for the first few frames during worldgen. This if statement makes the check not send in that case.
+                }
+                var moodleIndex = MoodleInternalNameList.IndexOf(mood.type);
+                if (moodleIndex == -1) // couldn't find it. try secondary method
+                {
+                    string baseName = System.Text.RegularExpressions.Regex.Replace(mood.type, @"\d+$", ""); // remove the number at the end
+                    moodleIndex = MoodleInternalNameList.FindIndex(name => System.Text.RegularExpressions.Regex.Replace(name, @"\d+$", "") == baseName);
+                    if (moodleIndex == -1) // still not found? throw error
+                    {
+                        Startup.Logger.LogError($"Moodle {mood.type} is not in the Moodlesanity index list!");
+                        APCanvas.EnqueueArchipelagoNotification($"Moodlesanity Error! Moodle {mood.type} is not in the Moodlesanity index list!", 3);
+                        continue;
+                    }
+                }
+                var CheckID = moodleIndex + startingMoodleId;
+                APClientClass.ChecksToSend.Add(CheckID);
+                AlreadySentChecks.Add(mood.type);
+            }
+            else // questboard mode
+            {
+                InternalMoodNameToCheck.TryGetValue(mood.type, out string checkName);
+                if (checkName == null) // not found
+                {
+                    Startup.Logger.LogError($"Could not find assocaited check for moodle {mood.type}!");
+                    APCanvas.EnqueueArchipelagoNotification($"Moodlesanity Error! Could not find assocaited check for moodle {mood.type}!", 3);
+                    continue;
+                }
+                if (questsAvailable.Contains(checkName))
+                {
+                    var CheckID = Client.Locations.GetLocationIdFromName(Client.Players.ActivePlayer.Game, checkName);
+                    APClientClass.ChecksToSend.Add(CheckID);
+                    questsAvailable.Remove(checkName); // this acts as our duplicate protection. no need to use AlreadySentChecks
+                    APCanvas.UpdateQuestboard(false);
                 }
             }
-            var CheckID = moodleIndex + startingMoodleId;
-            APClientClass.ChecksToSend.Add(CheckID);
-            AlreadySentChecks.Add(mood.type);
         }
+    }
+    public static void RefreshMaxQuests(bool increase)
+    {
+        if (increase)
+        {
+            maxQuests += 15;
+        }
+        questsAvailable.Clear();
+        int max = Mathf.Min(maxQuests, questboardList.Count);
+        for (int i = 0; i < max; i++)
+        {
+            string moodle = questboardList[i];
+            long locationId = Client.Locations.GetLocationIdFromName(Client.Players.ActivePlayer.Game, moodle);
+            if (!Client.Locations.AllLocationsChecked.Contains(locationId)) // do we have this already? only add it if we don't
+            {
+                questsAvailable.Add(moodle);
+            }
+        }
+        APCanvas.UpdateQuestboard(false);
     }
 }

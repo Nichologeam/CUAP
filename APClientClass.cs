@@ -154,6 +154,14 @@ public class APClientClass
             {
                 DepthExtendersRecieved++;
             }
+            if (item.ItemName == "Progressive Quests")
+            {
+                Moodlesanity.RefreshMaxQuests(true);
+            }
+            if (item.ItemName == "Questboard Slot")
+            {
+                APCanvas.UpdateQuestboard(unlockingSlot: true);
+            }
             if (item.ItemName == "Progressive Left Arm")
             {
                 leftArmUnlocks++;

@@ -268,13 +268,12 @@ public class CommandPatch : MonoBehaviour
             if (APCanvas.InGame)
             {
                 GameObject.Find("World").GetComponent<DepthChecks>().AlreadySentChecks.Clear();
-                // SkillChecks.alreadySentChecks.Clear();
                 try { GameObject.Find("Main Camera/Canvas/Moodles").GetComponent<Moodlesanity>().AlreadySentChecks.Clear(); }
                 catch { }
                 try { CraftingChecks.AlreadySentChecks.Clear(); }
                 catch { }
             }
-            Console.LogToConsole("CUAP: Data cleared.");
+            Console.LogToConsole("CUAP: Data cleared. Run apreportbug if the issue persists.");
         }, null, Array.Empty<ValueTuple<string, string>>()));
         ConsoleScript.Commands.Add(new Command("apsetskill", "Force set a skill to a certain level. Only works if Skillsanity is enabled.", delegate (string[] args)
         {
@@ -300,6 +299,14 @@ public class CommandPatch : MonoBehaviour
             new ValueTuple<string, string>("skill", "Which skill to change the level of."),
             new ValueTuple<string, string>("level", "What level to set the skill to.")
         }));
+        ConsoleScript.Commands.Add(new Command("apfixquests", "Forces the questboard to refresh sent checks. Use this if a quest didn't send properly.", delegate (string[] args)
+        {
+            if (APCanvas.InGame)
+            {
+                Moodlesanity.RefreshMaxQuests(false);
+            }
+            Console.LogToConsole("CUAP: Quests refreshed. Run apreportbug if the issue persists.");
+        }, null, Array.Empty<ValueTuple<string, string>>()));
     }
     public static IEnumerator CaptureScreenshot()
     {   // this is incredibly dumb, but it works
