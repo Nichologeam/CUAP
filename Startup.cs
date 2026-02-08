@@ -10,12 +10,12 @@ using HarmonyLib;
 
 namespace CUAP;
 
-[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.6.0.4")]
+[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.6.0.0")]
 public class Startup : BaseUnityPlugin
 {
     public static new ManualLogSource Logger;
     public static ArchipelagoSession Client;
-    public static string CUAPVersion = "v0.6.0-pre4";
+    public static string CUAPVersion = "v0.6.0";
     public static AssetBundle apassets;
     private static Harmony apHarmony;
     GameObject Handler;
