@@ -59,5 +59,5 @@ The in-game debug console now has various new Archipelago-related commands. You 
 
 # **Support for Other Mods**
 This mod doesn't have native support for any other mods, however, a few mods are on my radar.
-- Casualties Together: Shared BepInEx version, making for easy install and replacement. The two do not work together.
-- QOL Unknown: A small change was pushed in v0.6.0-pre4 to fix compatability with this mod. The two will run together, but a bugfree experience is not guarenteed.
+- [Casualties Together](https://github.com/Krokosha666/cas-unk-krokosha-multiplayer-coop): Shared BepInEx version. The two do not work together, especially since they don't support the same game version.
+- [QoL Unknown](https://itch.io/post/15369846): A small change was pushed in v0.6.0-pre4 to fix compatability with this mod. The two will run together, but a bugfree experience is not guarenteed.
