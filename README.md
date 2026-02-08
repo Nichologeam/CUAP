@@ -1,15 +1,13 @@
-### Casualties: Unknown Archipelago
+### Casualties: Together Archipelago
 
-This mod is made for the V5PreTesting5 version of Casualties: Unknown, which can be downloaded from the game's [Itch page](https://orsonik.itch.io/scav-prototype). Make sure you download V5PreTesting5 and not V4.1.
+This mod is made for the V5PreTesting4 version of Casualties: Unknown, specifically with the [Casualties: Together](https://github.com/danxnader/ScavKRInstaller) mod also installed.
 
 # **Installing The Mod**
-1. Download BepInEx v5.4.23.3 from its [Github Page](https://github.com/BepInEx/BepInEx/releases/tag/v5.4.23.3)
-2. Extract the zip folder into the game's directory
-    - If done correctly, a BepInEx folder should appear
-3. Launch Casualties Unknown once to configure BepInEx
-    - If done correctly, a Plugins folder should appear in the BepInEx folder
-4. Download and install the client mod by extracting the CUAPClientModx.x.x.zip folder into the newly created Plugins folder
-	- If done correctly, a CUAP folder should appear (not CUAPClientModx.x.x)
+1. Download the Casualties: Together installer from its [Github Page](https://github.com/danxnader/ScavKRInstaller)
+2. Run the installer. This will install C:T and BepInEx
+3. Download the latest release of CUAP (specifically a version labled `CT vx.x.x`, the others are for unmodded games)
+4. Download and install the client mod by extracting the CUAPCTClientModx.x.x.zip folder into the BepInEx/Plugins folder
+	- If done correctly, a CUAP folder should appear (not CUAPCTClientModx.x.x)
 
 # **Creating Your .yaml Settings**
 There are two ways to edit your .yaml file, and what you pick comes down to convenience.
@@ -18,7 +16,8 @@ There are two ways to edit your .yaml file, and what you pick comes down to conv
 2. Download the APWorld and place it into the custom_worlds folder of your Archipelago install, restarting the launcher if it was open
      - If you don't know where this is, the Archipelago Launcher comes with a `Browse Files` option
      - Fresh installs of Archipelago also create a desktop shortcut to the Archipelago folder
-3. In the Archipelago Launcher, open the `Options Creator`, and select `Casualties: Unknown` on the left side
+     - Make sure you get the Casualties: Together version of the APWorld! The client won't connect without it!
+3. In the Archipelago Launcher, open the `Options Creator`, and select `Casualties: Together` on the left side
 4. Fill out your desired options. You can hover over the option names for descriptions on what each of them does
 5. Once finished, select `Export` in the top right corner. Send that file to the world host, or check the [Archipelago Website](https://archipelago.gg/tutorial/Archipelago/setup_en#hosting-an-archipelago-server) for instructions on how to host yourself
 
@@ -40,9 +39,11 @@ This method is more hands-on, but you don't have to download anything more than 
 5. If anything goes wrong while playing, please let me know. This is still in development, and bugs may happen
 	- You can contact me in the AP After Dark Discord in the Casualties: Unknown thread in #future-game-design
 	- or in the Target Planet Discord in the C:U Multiworld Randomizer (Archipelago) thread in #art
+    - Please specify that you are using the Casualties: Together version of the mod!
 
 # **In-game Text Client**
-The in-game debug console now has various new Archipelago-related commands. You can open the in-game debug console with ~
+The in-game debug console now has various new Archipelago-related commands. You can open the in-game debug console with ~.
+All command output and incoming Archipelago messages will show up in the Casualties: Together chat as a server message.
 - apdeathlink [severity]: Enables or disables DeathLink. 'kill' kills Experiment. 'limbdamage' does a moderate amount of damage to a random limb
 - apchat [text]: Send a chat message to Archipelago
 - aphint [item]: Alias for `apchat !hint`. Leave [item] empty for a hint status update
@@ -59,5 +60,5 @@ The in-game debug console now has various new Archipelago-related commands. You 
 
 # **Support for Other Mods**
 This mod doesn't have native support for any other mods, however, a few mods are on my radar.
-- [Casualties Together](https://github.com/Krokosha666/cas-unk-krokosha-multiplayer-coop): Shared BepInEx version. The two do not work together, especially since they don't support the same game version.
-- [QoL Unknown](https://itch.io/post/15369846): A small change was pushed in v0.6.0-pre4 to fix compatability with this mod. The two will run together, but a bugfree experience is not guarenteed.
+- [Casualties Together](https://github.com/Krokosha666/cas-unk-krokosha-multiplayer-coop): You're here!
+- [QoL Unknown](https://itch.io/post/15369846): This mod works on the main version, but doesn't on the C:T version of CUAP (mainly because it targets V5Pretesting5).
