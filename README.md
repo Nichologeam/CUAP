@@ -56,3 +56,8 @@ The in-game debug console now has various new Archipelago-related commands. You 
 - apresetantispam: Clears local records of sent checks, allowing them to be sent again. Use this if a certain location isn't sending
 - apsetskill: Forces Skillsanity's received skills to be a certain value. Use this if your skills desync from what you've actually received
 - apfixquests: Forces Moodlesanity's questboard to refresh which checks have been sent. Use this if a quest didn't send properly
+
+# **Support for Other Mods**
+This mod doesn't have native support for any other mods, however, a few mods are on my radar.
+- Casualties Together: Shared BepInEx version, making for easy install and replacement. The two do not work together.
+- QOL Unknown: A small change was pushed in v0.6.0-pre4 to fix compatability with this mod. The two will run together, but a bugfree experience is not guarenteed.
