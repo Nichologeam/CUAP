@@ -87,17 +87,17 @@ public class APClientClass
             {
                 selectedGoal = Convert.ToInt32(goal);
             }
-            if (slotdata.TryGetValue("APWorldVersion", out object version))
+            if (slotdata.TryGetValue("APWorldVersion", out object serverVersion))
             {
-                version = Convert.ToString(version);
+                serverVersion = Convert.ToString(serverVersion);
                 APCanvas.versionTag.text =
                     $"""
-                    Client Mod v0.6.0-pre4
-                    Server APWorld {version}
+                    Client Mod {Startup.CUAPVersion}
+                    Server APWorld {serverVersion}
                     """;
-                if (!version.Equals("v0.6.0-pre4"))
+                if (!serverVersion.Equals(Startup.CUAPVersion))
                 {
-                    APCanvas.EnqueueArchipelagoNotification($"Server/Client Version Mismatch! Client: v0.6.0-pre4, Server: {version}!",3);
+                    APCanvas.EnqueueArchipelagoNotification($"Server/Client Version Mismatch! Client: {Startup.CUAPVersion}, Server: {serverVersion}!",3);
                 }
             }
         }
