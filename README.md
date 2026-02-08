@@ -39,7 +39,7 @@ This method is more hands-on, but you don't have to download anything more than 
 4. Upon connecting, the game's console (assigned to ~ on QWERTY keyboards) can be used as a text client. See the section below for more info
 5. If anything goes wrong while playing, please let me know. This is still in development, and bugs may happen
 	- You can contact me in the AP After Dark Discord in the Casualties: Unknown thread in #future-game-design
-	- or in the Orsoniks' studio Discord in the C:U Multiworld Randomizer (Archipelago) thread in #art
+	- or in the Target Planet Discord in the C:U Multiworld Randomizer (Archipelago) thread in #art
 
 # **In-game Text Client**
 The in-game debug console now has various new Archipelago-related commands. You can open the in-game debug console with ~
@@ -55,3 +55,4 @@ The in-game debug console now has various new Archipelago-related commands. You 
 - apreportbug: Opens a bug report in this GitHub repository. Optionally takes a screenshot as well
 - apresetantispam: Clears local records of sent checks, allowing them to be sent again. Use this if a certain location isn't sending
 - apsetskill: Forces Skillsanity's received skills to be a certain value. Use this if your skills desync from what you've actually received
+- apfixquests: Forces Moodlesanity's questboard to refresh which checks have been sent. Use this if a quest didn't send properly
