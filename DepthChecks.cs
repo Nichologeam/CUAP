@@ -31,21 +31,25 @@ public class DepthChecks : MonoBehaviour
                 GoalDepth = (long)goaldepthoption;
                 GoalCheckID = 22318000 + (GoalDepth / 100);
                 Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: Reach " + GoalDepth + "m");
+                APClientClass.sendServerMessage.Invoke(null, ["Archipelago", $"Goal is: Reach {GoalDepth}m!"]);
             }
             else if (APClientClass.selectedGoal == 2)
             {
                 GoalCheckID = 22318000 + (1500 / 100);
                 Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: Escape Overgrown Depths");
+                APClientClass.sendServerMessage.Invoke(null, ["Archipelago", "Goal is: Escape Overgrown Depths!"]);
                 GoalDepth = 1534;
             }
             else if (APClientClass.selectedGoal == 3)
             {
                 Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: Defeat Elder Thornback");
+                APClientClass.sendServerMessage.Invoke(null, ["Archipelago", "Goal is: Defeat Elder Thornback!"]);
                 GoalDepth = long.MaxValue; // not needed for this goal
             }
             else if (APClientClass.selectedGoal == 4)
             {
                 Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: Craftsanity");
+                APClientClass.sendServerMessage.Invoke(null, ["Archipelago", "Goal is: Craftsanity!"]);
                 GoalDepth = long.MaxValue; // not needed for this goal
             }
         }

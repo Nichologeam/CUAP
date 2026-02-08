@@ -97,7 +97,7 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
     }
 
     void SelectDeathLinkCause()
-    {
+    {// >>>> IDEA: Update this to be the player's Casualties: Together username? <<<<
         Dictionary<int, string> DrownDeathMessages = new Dictionary<int, string>()
         {
             {0,Client.Players.ActivePlayer.Alias + " is part canine, not fish."},

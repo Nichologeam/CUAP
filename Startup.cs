@@ -10,12 +10,12 @@ using HarmonyLib;
 
 namespace CUAP;
 
-[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.6.0.4")]
+[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.0.1.0")]
 public class Startup : BaseUnityPlugin
 {
     public static new ManualLogSource Logger;
     public static ArchipelagoSession Client;
-    public static string CUAPVersion = "v0.6.0-pre4";
+    public static string CUAPVersion = "CT v0.0.1";
     public static AssetBundle apassets;
     private static Harmony apHarmony;
     GameObject Handler;
@@ -27,7 +27,7 @@ public class Startup : BaseUnityPlugin
     private void Awake()
     {
         Logger = base.Logger;
-        Logger.LogMessage($"Casualties: Unknown Archipelago Plugin {CUAPVersion} loaded!");
+        Logger.LogMessage($"Casualties: Together Archipelago Plugin {CUAPVersion} loaded!");
         Handler = new GameObject("Archipelago Handler");
         DontDestroyOnLoad(Handler);
         apassets = AssetBundle.LoadFromFile(Path.Combine(BepInEx.Paths.PluginPath, "CUAP", "apassets"));
@@ -45,7 +45,6 @@ public class Startup : BaseUnityPlugin
         {
             try
             {
-                ScrollableText.ForceClose(); // skip intoductory story
                 Client = APClientClass.session;
                 if (Client is null || !Client.Socket.Connected) // we aren't connected. disable the start run buttons.
                 {
@@ -66,17 +65,11 @@ public class Startup : BaseUnityPlugin
                 }
                 GameObject.Find("Canvas/VersionWarning/Text (TMP) (1)").GetComponent<TextMeshProUGUI>().text =
                 """
-                <alpha=#11><i>...of both Casualties: Unknown and CUAP.<alpha=#FF></i>
+                <alpha=#11><i>...a mod for a mod, actually.<alpha=#FF></i>
 
-                Bug reports on the Discord servers would be appreciated.
-                <size=16><alpha=#11>Either the Target Planet #art or AP: After Dark #future-game-design threads.<alpha=#FF><size=20>
-
-                Keep a look-out for:<alpha=#55>
-                - Bugs and glitches
-                - Incorrectly sending checks
-                - Errors, both onscreen and in the BepInEx console
-                - Nonfuctional .yaml settings
-                <size=16><alpha=#11>You can also directly create issues on the CUAP Github repository, or by using `apreportbug` in the debug console.
+                If you find a bug, assume it's with CUAP and not Casualties: Together.
+                Bugs can be reported in either the Target Planet #art or AP: After Dark #future-game-design threads.
+                <alpha=#11><i>Please make sure to note that you are playing the CT version of CUAP.<alpha=#FF></i>
                 """;
             }
             catch

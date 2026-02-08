@@ -1,11 +1,11 @@
 ﻿using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
+using KrokoshaCasualtiesMP;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 
 namespace CUAP;
@@ -52,7 +52,7 @@ public class CommandPatch : MonoBehaviour
     private void PrintPlainJSON(LogMessage message)
     {
         if (LastGotMessage == message) { return; } // avoids spam
-        Console.LogToConsole(message.ToString());
+        APClientClass.sendServerMessage.Invoke(null, ["Archipelago", message.ToString()]);
         LastGotMessage = message;
     }
     private void PrintItemJSON(ItemSendLogMessage message)
@@ -70,26 +70,30 @@ public class CommandPatch : MonoBehaviour
                 ? $"You found your {message.Item.ItemName} ({message.Item.LocationName})" // true (it is the casualties player)
                 : $"{message.Receiver} found their {message.Item.ItemName} ({message.Item.LocationName})"; // false (it's someone else)
         }
-        Console.LogToConsole(constructedMessage);
+        APClientClass.sendServerMessage.Invoke(null, ["Archipelago", constructedMessage]);
     }
     private void PrintHintJSON(HintItemSendLogMessage hint)
     {
         if (LastGotHintMessage == hint || hint.IsFound == true) return; // don't show found hints (less clutter)
         LastGotHintMessage = hint;
-        Console.LogToConsole($"{hint.Receiver}'s {hint.Item.ItemName} is at {hint.Sender}'s {hint.Item.LocationName}.");
+        APClientClass.sendServerMessage.Invoke(null, ["Archipelago", $"{hint.Receiver}'s {hint.Item.ItemName} is at {hint.Sender}'s {hint.Item.LocationName}."]);
         APCanvas.EnqueueArchipelagoNotification($"{hint.Receiver}'s {hint.Item.ItemName} is at {hint.Sender}'s {hint.Item.LocationName}.",2);
     }
     private void CreateAPCommands()
     {
-        ConsoleScript.Commands.Add(new Command("apdeathlink", "Toggles DeathLink for the current game session.", delegate (string[] args)
+        ConsoleScript_Added_KrokoshaMultiplayerCommands_Patch.AddCommand("apdeathlink", delegate (string inputtext, List<string> splitted)
         {
             if (APClientClass.session is null)
             {
-                throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
+                return "Archipelago isn't connected or session was closed. You must be connected to run this command.";
             }
             if (APClientClass.dlService is null)
             {
-                throw new Exception("DeathLinkService is null! This shouldn't happen, yell at me on Discord or Github if it does!");
+                return "DeathLinkService is null! This shouldn't happen, yell at me on Discord or Github if it does!";
+            }
+            if (splitted.Count < 2 || string.IsNullOrWhiteSpace(splitted[1]))
+            {
+                return "No severity was given. Choices are 'kill' or 'limbdamage'";
             }
             if (APCanvas.DeathlinkEnabled)
             {
@@ -104,7 +108,7 @@ public class CommandPatch : MonoBehaviour
                 {
                     // we're on the main menu. perfectly fine for a command like this
                 }
-                Console.LogToConsole("CUAP: DeathLink Disabled.");
+                return "CUAP: DeathLink Disabled.";
             }
             else
             {
@@ -119,151 +123,125 @@ public class CommandPatch : MonoBehaviour
                 {
                     // we're on the main menu. perfectly fine for a command like this
                 }
-                if (args[1] == "kill")
+                if (splitted[1] == "kill")
                 {
                     DeathlinkManager.DeathlinkSeverity = true;
                 }
-                else if (args[1] == "limbdamage")
+                else if (splitted[1] == "limbdamage")
                 {
                     DeathlinkManager.DeathlinkSeverity = false;
                 }
                 else
                 {
                     DeathlinkManager.DeathlinkSeverity = true;
-                    Console.LogToConsole("CUAP: Severity of " + args[1] + " is invalid. Defaulted to 'kill'");
+                    return $"CUAP: Severity of {splitted[1]} is invalid. Defaulted to 'kill'";
                 }
-                Console.LogToConsole("CUAP: DeathLink Enabled.");
+                return "CUAP: DeathLink Enabled.";
             }
-        }, new Dictionary<int, List<string>> {
-        {
-            0,
-            new List<string> {"kill","limbdamage"}
-        } }, new ValueTuple<string, string>[]
-        {
-            new ValueTuple<string, string>("severity", "How punishing DeathLink should be. Choices are 'kill' and 'limbdamage'")
-        }));
-        ConsoleScript.Commands.Add(new Command("apchat", "Sends a message to Archipelago chat.", delegate (string[] args)
+        }, "Archipelago: Toggles DeathLink. Choices are 'kill' and 'limbdamage'");
+        ConsoleScript_Added_KrokoshaMultiplayerCommands_Patch.AddCommand("apchat", delegate (string inputtext, List<string> splitted)
         {
             if (APClientClass.session is null)
             {
-                throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
+                return "Archipelago isn't connected or session was closed. You must be connected to run this command.";
             }
-            if (args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
+            if (splitted.Count < 2 || string.IsNullOrWhiteSpace(splitted[1]))
             {
-                throw new Exception("No chat message was given.");
+                return "No chat message was given.";
             }
-            string chatMessage = string.Join(" ", args.Skip(1));
+            string chatMessage = string.Join(" ", splitted.Skip(1));
             Client.Say(chatMessage);
-            Console.LogToConsole("CUAP: Chat message sent.");
-        }, null, new ValueTuple<string, string>[]
-        {
-            new ValueTuple<string, string>("text", "Chat message to send.")
-        }));
-        ConsoleScript.Commands.Add(new Command("aphint", "Alias for !hint command.", delegate (string[] args)
+            return "CUAP: Chat message sent.";
+        }, "Archipelago: Sends a message to Archipelago chat.");
+        ConsoleScript_Added_KrokoshaMultiplayerCommands_Patch.AddCommand("aphint", delegate (string inputtext, List<string> splitted)
         {
             if (APClientClass.session is null)
             {
-                throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
+                return "Archipelago isn't connected or session was closed. You must be connected to run this command.";
             }
-            if (args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
+            if (splitted.Count < 2 || string.IsNullOrWhiteSpace(splitted[1]))
             {
                 Client.Say("!hint");
-                Console.LogToConsole("CUAP: Hint status requested.");
-                return;
+                return "CUAP: Hint status requested.";
             }
-            string itemName = string.Join(" ", args.Skip(1));
+            string itemName = string.Join(" ", splitted.Skip(1));
             Client.Say("!hint " + itemName);
-            Console.LogToConsole("CUAP: Hint sent.");
-        }, null, new ValueTuple<string, string>[]
-        {
-            new ValueTuple<string, string>("item", "Item to hint for. Leave blank to request hint status.")
-        }));
-        ConsoleScript.Commands.Add(new Command("aphintlocation", "Alias for !hint_location command.", delegate (string[] args)
+            return "CUAP: Hint sent.";
+        }, "Archipealgo: Alias for !hint command");
+        ConsoleScript_Added_KrokoshaMultiplayerCommands_Patch.AddCommand("aphintlocation", delegate (string inputtext, List<string> splitted)
         {
             if (APClientClass.session is null)
             {
-                throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
+                return "Archipelago isn't connected or session was closed. You must be connected to run this command.";
             }
-            if (args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
+            if (splitted.Count < 2 || string.IsNullOrWhiteSpace(splitted[1]))
             {
-                throw new Exception("No location was given to check.");
+                return "No location was given to check.";
             }
-            string locName = string.Join(" ", args.Skip(1));
+            string locName = string.Join(" ", splitted.Skip(1));
             Client.Say("!hint_location " + locName);
-            Console.LogToConsole("CUAP: Hint sent.");
-        }, null, new ValueTuple<string, string>[]
-        {
-            new ValueTuple<string, string>("location", "Location to hint.")
-        }));
-        ConsoleScript.Commands.Add(new Command("aprelease", "Alias for !release command.", delegate (string[] args)
+            return "CUAP: Hint sent.";
+        }, "Archipelago: Alias for !hint_location");
+        ConsoleScript_Added_KrokoshaMultiplayerCommands_Patch.AddCommand("aprelease", delegate (string inputtext, List<string> splitted)
         {
             if (APClientClass.session is null)
             {
-                throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
+                return "Archipelago isn't connected or session was closed. You must be connected to run this command.";
             }
             Client.Say("!release");
-            Console.LogToConsole("CUAP: Release requested.");
-        }, null, Array.Empty<ValueTuple<string, string>>()));
-        ConsoleScript.Commands.Add(new Command("apcollect", "Alias for !collect command.", delegate (string[] args)
+            return "CUAP: Release requested.";
+        }, "Archipelago: Alias for !release");
+        ConsoleScript_Added_KrokoshaMultiplayerCommands_Patch.AddCommand("apcollect", delegate (string inputtext, List<string> splitted)
         {
             if (APClientClass.session is null)
             {
-                throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
+                return "Archipelago isn't connected or session was closed. You must be connected to run this command.";
             }
             Client.Say("!collect");
-            Console.LogToConsole("CUAP: Collect requested.");
-        }, null, Array.Empty<ValueTuple<string, string>>()));
-        ConsoleScript.Commands.Add(new Command("apcheat", "Alias for !getitem command.", delegate (string[] args)
+            return "CUAP: Collect requested.";
+        }, "Archipelago: Alias for !collect command");
+        ConsoleScript_Added_KrokoshaMultiplayerCommands_Patch.AddCommand("apcheat", delegate (string inputtext, List<string> splitted)
         {
             if (APClientClass.session is null)
             {
-                throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
+                return "Archipelago isn't connected or session was closed. You must be connected to run this command.";
             }
-            if (args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
+            if (splitted.Count < 2 || string.IsNullOrWhiteSpace(splitted[1]))
             {
-                throw new Exception("No item was given to cheat in.");
+                return "No item was given to cheat in.";
             }
-            string itemName = string.Join(" ", args.Skip(1));
+            string itemName = string.Join(" ", splitted.Skip(1));
             Client.Say("!getitem " + itemName);
-            Console.LogToConsole("CUAP: Cheat requested.");
-        }, null, new ValueTuple<string, string>[]
-        {
-            new ValueTuple<string, string>("item", "Item to request be cheated in.")
-        }));
-        ConsoleScript.Commands.Add(new Command("apalias", "Alias for !alias command.", delegate (string[] args)
+            return "CUAP: Cheat requested.";
+        }, "Archipelago: Alias for !getitem");
+        ConsoleScript_Added_KrokoshaMultiplayerCommands_Patch.AddCommand("apalias", delegate (string inputtext, List<string> splitted)
         {
             if (APClientClass.session is null)
             {
-                throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
+                return "Archipelago isn't connected or session was closed. You must be connected to run this command.";
             }
-            if (args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
+            if (splitted.Count < 2 || string.IsNullOrWhiteSpace(splitted[1]))
             {
-                throw new Exception("No name was given.");
+                return "No name was given.";
             }
-            string newName = string.Join(" ", args.Skip(1));
+            string newName = string.Join(" ", splitted.Skip(1));
             Client.Say("!alias " + newName);
-            Console.LogToConsole("CUAP: Alias change requested.");
-        }, null, new ValueTuple<string, string>[]
+            return "CUAP: Alias change requested.";
+        }, "Archipealgo: Alias for !alias");
+        ConsoleScript_Added_KrokoshaMultiplayerCommands_Patch.AddCommand("apreportbug", delegate (string inputtext, List<string> splitted)
         {
-            new ValueTuple<string, string>("name", "Alias to change your slot name to.")
-        }));
-        ConsoleScript.Commands.Add(new Command("apreportbug", "Opens CUAP's Github to report a bug.", delegate (string[] args)
-        {
-            Console.CheckArgumentCount(args, 1);
-            if (args[1] == "true")
+            if (splitted.Count < 2 || string.IsNullOrWhiteSpace(splitted[1]))
+            {
+                return "Whether or not to take a screenshot wasn't specified. Please specify 'true' or 'false'";
+            }
+            if (splitted[1] == "true")
             {
                 StartCoroutine(CommandPatch.CaptureScreenshot());
             }
             Application.OpenURL("https://github.com/Nichologeam/CUAP/issues/new?template=issuetemplate.md");
-        }, new Dictionary<int, List<string>> {
-        {
-            0,
-            new List<string> {"true","false"}
-        } }, new ValueTuple<string, string>[]
-        {
-            new ValueTuple<string, string>("screenshot", "Whether to capture a screenshot to the CUAP folder.")
-        }));
-        ConsoleScript.Commands.Add(new Command("apresetantispam", "Clears CUAP's copies of sent locations. Use this to resend broken checks.", delegate (string[] args)
+            return "CUAP: Github opened";
+        }, "Archipelago: Report a bug. Be sure to specify your version as the Casualties: Together version!");
+        ConsoleScript_Added_KrokoshaMultiplayerCommands_Patch.AddCommand("apresetantispam", delegate (string inputtext, List<string> splitted)
         {
             if (APCanvas.InGame)
             {
@@ -273,40 +251,36 @@ public class CommandPatch : MonoBehaviour
                 try { CraftingChecks.AlreadySentChecks.Clear(); }
                 catch { }
             }
-            Console.LogToConsole("CUAP: Data cleared. Run apreportbug if the issue persists.");
-        }, null, Array.Empty<ValueTuple<string, string>>()));
-        ConsoleScript.Commands.Add(new Command("apsetskill", "Force set a skill to a certain level. Only works if Skillsanity is enabled.", delegate (string[] args)
+            return "CUAP: Data cleared. Run apreportbug if the issue persists.";
+        }, "Archipealgo: Clears local copies of sent locations.");
+        ConsoleScript_Added_KrokoshaMultiplayerCommands_Patch.AddCommand("apsetskill", delegate (string inputtext, List<string> splitted)
         {
-            Console.CheckArgumentCount(args, 2);
-            if (args[1] == "STR")
+            if (splitted.Count < 2 || string.IsNullOrWhiteSpace(splitted[1]))
             {
-                APClientClass.MaxSTR = Convert.ToInt16(args[2]);
+                return "No skill was given. Choices are 'STR', 'RES', or 'INT'";
             }
-            if (args[1] == "RES")
+            if (splitted[1] == "STR")
             {
-                APClientClass.MaxRES = Convert.ToInt16(args[2]);
+                APClientClass.MaxSTR = Convert.ToInt16(splitted[2]);
             }
-            if (args[1] == "INT")
+            if (splitted[1] == "RES")
             {
-                APClientClass.MaxINT = Convert.ToInt16(args[2]);
+                APClientClass.MaxRES = Convert.ToInt16(splitted[2]);
             }
-        }, new Dictionary<int, List<string>> {
-        {
-            0,
-            new List<string> {"STR","RES","INT"}
-        } }, new ValueTuple<string, string>[]
-        {
-            new ValueTuple<string, string>("skill", "Which skill to change the level of."),
-            new ValueTuple<string, string>("level", "What level to set the skill to.")
-        }));
-        ConsoleScript.Commands.Add(new Command("apfixquests", "Forces the questboard to refresh sent checks. Use this if a quest didn't send properly.", delegate (string[] args)
+            if (splitted[1] == "INT")
+            {
+                APClientClass.MaxINT = Convert.ToInt16(splitted[2]);
+            }
+            return "CUAP: Skills applied.";
+        }, "Archipelago: Force set a Skillsanity skill to a certain level");
+        ConsoleScript_Added_KrokoshaMultiplayerCommands_Patch.AddCommand("apfixquests", delegate (string inputtext, List<string> splitted)
         {
             if (APCanvas.InGame)
             {
                 Moodlesanity.RefreshMaxQuests(false);
             }
-            Console.LogToConsole("CUAP: Quests refreshed. Run apreportbug if the issue persists.");
-        }, null, Array.Empty<ValueTuple<string, string>>()));
+            return "CUAP: Quests refreshed. Run apreportbug if the issue persists.";
+        }, "Archipelago: Force refresh the Moodlesanity Questboard");
     }
     public static IEnumerator CaptureScreenshot()
     {   // this is incredibly dumb, but it works
@@ -316,6 +290,5 @@ public class CommandPatch : MonoBehaviour
         ScreenCapture.CaptureScreenshot(CUAPFolder + "apreportbug.png"); // Put screenshot in CUAP folder
         yield return 0; // wait ANOTHER frame for the screenshot to actually get taken
         Console.gameObject.GetComponentInChildren<Canvas>().enabled = true; // then finally put the console back
-        Console.LogToConsole("CUAP: Screenshot saved to " + CUAPFolder);
     }
 }

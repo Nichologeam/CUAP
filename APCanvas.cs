@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using KrokoshaCasualtiesMP;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -61,6 +63,13 @@ public class APCanvas : MonoBehaviour
     private void Start()
     {
         instance = this;
+        togetherAssembly = typeof(KrokoshaScavMultiplayer).Assembly; // run this here to guarentee that both mods are loaded (since we're loading a scene)
+        var serverChat = togetherAssembly.GetType("KrokoshaCasualtiesMP.Chat");
+        sendServerMessage = serverChat.GetMethod("Server_ChatAnnouncement",
+            bindingAttr: BindingFlags.Instance | BindingFlags.Static,
+            binder: null,
+            types: [typeof(string), typeof(string)],
+            modifiers: null);
         ConnectionBackground = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background"); // containing object for the connection ui
         ConnectedBackground = GameObject.Find("APCanvas(Clone)/APCanvas/Connected Background"); // containing object for the connected ui
         SkillsanityTracker = GameObject.Find("APCanvas(Clone)/APCanvas/Skillsanity"); // containing object for the skillsanity tracker

@@ -93,7 +93,8 @@ public class TrapHandler : MonoBehaviour
         if (TrapName == "Elder Thornback Trap")
         {
             plrcam.DoAlert("Trap: " + ItemSender + " sent something big your way. Something <i>really</i> big.", false);
-            StartCoroutine(Thornback());
+            plrcam.currentThreatTheme = 15; // play the Elder Thornback first phase theme
+            plrcam.threatMusicTime = 90; // for 90 seconds
         }
         if (TrapName == "Cave Ticks Trap")
         {
@@ -211,15 +212,5 @@ public class TrapHandler : MonoBehaviour
         Vitals.hearingLoss = preWipehl;
         if (Vitals.alive) Vitals.brainHealth = preWipebh; // only if Experiment didn't die during the mindwipe
         mindwipeActive = false;
-    }
-    IEnumerator Thornback()
-    {
-        plrcam.currentThreatTheme = 15; // play the Elder Thornback first phase theme
-        plrcam.threatMusicTime = 90; // for 90 seconds
-        moodles.horrifiedLevel = 1;
-        yield return new WaitForSecondsRealtime(11); // timed to be on the beat drop for maximum effect (because i'm just cool like that)
-        moodles.horrifiedLevel = 3;
-        yield return new WaitForSecondsRealtime(79);
-        moodles.horrifiedLevel = 0;
     }
 }

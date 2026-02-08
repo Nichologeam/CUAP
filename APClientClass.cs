@@ -12,6 +12,9 @@ using UnityEngine;
 using UnityEngine.UIElements.Collections;
 using BepInEx;
 using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
+using HarmonyLib;
+using KrokoshaCasualtiesMP;
+using System.Reflection;
 
 namespace CUAP;
 
@@ -35,6 +38,8 @@ public class APClientClass
     public static int selectedGoal;
     public static ArchipelagoSession? session;
     public static DeathLinkService? dlService;
+    public static Assembly? togetherAssembly;
+    public static MethodInfo? sendServerMessage;
 
     public static string[]? TryConnect(string address, string slot, string? password)
     {
@@ -95,6 +100,11 @@ public class APClientClass
                     Client Mod {Startup.CUAPVersion}
                     Server APWorld {serverVersion}
                     """;
+                if (!serverVersion.ToString().StartsWith("CT"))
+                {
+                    APCanvas.EnqueueArchipelagoNotification($"Server/Client Version Mismatch! Server is not running the Casualties: Together version!", 3);
+                    Disconnect();
+                }
                 if (!serverVersion.Equals(Startup.CUAPVersion))
                 {
                     APCanvas.EnqueueArchipelagoNotification($"Server/Client Version Mismatch! Client: {Startup.CUAPVersion}, Server: {serverVersion}!",3);
@@ -263,12 +273,7 @@ public class APClientClass
     {
         try
         {
-            if (GameObject.Find("Console(Clone)").GetComponent<ConsoleScript>().active) // console is pulled down (client makes it difficult to read)
-            {
-                APCanvas.ShowMainGUI = false;
-                APCanvas.ShowSkillTracker = false;
-            }
-            else if (GameObject.Find("Main Camera/Canvas/WoundView").activeSelf) // woundview is open (client covers it)
+            if (GameObject.Find("Main Camera/Canvas/WoundView").activeSelf) // woundview is open (client covers it)
             {
                 APCanvas.ShowMainGUI = false;
                 APCanvas.ShowSkillTracker = true;
