@@ -33,7 +33,7 @@ public class APCanvas : MonoBehaviour
     private static TMP_Text Moodle3Text;
     private static Image Moodle4Image;
     private static TMP_Text Moodle4Text;
-    private static int UnlockedSlots = 1;
+    public static int UnlockedSlots = 1;
     private static GameObject ItemNotif;
     private static TMP_Text ItemText;
     private static bool ItemProcessing;

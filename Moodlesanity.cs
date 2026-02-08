@@ -415,7 +415,7 @@ public class Moodlesanity : MonoBehaviour
                     AlreadySentChecks.Add(mood.type);
                     continue;
                 }
-                if (questsAvailable.Contains(checkName))
+                if (questsAvailable.Take(APCanvas.UnlockedSlots).Contains(checkName)) // check only the slots we are displaying
                 {
                     var CheckID = Client.Locations.GetLocationIdFromName(Client.Players.ActivePlayer.Game, checkName);
                     APClientClass.ChecksToSend.Add(CheckID);
