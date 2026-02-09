@@ -145,6 +145,7 @@ public class APCanvas : MonoBehaviour
             {
                 EnqueueArchipelagoNotification($"Connection error: No server port was given.", 3);
                 Startup.Logger.LogError($"Connection error: No server port was given.");
+                return;
             }
             var ipPortSplit = Ipporttext.text.Split(':');
             if (!int.TryParse(ipPortSplit[1], out var port))
