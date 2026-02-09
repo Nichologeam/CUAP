@@ -15,7 +15,7 @@ public class Startup : BaseUnityPlugin
 {
     public static new ManualLogSource Logger;
     public static ArchipelagoSession Client;
-    public static string CUAPVersion = "v0.6.0";
+    public static string CUAPVersion = "v0.6.0-hotfix1";
     public static AssetBundle apassets;
     private static Harmony apHarmony;
     GameObject Handler;
