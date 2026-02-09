@@ -114,7 +114,10 @@ public class APCanvas : MonoBehaviour
         {
             SkillsanityTracker.SetActive(true);
         }
-        MoodlesanityQuestboard.SetActive(InGame);
+        if (Moodlesanity.questboardMode)
+        {
+            MoodlesanityQuestboard.SetActive(InGame);
+        }
         if (!ShowMainGUI)
         {
             ConnectedBackground.SetActive(false);
