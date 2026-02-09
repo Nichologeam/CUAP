@@ -41,8 +41,8 @@ public class LimbUnlocks : MonoBehaviour
 
     public void RestoreLimbs()
     {
-        RestoreArm(3, APClientClass.leftArmUnlocks);  // Left arm (F)
-        RestoreArm(6, APClientClass.rightArmUnlocks); // Right arm (B)
+        RestoreArm(6, APClientClass.leftArmUnlocks);  // Left arm (B)
+        RestoreArm(3, APClientClass.rightArmUnlocks); // Right arm (F)
     }
     // this technically breaks if you get more than 3 progressive arm items, but you would need to be using the server console or !getitem for that to happen anyway
     private void RestoreArm(int startLimb, int unlocks)
