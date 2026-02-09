@@ -1,5 +1,6 @@
 ﻿using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
+using BepInEx;
 using KrokoshaCasualtiesMP;
 using System;
 using System.Collections;
@@ -19,7 +20,7 @@ public class CommandPatch : MonoBehaviour
     private ItemSendLogMessage LastGotItemMessage;
     private HintItemSendLogMessage LastGotHintMessage;
 
-    private void OnEnable()
+    private void Awake()
     {
         Console = gameObject.GetComponent<ConsoleScript>();
         Startup.Logger.LogMessage("Console has been patched!");
@@ -30,7 +31,7 @@ public class CommandPatch : MonoBehaviour
         Client = APClientClass.session;
         if (Client is not null)
         {
-            Client.MessageLog.OnMessageReceived += message =>
+            Client.MessageLog.OnMessageReceived += message => ThreadingHelper.Instance.StartSyncInvoke(() =>
             {
                 switch (message)
                 {
@@ -46,7 +47,7 @@ public class CommandPatch : MonoBehaviour
                         PrintPlainJSON(message);
                         break;
                 }
-            };
+            });
         }
     }
     private void PrintPlainJSON(LogMessage message)
@@ -91,10 +92,6 @@ public class CommandPatch : MonoBehaviour
             {
                 return "DeathLinkService is null! This shouldn't happen, yell at me on Discord or Github if it does!";
             }
-            if (splitted.Count < 2 || string.IsNullOrWhiteSpace(splitted[1]))
-            {
-                return "No severity was given. Choices are 'kill' or 'limbdamage'";
-            }
             if (APCanvas.DeathlinkEnabled)
             {
                 APClientClass.dlService.DisableDeathLink();
@@ -112,6 +109,10 @@ public class CommandPatch : MonoBehaviour
             }
             else
             {
+                if (splitted.Count < 2 || string.IsNullOrWhiteSpace(splitted[1]))
+                {
+                    return "No severity was given. Choices are 'kill' or 'limbdamage'";
+                }
                 APClientClass.dlService.EnableDeathLink();
                 APCanvas.DeathlinkEnabled = true;
                 try

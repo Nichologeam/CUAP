@@ -66,38 +66,38 @@ public class APCanvas : MonoBehaviour
         togetherAssembly = typeof(KrokoshaScavMultiplayer).Assembly; // run this here to guarentee that both mods are loaded (since we're loading a scene)
         var serverChat = togetherAssembly.GetType("KrokoshaCasualtiesMP.Chat");
         sendServerMessage = serverChat.GetMethod("Server_ChatAnnouncement",
-            bindingAttr: BindingFlags.Instance | BindingFlags.Static,
+            bindingAttr: BindingFlags.Public | BindingFlags.Static,
             binder: null,
             types: [typeof(string), typeof(string)],
             modifiers: null);
-        ConnectionBackground = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background"); // containing object for the connection ui
-        ConnectedBackground = GameObject.Find("APCanvas(Clone)/APCanvas/Connected Background"); // containing object for the connected ui
-        SkillsanityTracker = GameObject.Find("APCanvas(Clone)/APCanvas/Skillsanity"); // containing object for the skillsanity tracker
-        SkillsanitySTR = GameObject.Find("APCanvas(Clone)/APCanvas/Skillsanity/STR").GetComponent<TMP_Text>();
-        SkillsanityRES = GameObject.Find("APCanvas(Clone)/APCanvas/Skillsanity/RES").GetComponent<TMP_Text>();
-        SkillsanityINT = GameObject.Find("APCanvas(Clone)/APCanvas/Skillsanity/INT").GetComponent<TMP_Text>();
-        MoodlesanityQuestboard = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard"); // containing object for the moodlesanity quests
-        Moodle1Image = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard/Moodle Image 1").GetComponent<Image>();
-        Moodle1Text = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard/Moodle Name 1").GetComponent<TMP_Text>();
-        Moodle2Image = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard/Moodle Image 2").GetComponent<Image>();
-        Moodle2Text = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard/Moodle Name 2").GetComponent<TMP_Text>();
-        Moodle3Image = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard/Moodle Image 3").GetComponent<Image>();
-        Moodle3Text = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard/Moodle Name 3").GetComponent<TMP_Text>();
-        Moodle4Image = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard/Moodle Image 4").GetComponent<Image>();
-        Moodle4Text = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard/Moodle Name 4").GetComponent<TMP_Text>();
-        Ipporttext = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background/IPandPort").GetComponent<TMP_InputField>(); // address and port input
-        Slot = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background/Slot").GetComponent<TMP_InputField>(); // slot name input
-        Password = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background/Password").GetComponent<TMP_InputField>(); // password input
-        ConnectButton = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background/Connect").GetComponent<Button>(); // connect to archipelago button
-        Status = GameObject.Find("APCanvas(Clone)/APCanvas/Connected Background/Status").GetComponent<TMP_Text>(); // goal status tracker
-        versionTag = GameObject.Find("APCanvas(Clone)/APCanvas/Version Tag").GetComponent<TMP_Text>();
+        ConnectionBackground = GameObject.Find("APCTCanvas(Clone)/APCanvas/Connection Background"); // containing object for the connection ui
+        ConnectedBackground = GameObject.Find("APCTCanvas(Clone)/APCanvas/Connected Background"); // containing object for the connected ui
+        SkillsanityTracker = GameObject.Find("APCTCanvas(Clone)/APCanvas/Skillsanity"); // containing object for the skillsanity tracker
+        SkillsanitySTR = GameObject.Find("APCTCanvas(Clone)/APCanvas/Skillsanity/STR").GetComponent<TMP_Text>();
+        SkillsanityRES = GameObject.Find("APCTCanvas(Clone)/APCanvas/Skillsanity/RES").GetComponent<TMP_Text>();
+        SkillsanityINT = GameObject.Find("APCTCanvas(Clone)/APCanvas/Skillsanity/INT").GetComponent<TMP_Text>();
+        MoodlesanityQuestboard = GameObject.Find("APCTCanvas(Clone)/APCanvas/Questboard"); // containing object for the moodlesanity quests
+        Moodle1Image = GameObject.Find("APCTCanvas(Clone)/APCanvas/Questboard/Moodle Image 1").GetComponent<Image>();
+        Moodle1Text = GameObject.Find("APCTCanvas(Clone)/APCanvas/Questboard/Moodle Name 1").GetComponent<TMP_Text>();
+        Moodle2Image = GameObject.Find("APCTCanvas(Clone)/APCanvas/Questboard/Moodle Image 2").GetComponent<Image>();
+        Moodle2Text = GameObject.Find("APCTCanvas(Clone)/APCanvas/Questboard/Moodle Name 2").GetComponent<TMP_Text>();
+        Moodle3Image = GameObject.Find("APCTCanvas(Clone)/APCanvas/Questboard/Moodle Image 3").GetComponent<Image>();
+        Moodle3Text = GameObject.Find("APCTCanvas(Clone)/APCanvas/Questboard/Moodle Name 3").GetComponent<TMP_Text>();
+        Moodle4Image = GameObject.Find("APCTCanvas(Clone)/APCanvas/Questboard/Moodle Image 4").GetComponent<Image>();
+        Moodle4Text = GameObject.Find("APCTCanvas(Clone)/APCanvas/Questboard/Moodle Name 4").GetComponent<TMP_Text>();
+        Ipporttext = GameObject.Find("APCTCanvas(Clone)/APCanvas/Connection Background/IPandPort").GetComponent<TMP_InputField>(); // address and port input
+        Slot = GameObject.Find("APCTCanvas(Clone)/APCanvas/Connection Background/Slot").GetComponent<TMP_InputField>(); // slot name input
+        Password = GameObject.Find("APCTCanvas(Clone)/APCanvas/Connection Background/Password").GetComponent<TMP_InputField>(); // password input
+        ConnectButton = GameObject.Find("APCTCanvas(Clone)/APCanvas/Connection Background/Connect").GetComponent<Button>(); // connect to archipelago button
+        Status = GameObject.Find("APCTCanvas(Clone)/APCanvas/Connected Background/Status").GetComponent<TMP_Text>(); // goal status tracker
+        versionTag = GameObject.Find("APCTCanvas(Clone)/APCanvas/Version Tag").GetComponent<TMP_Text>();
         ConnectButton.onClick.AddListener(OnConnectPressed); // run connect function when button is pressed
-        ItemNotif = GameObject.Find("APCanvas(Clone)/APCanvas/Item Notification");
-        ItemText = GameObject.Find("APCanvas(Clone)/APCanvas/Item Notification/Notification Message").GetComponent<TMP_Text>();
-        HintNotif = GameObject.Find("APCanvas(Clone)/APCanvas/Hint Notification");
-        HintText = GameObject.Find("APCanvas(Clone)/APCanvas/Hint Notification/Notification Message").GetComponent<TMP_Text>();
-        ErrorNotif = GameObject.Find("APCanvas(Clone)/APCanvas/Error Notification");
-        ErrorText = GameObject.Find("APCanvas(Clone)/APCanvas/Error Notification/Notification Message").GetComponent<TMP_Text>();
+        ItemNotif = GameObject.Find("APCTCanvas(Clone)/APCanvas/Item Notification");
+        ItemText = GameObject.Find("APCTCanvas(Clone)/APCanvas/Item Notification/Notification Message").GetComponent<TMP_Text>();
+        HintNotif = GameObject.Find("APCTCanvas(Clone)/APCanvas/Hint Notification");
+        HintText = GameObject.Find("APCTCanvas(Clone)/APCanvas/Hint Notification/Notification Message").GetComponent<TMP_Text>();
+        ErrorNotif = GameObject.Find("APCTCanvas(Clone)/APCanvas/Error Notification");
+        ErrorText = GameObject.Find("APCTCanvas(Clone)/APCanvas/Error Notification/Notification Message").GetComponent<TMP_Text>();
         UpdateSkillsanityValues(0, 60);
         UpdateSkillsanityValues(1, 60);
         UpdateSkillsanityValues(2, 60);
@@ -123,10 +123,12 @@ public class APCanvas : MonoBehaviour
         {
             SkillsanityTracker.SetActive(true);
         }
-        MoodlesanityQuestboard.SetActive(InGame);
+        if (Moodlesanity.questboardMode)
+        {
+            MoodlesanityQuestboard.SetActive(InGame);
+        }
         if (!ShowMainGUI)
         {
-            ConnectedBackground.SetActive(false);
             ConnectedBackground.SetActive(false);
             MoodlesanityQuestboard.SetActive(false);
             return;
@@ -134,12 +136,22 @@ public class APCanvas : MonoBehaviour
         if (!IsConnected())
         {
             ConnectionBackground.SetActive(true);
-            ConnectedBackground.SetActive(false);
         }
         else
         {
-            ConnectedBackground.SetActive(true);
             ConnectionBackground.SetActive(false);
+        }
+        if (!InGame)
+        {
+            ConnectedBackground.SetActive(false);
+        }
+        if (Startup.pauseMenu is not null && Startup.pauseMenu.activeSelf) // gamma panel exists and is open
+        {
+            ConnectedBackground.SetActive(true);
+        }
+        else
+        {
+            ConnectedBackground.SetActive(false);
         }
     }
 
@@ -151,6 +163,7 @@ public class APCanvas : MonoBehaviour
             {
                 EnqueueArchipelagoNotification($"Connection error: No server port was given.", 3);
                 Startup.Logger.LogError($"Connection error: No server port was given.");
+                return;
             }
             var ipPortSplit = Ipporttext.text.Split(':');
             if (!int.TryParse(ipPortSplit[1], out var port))

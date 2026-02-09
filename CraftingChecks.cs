@@ -429,7 +429,7 @@ public class CraftingChecks : MonoBehaviour
                 {
                     APClientClass.session.Socket.SendPacket(blueprintsPacket);
                     SetupAPBlueprint();
-                    bundle = AssetBundle.GetAllLoadedAssetBundles().FirstOrDefault(b => b.name == "apassets");
+                    bundle = AssetBundle.GetAllLoadedAssetBundles().FirstOrDefault(b => b.name == "apctassets");
                     aplogo = bundle.LoadAsset<Sprite>("aplogo200"); // load custom blueprint asset replacement
                 }
                 else // blueprint locations aren't enabled. mark that for later

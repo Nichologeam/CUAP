@@ -23,6 +23,7 @@ public class Startup : BaseUnityPlugin
     GameObject Body;
     GameObject WorldGen;
     GameObject Moodles;
+    public static GameObject pauseMenu;
         
     private void Awake()
     {
@@ -30,8 +31,8 @@ public class Startup : BaseUnityPlugin
         Logger.LogMessage($"Casualties: Together Archipelago Plugin {CUAPVersion} loaded!");
         Handler = new GameObject("Archipelago Handler");
         DontDestroyOnLoad(Handler);
-        apassets = AssetBundle.LoadFromFile(Path.Combine(BepInEx.Paths.PluginPath, "CUAP", "apassets"));
-        var UI = Instantiate(apassets.LoadAsset<GameObject>("APCanvas"));
+        apassets = AssetBundle.LoadFromFile(Path.Combine(BepInEx.Paths.PluginPath, "CUAP", "apctassets"));
+        var UI = Instantiate(apassets.LoadAsset<GameObject>("APCTCanvas"));
         DontDestroyOnLoad(UI);
         UI.AddComponent<APCanvas>();
         apHarmony = new Harmony("nichologeam.cuap.harmony");
@@ -58,11 +59,6 @@ public class Startup : BaseUnityPlugin
                     GameObject.Find("Canvas/Button (7)").GetComponent<Button>().interactable = true;
                     GameObject.Find("Canvas/Button (2)").GetComponent<Button>().interactable = true;
                 }
-                Console = GameObject.Find("Console(Clone)");
-                if (!Console.GetComponent<CommandPatch>())
-                {
-                    Console.AddComponent<CommandPatch>();
-                }
                 GameObject.Find("Canvas/VersionWarning/Text (TMP) (1)").GetComponent<TextMeshProUGUI>().text =
                 """
                 <alpha=#11><i>...a mod for a mod, actually.<alpha=#FF></i>
@@ -84,6 +80,13 @@ public class Startup : BaseUnityPlugin
                 GameObject.Find("World").GetComponent<WorldGeneration>().SaveAndExit();
                 PlayerCamera.main.ToMainMenu();
             }
+            Console = GameObject.Find("Console/Canvas").transform.Find("Console").gameObject;
+            if (!Console.GetComponent<CommandPatch>())
+            {
+                Console.AddComponent<CommandPatch>();
+                Console.GetComponent<CommandPatch>().Subscribe();
+            }
+            pauseMenu = GameObject.Find("Main Camera/Canvas").transform.Find("GammaPanel").gameObject;
             if (APClientClass.selectedGoal == 3) // elder thornback goal
             {
                 try

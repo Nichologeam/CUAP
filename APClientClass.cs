@@ -52,7 +52,7 @@ public class APClientClass
             }
             session = ArchipelagoSessionFactory.CreateSession(address);
             session!.Items.ItemReceived += (item) => ThreadingHelper.Instance.StartSyncInvoke(() => ProcessItem(item)); // this has to be run on main thread or unity will hard crash
-            var loginResult = session.TryConnectAndLogin("Casualties: Unknown", slot, ItemsHandlingFlags.AllItems, (new Version(0, 6, 5)), password: password, requestSlotData: true);
+            var loginResult = session.TryConnectAndLogin("Casualties: Together", slot, ItemsHandlingFlags.AllItems, (new Version(0, 6, 5)), password: password, requestSlotData: true);
             
             if (loginResult is LoginFailure failure)
             {
@@ -85,7 +85,6 @@ public class APClientClass
         Startup.Logger.LogMessage("Connnected to Archipelago!");
         dlService = session.CreateDeathLinkService();
         session.Socket.SendPacket(new GetFullDataPackagePacket());
-        GameObject.Find("Console(Clone)").GetComponent<CommandPatch>().Subscribe();
         if (slotdata != null && session != null)
         {
             if (slotdata.TryGetValue("Goal", out var goal))
