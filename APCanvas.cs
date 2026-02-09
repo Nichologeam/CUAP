@@ -13,7 +13,7 @@ public class APCanvas : MonoBehaviour
     public static APCanvas instance;
     public static bool ShowMainGUI = true;
     public static bool ShowSkillTracker = false;
-    public static bool skillsanityEnabled = true;
+    public static bool skillsanityEnabled = false;
     public GameObject ConnectionBackground;
     public GameObject ConnectedBackground;
     public TMP_InputField Ipporttext;
@@ -106,13 +106,13 @@ public class APCanvas : MonoBehaviour
             Start();
             return;
         }
-        if (!ShowSkillTracker || !skillsanityEnabled)
+        if (skillsanityEnabled)
+        {
+            SkillsanityTracker.SetActive(ShowSkillTracker);
+        }
+        else
         {
             SkillsanityTracker.SetActive(false);
-        }
-        if (ShowSkillTracker)
-        {
-            SkillsanityTracker.SetActive(true);
         }
         if (Moodlesanity.questboardMode)
         {

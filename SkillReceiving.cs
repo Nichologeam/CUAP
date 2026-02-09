@@ -25,6 +25,7 @@ public class SkillReceiving : MonoBehaviour
                 return;
             }
         }
+        APCanvas.skillsanityEnabled = true;
         worldgen = GameObject.Find("World").GetComponent<WorldGeneration>();
         playerSkills = gameObject.GetComponent<Body>().skills;
         Startup.Logger.LogMessage("Skillsanity is monitoring exp...");
