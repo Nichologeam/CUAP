@@ -203,7 +203,7 @@ public class TrapHandler : MonoBehaviour
         MindwipeScript mw = Vitals.gameObject.AddComponent<MindwipeScript>();
         yield return new WaitForSecondsRealtime(70);
         Destroy(mw);
-        Destroy(GameObject.Find("Main Camera/Canvas/MindwipeViginette(Clone)"));
+        Destroy(GameObject.Find("Main Camera/Canvas/MindwipeVignette(Clone)"));
         skills.INT = INTSkillPreWipe;
         skills.expINT = +INTExpPreWipe;
         skills.maxINT = INTMaxPreWipe;
