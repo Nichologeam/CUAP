@@ -309,76 +309,11 @@ public class APClientClass
             {
                 foreach (var item in items)
                 {
-                    playerItemIdToName.TryGetValue(item.Player, out Dictionary<long, string> blueprintitemidtoname);
-                    blueprintitemidtoname.TryGetValue(item.Item, out string itemname);
+                    var itemname = session.Items.GetItemName(item.Item, session.Players?.GetPlayerInfo(item.Player).Game);
                     CraftingChecks.BlueprintToItemName.Add(item.Location - 22318500, itemname);
                     CraftingChecks.BlueprintToPlayerName.Add(item.Location - 22318500, 
                         session.Players != null && item.Player >= 0 ? session.Players.GetPlayerName(item.Player) : $"Unknown Player (id:{item.Player})");
                 }
-            }
-        }
-        else if (packet is DataPackagePacket && !datapackageprocessed)
-        {
-            try
-            {
-                Startup.Logger.LogMessage("Received DataPackage");
-                datapackageprocessed = true;
-                var data = packet.ToJObject()["data"];
-                if (data == null) {Startup.Logger.LogError("'data' is null!"); return;}
-                var gamelist = data["games"];
-                JObject? games = gamelist as JObject;
-                if (games == null || session == null) {Startup.Logger.LogError("'Games' is null!"); return;}
-                var allPlayers = session.Players.AllPlayers;
-                foreach (var player in allPlayers)
-                {
-                    Startup.Logger.LogMessage($"Processing {player.Name}");
-                    int playerID = player.Slot;
-                    string gameName = player.Game;
-                    if (!games.TryGetValue(gameName, out JToken? gameDataToken))
-                    {
-                        continue;
-                    }
-                    JObject? gameData = gameDataToken as JObject;
-                    if (gameData == null)
-                    {
-                        continue;
-                    }
-                    JObject? itemNameToIdJson = gameData["item_name_to_id"] as JObject;
-                    if (itemNameToIdJson == null)
-                    {
-                        continue;
-                    }
-                    Dictionary<long, string> itemNameToId = new Dictionary<long, string>();
-                    foreach (var prop in itemNameToIdJson.Properties())
-                    {
-                        long id = prop.Value.Value<long>();
-                        string name = prop.Name;
-
-                        if (!itemNameToId.ContainsKey(id))
-                            itemNameToId[id] = name;
-                    }
-                    playerItemIdToName[playerID] = itemNameToId;
-                    JObject? locNameToIdJson = gameData["location_name_to_id"] as JObject;
-                    if (locNameToIdJson == null)
-                    {
-                        continue;
-                    }
-                    Dictionary<long, string> locNameToId = new Dictionary<long, string>();
-                    foreach (var prop in locNameToIdJson.Properties())
-                    {
-                        long id = prop.Value.Value<long>();
-                        string name = prop.Name;
-
-                        if (!locNameToId.ContainsKey(id))
-                            locNameToId[id] = name;
-                    }
-                    playerLocIdToName[playerID] = locNameToId;
-                }
-            }
-            catch (Exception ex)
-            {
-                APCanvas.EnqueueArchipelagoNotification("Datapackage Error: " + ex.ToString(),3);
-                Startup.Logger.LogError("Datapackage Error: " + ex.ToString());
             }
         }
         else if (packet is RetrievedPacket)

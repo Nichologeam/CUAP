@@ -25,13 +25,6 @@ public class CraftingChecks : MonoBehaviour
     private bool removeBlueprints = false;
     private static readonly long startingRecipeID = 22318500;
     private static HashSet<string> AppliedRecipes = new();
-    private LocationScoutsPacket blueprintsPacket = new LocationScoutsPacket()
-    {
-        Locations = Enumerable.Range(22318500, 22318612 - 22318500 + 1)
-                            .Select(i => (long)i)
-                            .ToArray(),
-        CreateAsHint = 0
-    };
     public static Dictionary<long, string> BlueprintToPlayerName = new Dictionary<long, string>();
     public static Dictionary<long, string> BlueprintToItemName = new Dictionary<long, string>();
     public static Dictionary<string, string> CheckNameToItem = new Dictionary<string, string>()
@@ -442,7 +435,10 @@ public class CraftingChecks : MonoBehaviour
                 }
                 if (Convert.ToInt16(recipesoption) == 3) // blueprint locations enabled
                 {
-                    APClientClass.session.Socket.SendPacket(blueprintsPacket);
+                    Client.Locations.ScoutLocationsAsync(
+                        Enumerable.Range(22318500, 22318612 - 22318500 + 1)
+                            .Select(i => (long)i)
+                            .ToArray());
                     SetupAPBlueprint();
                     bundle = AssetBundle.GetAllLoadedAssetBundles().FirstOrDefault(b => b.name == "apassets");
                     aplogo = bundle.LoadAsset<Sprite>("aplogo200"); // load custom blueprint asset replacement
