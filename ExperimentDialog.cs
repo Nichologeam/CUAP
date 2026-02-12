@@ -1,5 +1,4 @@
 ﻿using Archipelago.MultiClient.Net;
-using Archipelago.MultiClient.Net.MessageLog.Parts;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,9 +8,11 @@ public class ExperimentDialog : MonoBehaviour
 {
     public static ArchipelagoSession Client;
     private static Talker PlayerTalker;
+    private static ExperimentDialog instance;
 
     private void OnEnable()
     {
+        instance = this;
         Client = APClientClass.session;
         PlayerTalker = gameObject.GetComponent<Talker>();
         Startup.Logger.LogMessage("Dialogue patches applied!");
@@ -87,7 +88,7 @@ public class ExperimentDialog : MonoBehaviour
             {3,$"Alright. As long as you don't call me a nerd, {item.Player}."},
             {4,$"Erm, achkually, {item.Player}..."},
         };
-        GameObject.Find("Experiment/Body").GetComponent<ExperimentDialog>().CompanionTextbox(item);
+        instance.CompanionTextbox(item);
         if (item.ItemName == "Depth Extender") // depth extender
         {
             PlayerTalker.Talk(ExtenderItemDialog[UnityEngine.Random.Range(0, ExtenderItemDialog.Count + 1)], null, true, false);

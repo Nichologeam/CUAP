@@ -1,5 +1,4 @@
-﻿using Archipelago.MultiClient.Net;
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace CUAP;

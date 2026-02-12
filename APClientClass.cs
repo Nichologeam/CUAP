@@ -31,7 +31,6 @@ public class APClientClass
     public static int DepthExtendersRecieved = 0;
     public static int leftArmUnlocks;
     public static int rightArmUnlocks;
-    private static bool datapackageprocessed = false;
     public static int selectedGoal;
     public static ArchipelagoSession? session;
     public static DeathLinkService? dlService;

@@ -3,7 +3,6 @@ using UnityEngine;
 using TMPro;
 using System.Collections;
 using Archipelago.MultiClient.Net;
-using System;
 
 namespace CUAP;
 
