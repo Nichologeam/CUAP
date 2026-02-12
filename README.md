@@ -1,6 +1,6 @@
 ### Casualties: Unknown Archipelago
 
-This mod is made for the V5.01 version of Casualties: Unknown, which can be downloaded from the game's [Itch page](https://orsonik.itch.io/scav-prototype).
+This mod is made for the V5.0.3 version of Casualties: Unknown, which can be downloaded from the game's [Itch page](https://orsonik.itch.io/scav-prototype).
 
 # **Installing The Mod**
 1. Download BepInEx v5.4.23.3 from its [Github Page](https://github.com/BepInEx/BepInEx/releases/tag/v5.4.23.3)
