@@ -32,13 +32,22 @@ public class TrapHandler : MonoBehaviour
         moodles = GameObject.Find("Main Camera/Canvas/Moodles").GetComponent<MoodleManager>();
         Startup.Logger.LogMessage("TrapHandler Ready!");
     }
+    private void Start() // run this later so MoodleManager.Awake has indexed the sprites into MoodleManager.icons in time
+    {
+        var APLogo = Sprite.Create(
+            texture: Startup.apassets.LoadAsset<Texture2D>("aplogo200"),
+            pixelsPerUnit: 400,
+            rect: new Rect(0, 0, 200, 200),
+            pivot: new Vector2(0.5f, 0.5f));
+        moodles.icons["death"] = APLogo; // replace unused Deceased moodle sprite
+    }
     private void LateUpdate() // lateupdate so it's after normal moodle updates (no race condition, yippee!)
     {
         if (moodleUpdateTime(moodles) > prevUpdateTime && Vitals.alive) // timer reset, moodles were updated
         {
             if (revControlActive)
             {
-                moodles.AddMoodle(5, "confused", "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Trap: Reversed Controls", trapSender + " reversed your controls! Lasts 10 seconds.", false, false);
+                moodles.AddMoodle(5, "death", "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Trap: Reversed Controls", trapSender + " reversed your controls! Lasts 10 seconds.", false, false);
             }
             if (unchippedActive)
             {
@@ -46,11 +55,11 @@ public class TrapHandler : MonoBehaviour
             }
             if (disfigActive)
             {
-                moodles.AddMoodle(5, "dislocatedjaw", "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Trap: Disfigured", trapSender + " removed your jaw! Lasts 180 seconds.", false, false);
+                moodles.AddMoodle(5, "death", "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Trap: Disfigured", trapSender + " removed your jaw! Lasts 180 seconds.", false, false);
             }
             if (mindwipeActive)
             {
-                moodles.AddMoodle(5, "hollow", "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Trap: Mindwipe", trapSender + " removed your memories! Lasts 70 seconds.", false, false);
+                moodles.AddMoodle(5, "death", "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Trap: Mindwipe", trapSender + " removed your memories! Lasts 70 seconds.", false, false);
             }
         }
         prevUpdateTime = moodleUpdateTime(moodles);
