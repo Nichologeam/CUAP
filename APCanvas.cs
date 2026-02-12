@@ -262,6 +262,7 @@ public class APCanvas : MonoBehaviour
         }
         if (!InGame) return;
         CheckIfOutOfSlots();
+        if (Moodlesanity.questsAvailable.Count < 1) return;
         Moodle1Text.text = Moodlesanity.questsAvailable[0].Replace("Moodlesanity - ","");
         Moodle1Image.sprite = Resources.Load<Sprite>($"moodles/{Moodlesanity.CheckToInternalMoodID.GetValueOrDefault(Moodlesanity.questsAvailable[0])}");
         if (UnlockedSlots < 2 || !(Moodlesanity.questsAvailable.Count >= 2)) return;
