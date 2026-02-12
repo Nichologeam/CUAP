@@ -13,7 +13,6 @@ namespace CUAP;
 
 public class CraftingChecks : MonoBehaviour
 {
-    AssetBundle bundle;
     private Sprite aplogo;
     public static ArchipelagoSession Client;
     private static List<string> RecievedRecipes;
@@ -440,8 +439,7 @@ public class CraftingChecks : MonoBehaviour
                             .Select(i => (long)i)
                             .ToArray());
                     SetupAPBlueprint();
-                    bundle = AssetBundle.GetAllLoadedAssetBundles().FirstOrDefault(b => b.name == "apassets");
-                    aplogo = bundle.LoadAsset<Sprite>("aplogo200"); // load custom blueprint asset replacement
+                    aplogo = Startup.apassets.LoadAsset<Sprite>("aplogo200"); // load custom blueprint asset replacement
                 }
                 else // blueprint locations aren't enabled. mark that for later
                 {
