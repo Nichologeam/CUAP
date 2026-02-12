@@ -1,17 +1,18 @@
 #nullable enable
 using Archipelago.MultiClient.Net;
-using Archipelago.MultiClient.Net.Helpers;
+using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 using Archipelago.MultiClient.Net.Enums;
+using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Packets;
+using BepInEx;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.UIElements.Collections;
-using BepInEx;
-using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 
 namespace CUAP;
 
@@ -37,6 +38,13 @@ public class APClientClass
 
     public static string[]? TryConnect(string address, string slot, string? password)
     {
+        if (ThreadingHelper.Instance == null) // V5.0.2 causes BepInEx's bootstrapper to fail creating this, so we'll do it ourselves.
+        {
+            Startup.Logger.LogWarning("BepInEx.ThreadingHelper is null. Recreating...");
+            var threadingHelperType = typeof(BepInEx.ThreadingHelper);
+            var initializeMethod = threadingHelperType.GetMethod("Initialize", BindingFlags.Static | BindingFlags.NonPublic);
+            initializeMethod!.Invoke(null, null);
+        }
         try
         {
             Startup.Logger.LogMessage($"Attempting to connect to [{address}], with password: [{password}], on slot: [{slot}]");
@@ -45,7 +53,7 @@ public class APClientClass
                 password = null;
             }
             session = ArchipelagoSessionFactory.CreateSession(address);
-            session!.Items.ItemReceived += (item) => ThreadingHelper.Instance.StartSyncInvoke(() => ProcessItem(item)); // this has to be run on main thread or unity will hard crash
+            session!.Items.ItemReceived += (item) => ThreadingHelper.Instance!.StartSyncInvoke(() => ProcessItem(item)); // this has to be run on main thread or unity will hard crash
             var loginResult = session.TryConnectAndLogin("Casualties: Unknown", slot, ItemsHandlingFlags.AllItems, (new Version(0, 6, 5)), password: password, requestSlotData: true);
             
             if (loginResult is LoginFailure failure)
@@ -78,7 +86,6 @@ public class APClientClass
         slotdata = session!.DataStorage.GetSlotData(session.Players.ActivePlayer.Slot);
         Startup.Logger.LogMessage("Connnected to Archipelago!");
         dlService = session.CreateDeathLinkService();
-        session.Socket.SendPacket(new GetFullDataPackagePacket());
         GameObject.Find("Console(Clone)").GetComponent<CommandPatch>().Subscribe();
         if (slotdata != null && session != null)
         {
@@ -265,6 +272,7 @@ public class APClientClass
 
     public static void Update()
     {
+        Startup.instance.Update(); // after V5.0.2, Startup gets force disabled at game startup. Reennabling it doesn't work, so I'll just call update manually!
         try
         {
             if (GameObject.Find("Console(Clone)").GetComponent<ConsoleScript>().active) // console is pulled down (client makes it difficult to read)

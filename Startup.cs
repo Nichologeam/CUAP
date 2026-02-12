@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using HarmonyLib;
+using System.Threading.Tasks;
 
 namespace CUAP;
 
@@ -18,14 +19,17 @@ public class Startup : BaseUnityPlugin
     public static string CUAPVersion = "v0.6.2";
     public static AssetBundle apassets;
     private static Harmony apHarmony;
+    public static Startup instance;
     GameObject Handler;
     GameObject Console;
     GameObject Body;
     GameObject WorldGen;
     GameObject Moodles;
         
-    private void Awake()
+    private async void Awake()
     {
+        await Task.Delay(1000);
+        instance = this;
         Logger = base.Logger;
         Logger.LogMessage($"Casualties: Unknown Archipelago Plugin {CUAPVersion} loaded!");
         Handler = new GameObject("Archipelago Handler");
@@ -38,7 +42,7 @@ public class Startup : BaseUnityPlugin
         apHarmony.PatchAll();
         Logger.LogMessage($"Harmony patches applied!");
     }
-    private void Update()
+    public void Update()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
         if (SceneManager.GetActiveScene().name == "PreGen")
