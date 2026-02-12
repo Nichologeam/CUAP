@@ -395,6 +395,10 @@ public class Moodlesanity : MonoBehaviour
             {
                 continue; // There's a bug where Experiment is Immunocompromised for the first few frames during worldgen. This if statement makes the check not send in that case.
             }
+            if (mood.type == "death5")
+            {
+                continue; // only used by Archipelago traps. obviously, those don't have checks
+            }
             if (!questboardMode) // normal mode
             {
                 var moodleIndex = MoodleInternalNameList.IndexOf(mood.type);
