@@ -32,6 +32,7 @@ public class APCanvas : MonoBehaviour
     private static Button RerollButton;
     private static TMP_Text RerollText;
     private static int rerollCooldown;
+    public static int rerollCooldownMax;
     private static TMP_Text QuestsRemaining;
     private static Image Moodle1Image;
     private static TMP_Text Moodle1Text;
@@ -333,7 +334,7 @@ public class APCanvas : MonoBehaviour
     }
     private IEnumerator RerollCooldown()
     {
-        rerollCooldown = 15;
+        rerollCooldown = rerollCooldownMax;
         while (rerollCooldown > 0)
         {
             rerollCooldown--;

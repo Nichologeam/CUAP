@@ -375,6 +375,8 @@ public class Moodlesanity : MonoBehaviour
                     .Select(jv => jv.ToString())
                     .ToList();
                 }
+                options.TryGetValue("QuestboardCooldown", out object timer);
+                APCanvas.rerollCooldownMax = (int)(long)timer;
                 RefreshMaxQuests(false);
             }
         }
