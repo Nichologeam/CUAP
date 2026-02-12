@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static CUAP.APClientClass;
 
@@ -24,7 +25,14 @@ public class APCanvas : MonoBehaviour
     private static TMP_Text SkillsanitySTR;
     private static TMP_Text SkillsanityRES;
     private static TMP_Text SkillsanityINT;
+    public static List<string> ShuffledQuests = [];
     private GameObject MoodlesanityQuestboard;
+    private static TMP_Text[] MoodleTexts;
+    private static Image[] MoodleImages;
+    private static Button RerollButton;
+    private static TMP_Text RerollText;
+    private static int rerollCooldown;
+    private static TMP_Text QuestsRemaining;
     private static Image Moodle1Image;
     private static TMP_Text Moodle1Text;
     private static Image Moodle2Image;
@@ -33,7 +41,15 @@ public class APCanvas : MonoBehaviour
     private static TMP_Text Moodle3Text;
     private static Image Moodle4Image;
     private static TMP_Text Moodle4Text;
-    public static int UnlockedSlots = 1;
+    private static Image Moodle5Image;
+    private static TMP_Text Moodle5Text;
+    private static Image Moodle6Image;
+    private static TMP_Text Moodle6Text;
+    private static Image Moodle7Image;
+    private static TMP_Text Moodle7Text;
+    private static Image Moodle8Image;
+    private static TMP_Text Moodle8Text;
+    public static int UnlockedSlots = 2;
     private static GameObject ItemNotif;
     private static TMP_Text ItemText;
     private static bool ItemProcessing;
@@ -64,18 +80,31 @@ public class APCanvas : MonoBehaviour
         ConnectionBackground = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background"); // containing object for the connection ui
         ConnectedBackground = GameObject.Find("APCanvas(Clone)/APCanvas/Connected Background"); // containing object for the connected ui
         SkillsanityTracker = GameObject.Find("APCanvas(Clone)/APCanvas/Skillsanity"); // containing object for the skillsanity tracker
-        SkillsanitySTR = GameObject.Find("APCanvas(Clone)/APCanvas/Skillsanity/STR").GetComponent<TMP_Text>();
-        SkillsanityRES = GameObject.Find("APCanvas(Clone)/APCanvas/Skillsanity/RES").GetComponent<TMP_Text>();
-        SkillsanityINT = GameObject.Find("APCanvas(Clone)/APCanvas/Skillsanity/INT").GetComponent<TMP_Text>();
+        SkillsanitySTR = SkillsanityTracker.transform.Find("STR").gameObject.GetComponent<TMP_Text>();
+        SkillsanityRES = SkillsanityTracker.transform.Find("RES").gameObject.GetComponent<TMP_Text>();
+        SkillsanityINT = SkillsanityTracker.transform.Find("INT").gameObject.GetComponent<TMP_Text>();
         MoodlesanityQuestboard = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard"); // containing object for the moodlesanity quests
-        Moodle1Image = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard/Moodle Image 1").GetComponent<Image>();
-        Moodle1Text = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard/Moodle Name 1").GetComponent<TMP_Text>();
-        Moodle2Image = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard/Moodle Image 2").GetComponent<Image>();
-        Moodle2Text = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard/Moodle Name 2").GetComponent<TMP_Text>();
-        Moodle3Image = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard/Moodle Image 3").GetComponent<Image>();
-        Moodle3Text = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard/Moodle Name 3").GetComponent<TMP_Text>();
-        Moodle4Image = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard/Moodle Image 4").GetComponent<Image>();
-        Moodle4Text = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard/Moodle Name 4").GetComponent<TMP_Text>();
+        QuestsRemaining = MoodlesanityQuestboard.transform.Find("Quests Remaining").gameObject.GetComponent<TMP_Text>();
+        RerollButton = MoodlesanityQuestboard.transform.Find("Reroll Button").gameObject.GetComponent<Button>();
+        RerollText = RerollButton.transform.Find("Text (TMP)").gameObject.GetComponent<TMP_Text>();
+        Moodle1Image = MoodlesanityQuestboard.transform.Find("Moodle Image 1").gameObject.GetComponent<Image>();
+        Moodle1Text = MoodlesanityQuestboard.transform.Find("Moodle Name 1").gameObject.GetComponent<TMP_Text>();
+        Moodle2Image = MoodlesanityQuestboard.transform.Find("Moodle Image 2").gameObject.GetComponent<Image>();
+        Moodle2Text = MoodlesanityQuestboard.transform.Find("Moodle Name 2").gameObject.GetComponent<TMP_Text>();
+        Moodle3Image = MoodlesanityQuestboard.transform.Find("Moodle Image 3").gameObject.GetComponent<Image>();
+        Moodle3Text = MoodlesanityQuestboard.transform.Find("Moodle Name 3").gameObject.GetComponent<TMP_Text>();
+        Moodle4Image = MoodlesanityQuestboard.transform.Find("Moodle Image 4").gameObject.GetComponent<Image>();
+        Moodle4Text = MoodlesanityQuestboard.transform.Find("Moodle Name 4").gameObject.GetComponent<TMP_Text>();
+        Moodle5Image = MoodlesanityQuestboard.transform.Find("Moodle Image 5").gameObject.GetComponent<Image>();
+        Moodle5Text = MoodlesanityQuestboard.transform.Find("Moodle Name 5").gameObject.GetComponent<TMP_Text>();
+        Moodle6Image = MoodlesanityQuestboard.transform.Find("Moodle Image 6").gameObject.GetComponent<Image>();
+        Moodle6Text = MoodlesanityQuestboard.transform.Find("Moodle Name 6").gameObject.GetComponent<TMP_Text>();
+        Moodle7Image = MoodlesanityQuestboard.transform.Find("Moodle Image 7").gameObject.GetComponent<Image>();
+        Moodle7Text = MoodlesanityQuestboard.transform.Find("Moodle Name 7").gameObject.GetComponent<TMP_Text>();
+        Moodle8Image = MoodlesanityQuestboard.transform.Find("Moodle Image 8").gameObject.GetComponent<Image>();
+        Moodle8Text = MoodlesanityQuestboard.transform.Find("Moodle Name 8").gameObject.GetComponent<TMP_Text>();
+        MoodleTexts = [Moodle1Text,Moodle2Text,Moodle3Text,Moodle4Text,Moodle5Text,Moodle6Text,Moodle7Text,Moodle8Text];
+        MoodleImages = [Moodle1Image,Moodle2Image,Moodle3Image,Moodle4Image,Moodle5Image,Moodle6Image,Moodle7Image,Moodle8Image];
         Ipporttext = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background/IPandPort").GetComponent<TMP_InputField>(); // address and port input
         Slot = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background/Slot").GetComponent<TMP_InputField>(); // slot name input
         Password = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background/Password").GetComponent<TMP_InputField>(); // password input
@@ -83,6 +112,7 @@ public class APCanvas : MonoBehaviour
         Status = GameObject.Find("APCanvas(Clone)/APCanvas/Connected Background/Status").GetComponent<TMP_Text>(); // goal status tracker
         versionTag = GameObject.Find("APCanvas(Clone)/APCanvas/Version Tag").GetComponent<TMP_Text>();
         ConnectButton.onClick.AddListener(OnConnectPressed); // run connect function when button is pressed
+        RerollButton.onClick.AddListener(() => RerollQuests(false));
         ItemNotif = GameObject.Find("APCanvas(Clone)/APCanvas/Item Notification");
         ItemText = GameObject.Find("APCanvas(Clone)/APCanvas/Item Notification/Notification Message").GetComponent<TMP_Text>();
         HintNotif = GameObject.Find("APCanvas(Clone)/APCanvas/Hint Notification");
@@ -255,42 +285,62 @@ public class APCanvas : MonoBehaviour
         }
     }
     public static void UpdateQuestboard(bool unlockingSlot = false)
-    {// if you think this looks bad, the basegame moodle code is worse
+    {
         if (unlockingSlot)
         {
             UnlockedSlots++;
         }
         if (!InGame) return;
         CheckIfOutOfSlots();
-        if (Moodlesanity.questsAvailable.Count < 1) return;
-        Moodle1Text.text = Moodlesanity.questsAvailable[0].Replace("Moodlesanity - ","");
-        Moodle1Image.sprite = Resources.Load<Sprite>($"moodles/{Moodlesanity.CheckToInternalMoodID.GetValueOrDefault(Moodlesanity.questsAvailable[0])}");
-        if (UnlockedSlots < 2 || !(Moodlesanity.questsAvailable.Count >= 2)) return;
-        Moodle2Text.text = Moodlesanity.questsAvailable[1].Replace("Moodlesanity - ", "");
-        Moodle2Image.sprite = Resources.Load<Sprite>($"moodles/{Moodlesanity.CheckToInternalMoodID.GetValueOrDefault(Moodlesanity.questsAvailable[1])}");
-        if (UnlockedSlots < 3 || !(Moodlesanity.questsAvailable.Count >= 3)) return;
-        Moodle3Text.text = Moodlesanity.questsAvailable[2].Replace("Moodlesanity - ", "");
-        Moodle3Image.sprite = Resources.Load<Sprite>($"moodles/{Moodlesanity.CheckToInternalMoodID.GetValueOrDefault(Moodlesanity.questsAvailable[2])}");
-        if (UnlockedSlots < 4 || !(Moodlesanity.questsAvailable.Count >= 4)) return;
-        Moodle4Text.text = Moodlesanity.questsAvailable[3].Replace("Moodlesanity - ", "");
-        Moodle4Image.sprite = Resources.Load<Sprite>($"moodles/{Moodlesanity.CheckToInternalMoodID.GetValueOrDefault(Moodlesanity.questsAvailable[3])}");
+        int questCount = Moodlesanity.questsAvailable.Count;
+        int maxSlots = Mathf.Min(UnlockedSlots, MoodleTexts.Length, questCount);
+        QuestsRemaining.text = $"{questCount} quests remaining";
+        for (int i = 0; i < maxSlots; i++)
+        {
+            string questName = ShuffledQuests[i];
+            MoodleTexts[i].text = questName.Replace("Moodlesanity - ", "");
+            string internalId = Moodlesanity.CheckToInternalMoodID.GetValueOrDefault(questName);
+            MoodleImages[i].sprite = Resources.Load<Sprite>($"moodles/{internalId}");
+        }
     }
     private static void CheckIfOutOfSlots()
     {
-        if (UnlockedSlots > Moodlesanity.questsAvailable.Count)
+        if (UnlockedSlots <= Moodlesanity.questsAvailable.Count) return;
+        Sprite apLogo = Startup.apassets.LoadAsset<Sprite>("aplogo200");
+        int maxSlots = Mathf.Min(UnlockedSlots, MoodleTexts.Length);
+        for (int i = 0; i < maxSlots; i++)
         {
-            Moodle1Text.text = "Out of quests!";
-            Moodle1Image.sprite = Startup.apassets.LoadAsset<Sprite>("aplogo200");
-            if (UnlockedSlots < 2) return;
-            Moodle2Text.text = "Out of quests!";
-            Moodle2Image.sprite = Startup.apassets.LoadAsset<Sprite>("aplogo200");
-            if (UnlockedSlots < 3) return;
-            Moodle3Text.text = "Out of quests!";
-            Moodle3Image.sprite = Startup.apassets.LoadAsset<Sprite>("aplogo200");
-            if (UnlockedSlots < 4) return;
-            Moodle4Text.text = "Out of quests!";
-            Moodle4Image.sprite = Startup.apassets.LoadAsset<Sprite>("aplogo200");
+            MoodleTexts[i].text = "Out of quests!";
+            MoodleImages[i].sprite = apLogo;
         }
+    }
+    public static void RerollQuests(bool force)
+    {
+        if (rerollCooldown > 0 && !force) return;
+        ShuffledQuests = Moodlesanity.questsAvailable;
+        for (int i = ShuffledQuests.Count - 1; i > 0; i--) // randomize the quest order
+        {
+            int j = UnityEngine.Random.Range(0, i + 1);
+            (ShuffledQuests[i], ShuffledQuests[j]) = (ShuffledQuests[j], ShuffledQuests[i]);
+        };
+        GameObject.Find("EventSystem").GetComponent<EventSystem>().SetSelectedGameObject(null); // stops space presses from being eaten
+        UpdateQuestboard(false);
+        if (!force)
+        {
+            instance.StartCoroutine(instance.RerollCooldown());
+        }
+
+    }
+    private IEnumerator RerollCooldown()
+    {
+        rerollCooldown = 15;
+        while (rerollCooldown > 0)
+        {
+            rerollCooldown--;
+            RerollText.text = $"({rerollCooldown + 1})";
+            yield return new WaitForSecondsRealtime(1);
+        }
+        RerollText.text = "Reroll Quests";
     }
     public static void EnqueueArchipelagoNotification(string text, int severity)
     {

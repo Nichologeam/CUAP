@@ -342,7 +342,7 @@ public class Moodlesanity : MonoBehaviour
         {"clawdamage0","Moodlesanity - Dulled claws"},
         {"clawdamage1","Moodlesanity - Broken claws"},
         {"keratinbooster5","Moodlesanity - Boosted regrowth"},
-        {"impendingdoom1","Moodlesantiy - Sense of impending doom"},
+        {"impendingdoom1","Moodlesanity - Sense of impending doom"},
         {"horrified3","Moodlesanity - HORRIFIED"},
     };
     public static Dictionary<string, string> CheckToInternalMoodID = InternalMoodNameToCheck.GroupBy(kv => kv.Value)
@@ -422,7 +422,7 @@ public class Moodlesanity : MonoBehaviour
                     AlreadySentChecks.Add(mood.type);
                     continue;
                 }
-                if (questsAvailable.Take(APCanvas.UnlockedSlots).Contains(checkName)) // check only the slots we are displaying
+                if (APCanvas.ShuffledQuests.Take(APCanvas.UnlockedSlots).Contains(checkName)) // check only the slots we are displaying
                 {
                     var CheckID = Client.Locations.GetLocationIdFromName(Client.Players.ActivePlayer.Game, checkName);
                     APClientClass.ChecksToSend.Add(CheckID);
@@ -449,6 +449,6 @@ public class Moodlesanity : MonoBehaviour
                 questsAvailable.Add(moodle);
             }
         }
-        APCanvas.UpdateQuestboard(false);
+        APCanvas.RerollQuests(true);
     }
 }
