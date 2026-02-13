@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.Windows.Speech;
 
 namespace CUAP;
 
@@ -64,15 +65,40 @@ public class CommandPatch : MonoBehaviour
         if (LastGotItemMessage == message) return;
         LastGotItemMessage = message;
         string constructedMessage = "";
+        var itemColor = "";
+        switch (message.Item.Flags)
+        {
+            case Archipelago.MultiClient.Net.Enums.ItemFlags.None: // filler/unspecified item
+                itemColor = "#00EEEE"; // cyan
+                break;
+            case Archipelago.MultiClient.Net.Enums.ItemFlags.Advancement: // progression
+                itemColor = "#AF99EF"; // plum
+                break;
+            case Archipelago.MultiClient.Net.Enums.ItemFlags.NeverExclude: // useful
+                itemColor = "#6D8BE8"; // slateblue
+                break;
+            case Archipelago.MultiClient.Net.Enums.ItemFlags.Trap: // trap
+                itemColor = "#FA8072"; // salmon
+                break;
+
+        }
         if (message.Receiver != message.Sender) // not a local item
         {
-            constructedMessage = $"{message.Sender} sent {message.Item.ItemName} to {message.Receiver} ({message.Item.LocationName})";
+            if (message.IsSenderTheActivePlayer)
+            {
+                constructedMessage = $"<color=#EE00EE>You</color> sent <color={itemColor}>{message.Item.ItemName}</color> to <color=#FAFAD2>{message.Receiver}</color> (<color=#00FF7F>{message.Item.LocationName}</color>)";
+            }
+            else if (message.IsReceiverTheActivePlayer)
+            {
+                constructedMessage = $"<color=#EE00EE>{message.Item.Player}</color> sent <color={itemColor}>{message.Item.ItemName}</color> to <color=#EE00EE>You</color> (<color=#00FF7F>{message.Item.LocationName}</color>)";
+            }
+            
         }
         else if (message.Sender == message.Receiver) // player found their own item
         {
             constructedMessage = message.IsReceiverTheActivePlayer 
-                ? $"You found your {message.Item.ItemName} ({message.Item.LocationName})" // true (it is the casualties player)
-                : $"{message.Receiver} found their {message.Item.ItemName} ({message.Item.LocationName})"; // false (it's someone else)
+                ? $"<color=#EE00EE>You</color> found your <color={itemColor}>{message.Item.ItemName}</color> (<color=#00FF7F>{message.Item.LocationName}</color>)" // true (it is the casualties player)
+                : $"<color=#FAFAD2>{message.Receiver}</color> found their <color={itemColor}>{message.Item.ItemName}</color> (<color=#00FF7F>{message.Item.LocationName}</color>)"; // false (it's someone else)
         }
         LogToConsole.Invoke(Console, [constructedMessage]);
     }
