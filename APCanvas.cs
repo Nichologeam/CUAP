@@ -152,13 +152,6 @@ public class APCanvas : MonoBehaviour
         {
             MoodlesanityQuestboard.SetActive(InGame);
         }
-        if (!ShowMainGUI)
-        {
-            ConnectedBackground.SetActive(false);
-            ConnectedBackground.SetActive(false);
-            MoodlesanityQuestboard.SetActive(false);
-            return;
-        }
         if (!IsConnected())
         {
             ConnectionBackground.SetActive(true);
@@ -168,6 +161,12 @@ public class APCanvas : MonoBehaviour
         {
             ConnectedBackground.SetActive(true);
             ConnectionBackground.SetActive(false);
+        }
+        if (!ShowMainGUI)
+        {
+            ConnectedBackground.SetActive(false);
+            ConnectedBackground.SetActive(false);
+            MoodlesanityQuestboard.SetActive(false);
         }
     }
 

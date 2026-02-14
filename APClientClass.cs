@@ -275,25 +275,25 @@ public class APClientClass
         Startup.instance.Update(); // after V5.0.2, Startup gets force disabled at game startup. Reennabling it doesn't work, so I'll just call update manually!
         try
         {
-            if (GameObject.Find("Console(Clone)").GetComponent<ConsoleScript>().active) // console is pulled down (client makes it difficult to read)
-            {
-                APCanvas.ShowMainGUI = false;
-                APCanvas.ShowSkillTracker = false;
-            }
-            else if (GameObject.Find("Main Camera/Canvas/WoundView").activeSelf) // woundview is open (client covers it)
+            if (GameObject.Find("Main Camera/Canvas/WoundView").activeSelf) // woundview is open (client covers it)
             {
                 APCanvas.ShowMainGUI = false;
                 APCanvas.ShowSkillTracker = true;
             }
-            else
+            else if (GameObject.Find("Main Camera/Canvas").transform.Find("GammaPanel").gameObject.activeSelf) // gamma panel is open
             {
                 APCanvas.ShowMainGUI = true;
+                APCanvas.ShowSkillTracker = false;
+            }
+            else
+            {
+                APCanvas.ShowMainGUI = false;
                 APCanvas.ShowSkillTracker = false;
             }
         }
         catch
         {
-            APCanvas.ShowMainGUI = true; // default true
+            APCanvas.ShowMainGUI = false; // default false
             APCanvas.ShowSkillTracker = false;
         }
         APCanvas.UpdateGUIDescriptions();
