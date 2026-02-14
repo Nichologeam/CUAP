@@ -404,6 +404,7 @@ public class APCanvas : MonoBehaviour
             Sound.Play("shuttleNotice", Vector2.zero, true, false, null, 0.6f, 1f, false, false);
             yield return new WaitForSeconds(5);
             HintNotif.SetActive(false);
+            yield return 0; // one frame of downtime to make it clearer that the next hint is a new one
         }
         HintProcessing = false;
     }
