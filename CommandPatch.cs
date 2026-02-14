@@ -1,4 +1,5 @@
 ﻿using Archipelago.MultiClient.Net;
+using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
 using System;
 using System.Collections;
@@ -66,21 +67,22 @@ public class CommandPatch : MonoBehaviour
         LastGotItemMessage = message;
         string constructedMessage = "";
         var itemColor = "";
-        switch (message.Item.Flags)
+        // a switch statement would be better here, but it would't support items with more than one tag (rare, but they exist)
+        if (message.Item.Flags.HasFlag(ItemFlags.Trap))
         {
-            case Archipelago.MultiClient.Net.Enums.ItemFlags.None: // filler/unspecified item
-                itemColor = "#00EEEE"; // cyan
-                break;
-            case Archipelago.MultiClient.Net.Enums.ItemFlags.Advancement: // progression
-                itemColor = "#AF99EF"; // plum
-                break;
-            case Archipelago.MultiClient.Net.Enums.ItemFlags.NeverExclude: // useful
-                itemColor = "#6D8BE8"; // slateblue
-                break;
-            case Archipelago.MultiClient.Net.Enums.ItemFlags.Trap: // trap
-                itemColor = "#FA8072"; // salmon
-                break;
-
+            itemColor = "#FA8072"; // salmon (trap)
+        }
+        else if (message.Item.Flags.HasFlag(ItemFlags.Advancement))
+        {
+            itemColor = "#AF99EF"; // plum (progression)
+        }
+        else if (message.Item.Flags.HasFlag(ItemFlags.NeverExclude))
+        {
+            itemColor = "#6D8BE8"; // slateblue (useful)
+        }
+        else
+        {
+            itemColor = "#00EEEE"; // cyan (filler/unspecified)
         }
         if (message.Receiver != message.Sender) // not a local item
         {
