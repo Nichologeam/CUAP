@@ -68,6 +68,10 @@ public class LimbUnlocks : MonoBehaviour
             thisLimb.pain = 0f;
             thisLimb.shrapnel = 0;
             thisLimb.infected = false;
+            if (thisLimb == limbs[8] || thisLimb == limbs[5])
+            {
+                vitals.clawHealth = 100f; // fix basegame oversight (restore claws when unamputating hands)
+            }
         }
     }
 
