@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 
 namespace CUAP;
 
-[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.6.3.0")]
+[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.6.4.0")]
 public class Startup : BaseUnityPlugin
 {
     public static new ManualLogSource Logger;
     public static ArchipelagoSession Client;
-    public static string CUAPVersion = "v0.6.3";
+    public static string CUAPVersion = "v0.6.4";
     public static AssetBundle apassets;
     private static Harmony apHarmony;
     public static Startup instance;
