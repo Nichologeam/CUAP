@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using BepInEx;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -345,14 +347,21 @@ public class APCanvas : MonoBehaviour
     }
     public static void EnqueueArchipelagoNotification(string text, int severity)
     {
-        switch(severity)
+        if (ThreadingHelper.Instance == null) // V5.0.2 causes BepInEx's bootstrapper to fail creating this, so we'll do it ourselves.
+        {
+            Startup.Logger.LogWarning("BepInEx.ThreadingHelper is null. Recreating...");
+            var threadingHelperType = typeof(BepInEx.ThreadingHelper);
+            var initializeMethod = threadingHelperType.GetMethod("Initialize", BindingFlags.Static | BindingFlags.NonPublic);
+            initializeMethod!.Invoke(null, null);
+        }
+        switch (severity)
         {
             case 1:
                 ItemQueue.Enqueue(text);
                 if (!ItemProcessing)
                 {
                     ItemProcessing = true;
-                    instance.StartCoroutine(ProcessItemQueue());
+                    ThreadingHelper.Instance.StartSyncInvoke(() => instance.StartCoroutine(ProcessItemQueue()));
                 }
                 break;
             case 2:
@@ -360,7 +369,7 @@ public class APCanvas : MonoBehaviour
                 if (!HintProcessing)
                 {
                     HintProcessing = true;
-                    instance.StartCoroutine(ProcessHintQueue());
+                    ThreadingHelper.Instance.StartSyncInvoke(() => instance.StartCoroutine(ProcessHintQueue()));
                 }
                 break;
             case 3:
@@ -368,7 +377,7 @@ public class APCanvas : MonoBehaviour
                 if (!ErrorProcessing)
                 {
                     ErrorProcessing = true;
-                    instance.StartCoroutine(ProcessErrorQueue());
+                    ThreadingHelper.Instance.StartSyncInvoke(() => instance.StartCoroutine(ProcessErrorQueue()));
                 }
                 break;
         }
