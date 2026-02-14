@@ -90,7 +90,7 @@ public class CommandPatch : MonoBehaviour
             }
             else if (message.IsReceiverTheActivePlayer)
             {
-                constructedMessage = $"<color=#EE00EE>{message.Item.Player}</color> sent <color={itemColor}>{message.Item.ItemName}</color> to <color=#EE00EE>You</color> (<color=#00FF7F>{message.Item.LocationName}</color>)";
+                constructedMessage = $"<color=#FAFAD2>{message.Item.Player}</color> sent <color={itemColor}>{message.Item.ItemName}</color> to <color=#EE00EE>You</color> (<color=#00FF7F>{message.Item.LocationName}</color>)";
             }
             
         }
