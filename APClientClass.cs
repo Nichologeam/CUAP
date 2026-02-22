@@ -101,11 +101,6 @@ public class APClientClass
                     Client Mod {Startup.CUAPVersion}
                     Server APWorld {serverVersion}
                     """;
-                if (serverVersion.ToString().StartsWith("CT"))
-                {
-                    APCanvas.EnqueueArchipelagoNotification($"Server/Client Version Mismatch! Server is running the Casualties: Together version!", 3);
-                    Disconnect();
-                }
                 if (!serverVersion.Equals(Startup.CUAPVersion))
                 {
                     APCanvas.EnqueueArchipelagoNotification($"Server/Client Version Mismatch! Client: {Startup.CUAPVersion}, Server: {serverVersion}!",3);
