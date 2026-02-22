@@ -51,18 +51,8 @@ public class Startup : BaseUnityPlugin
             {
                 ScrollableText.ForceClose(); // skip intoductory story
                 Client = APClientClass.session;
-                if (Client is null || !Client.Socket.Connected) // we aren't connected. disable the start run buttons.
-                {
-                    GameObject.Find("Canvas/Button").GetComponent<Button>().interactable = false; // Start Run button
-                    GameObject.Find("Canvas/Button (7)").GetComponent<Button>().interactable = false; // Continue button
-                    GameObject.Find("Canvas/Button (2)").GetComponent<Button>().interactable = false; // Tutorial button
-                }
-                else
-                {
-                    GameObject.Find("Canvas/Button").GetComponent<Button>().interactable = true;
-                    GameObject.Find("Canvas/Button (7)").GetComponent<Button>().interactable = true;
-                    GameObject.Find("Canvas/Button (2)").GetComponent<Button>().interactable = true;
-                }
+                GameObject.Find("Canvas/MenuBackground/Experiment/Clickable").SetActive(Client is null || !Client.Socket.Connected); // Experiment on cave floor
+                GameObject.Find("Canvas/MenuBackground/TutorialRadio/Clickable").SetActive(Client is null || !Client.Socket.Connected); // Tutorial Radio on cave floor
                 Console = GameObject.Find("Console(Clone)");
                 if (!Console.GetComponent<CommandPatch>())
                 {
