@@ -60,10 +60,8 @@ public class Startup : BaseUnityPlugin
                 }
                 GameObject.Find("Canvas/VersionWarning/Text (TMP) (1)").GetComponent<TextMeshProUGUI>().text =
                 """
-                <alpha=#11><i>...of both Casualties: Unknown and CUAP.<alpha=#FF></i>
-
                 Bug reports on the Discord servers would be appreciated.
-                <size=16><alpha=#11>You can also report bugs by using `apreportbug` in the debug console.
+                <size=16><alpha=#33>You can also report bugs by using `apreportbug` in the debug console.
                 """;
             }
             catch
