@@ -5,7 +5,6 @@ using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using HarmonyLib;
 using System.Threading.Tasks;
 
@@ -51,8 +50,8 @@ public class Startup : BaseUnityPlugin
             {
                 ScrollableText.ForceClose(); // skip intoductory story
                 Client = APClientClass.session;
-                GameObject.Find("Canvas/MenuBackground/Experiment/Clickable").SetActive(Client is null || !Client.Socket.Connected); // Experiment on cave floor
-                GameObject.Find("Canvas/MenuBackground/TutorialRadio/Clickable").SetActive(Client is null || !Client.Socket.Connected); // Tutorial Radio on cave floor
+                GameObject.Find("Canvas/MenuBackground/Experiment/Clickable").SetActive(!(Client is null || !Client.Socket.Connected)); // Experiment on cave floor
+                GameObject.Find("Canvas/MenuBackground/TutorialRadio/Clickable").SetActive(!(Client is null || !Client.Socket.Connected)); // Tutorial Radio on cave floor
                 Console = GameObject.Find("Console(Clone)");
                 if (!Console.GetComponent<CommandPatch>())
                 {
