@@ -388,7 +388,7 @@ public class APCanvas : MonoBehaviour
             ItemText.text = ItemQueue.Dequeue();
             ItemNotif.SetActive(true);
             Sound.Play("warning", Vector2.zero, true, false, null, 1.2f, 1f, false, false);
-            yield return new WaitForSeconds(3);
+            yield return new WaitForSecondsRealtime(3);
             ItemNotif.SetActive(false);
             yield return 0; // one frame of downtime to make it clearer that the next item is a new one
         }
@@ -401,7 +401,7 @@ public class APCanvas : MonoBehaviour
             HintText.text = HintQueue.Dequeue();
             HintNotif.SetActive(true);
             Sound.Play("shuttleNotice", Vector2.zero, true, false, null, 0.6f, 1f, false, false);
-            yield return new WaitForSeconds(5);
+            yield return new WaitForSecondsRealtime(5);
             HintNotif.SetActive(false);
             yield return 0; // one frame of downtime to make it clearer that the next hint is a new one
         }
@@ -413,7 +413,7 @@ public class APCanvas : MonoBehaviour
         {
             ErrorText.text = ErrorQueue.Dequeue();
             ErrorNotif.SetActive(true);
-            yield return new WaitForSeconds(10);
+            yield return new WaitForSecondsRealtime(10);
             ErrorNotif.SetActive(false);
         }
         ErrorProcessing = false;
