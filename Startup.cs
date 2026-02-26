@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace CUAP;
 
-[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.6.5.0")]
+[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.0.1.0")]
 public class Startup : BaseUnityPlugin
 {
     public static new ManualLogSource Logger;
     public static ArchipelagoSession Client;
-    public static string CUAPVersion = "v0.6.5";
+    public static string CUAPVersion = "CTv0.0.1";
     public static AssetBundle apassets;
     private static Harmony apHarmony;
     public static Startup instance;
@@ -33,7 +33,7 @@ public class Startup : BaseUnityPlugin
         Logger.LogMessage($"Casualties: Unknown Archipelago Plugin {CUAPVersion} loaded!");
         Handler = new GameObject("Archipelago Handler");
         DontDestroyOnLoad(Handler);
-        apassets = AssetBundle.LoadFromFile(Path.Combine(BepInEx.Paths.PluginPath, "CUAP", "apassets"));
+        apassets = AssetBundle.LoadFromFile(Path.Combine(BepInEx.Paths.PluginPath, "CUAP", "apctassets"));
         var UI = Instantiate(apassets.LoadAsset<GameObject>("APCanvas"));
         DontDestroyOnLoad(UI);
         UI.AddComponent<APCanvas>();

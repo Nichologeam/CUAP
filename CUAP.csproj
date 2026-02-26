@@ -34,6 +34,12 @@
     <Reference Include="Assembly-CSharp">
       <HintPath>lib\Assembly-CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="KrokoshaCasualtiesMP">
+      <HintPath>lib\KrokoshaCasualtiesMP.dll</HintPath>
+    </Reference>
+    <Reference Include="OpusSharp.Core">
+      <HintPath>lib\OpusSharp.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>lib\Unity.TextMeshPro.dll</HintPath>
     </Reference>
