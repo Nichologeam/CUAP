@@ -1,6 +1,7 @@
 ﻿using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 using BepInEx;
+using KrokoshaCasualtiesMP;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -11,7 +12,6 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
 {
     public static ArchipelagoSession Client;
     private DeathLinkService dlService;
-    private TextMeshProUGUI DeathLinkText;
     private Body Vitals;
     private float DeathlinkCooldown;
     public static bool DeathlinkSeverity = true;
@@ -19,13 +19,12 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
 
     private void OnEnable()
     {
-        Vitals = this.gameObject.GetComponent<Body>();
-        DeathLinkText = GameObject.Find("Main Camera/Canvas/TimeScaleShow/Text (TMP)").GetComponent<TextMeshProUGUI>();
+        var speedupText = GameObject.Find("Main Camera/Canvas/TimeScaleShow/Text (TMP)").GetComponent<TextMeshProUGUI>();
         GameObject.Find("Main Camera/Canvas/TimeScaleShow/Image").SetActive(false);
         GameObject.Find("Main Camera/Canvas/TimeScaleShow").SetActive(true);
-        DeathLinkText.text = ""; // remove the 1x in there, as this is actually an unused version of the speedup overlay.
+        speedupText.text = ""; // remove the 1x in there, as this is actually an unused version of the speedup overlay.
         GameObject.Find("Main Camera/Canvas/TimeScaleShow").transform.SetAsLastSibling(); // overlay over top of everything else by moving to bottom of heirarchy
-        DeathLinkText.transform.localPosition = Vector3.zero; // by default this is pushed to the left slightly for a sprite. i removed said sprite and the text is better centered.
+        speedupText.transform.localPosition = Vector3.zero; // by default this is pushed to the left slightly for a sprite. i removed said sprite and the text is better centered.
         if (!APCanvas.DeathlinkEnabled)
         {
             Startup.Logger.LogWarning("Deathlink is disabled, destroying script.");
@@ -38,18 +37,18 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
     }
     private void Update()
     {
-        if (!Vitals.alive && Vitals.brainHealth == 0) // Experiment is dead! Send Deathlink!
+        if (ServerMain.GetAllDeadPlayers().Count > 0) // Someone died! Send Deathlink!
         {
             SelectDeathLinkCause();
-            DestroyImmediate(this); // This is in the update loop, so we should kill the script to not spam deathlinks. No damage will be done, because the player is forced back to main menu.
+            foreach (var player in ServerMain.GetAllPlayerGameObjects())
+            {
+                player.GetComponent<Body>().brainHealth = 0; // kill all other players in the server
+                player.GetComponent<NetPlayer>().dead = true; // make sure the server knows too
+            }
+            DestroyImmediate(this); // This is in the update loop, so we should kill the script to not spam deathlinks. No damage will be done, because the players are forced back to main menu.
             return;
         }
         DeathlinkCooldown -= Time.deltaTime;
-        if (DeathlinkCooldown <= 0 && DeathlinkCooldown >= -1)
-        {
-            DeathLinkText.text = "";
-            DeathlinkCooldown = -2; // This makes it only empty the text once. There's probably a much better way to do this, but I don't really care.
-        }
         dlService.OnDeathLinkReceived += ProcessDeathLink;
     }
 
@@ -69,67 +68,73 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
         DeathlinkCooldown = 15;
         if (dlPacket.Cause.IsNullOrWhiteSpace())
         {
-            DeathLinkText.text = dlPacket.Source + " died.";
+            Chat.Server_ChatAnnouncement("DEATHLINK", "AP", $"{dlPacket.Source} died.");
         }
         else
         {
-            DeathLinkText.text = dlPacket.Cause;
+            Chat.Server_ChatAnnouncement("DEATHLINK", "AP", dlPacket.Cause);
         }
         if (DeathlinkSeverity)
         {
-            DeathLinkText.text = DeathLinkText.text + " Your run has ended.";
-            DeathLinkText.autoSizeTextContainer = true; // fixes linewrapping off the screen
-            Vitals.brainHealth = 0; // Instantly kill Experiment
-            Destroy(this); // Destroy script so we don't send a deathlink next frame. No damage will be done, because the player is forced back to main menu.
+            foreach (var player in ServerMain.GetAllPlayerGameObjects())
+            {
+                player.GetComponent<Body>().brainHealth = 0; // kill all other players in the server
+                player.GetComponent<NetPlayer>().dead = true; // make sure the server knows too
+            }
+            Chat.Server_ChatAnnouncement("DEATHLINK", "AP", "Your run is over.");
+            Destroy(this); // Destroy script so we don't send a deathlink next frame. No damage will be done, because the players are forced back to main menu.
         }
         else // Nearly exact replica of the V4 version of SelfHarmer.SelfHarm because we can't actually call it
         {
-            DeathLinkText.autoSizeTextContainer = false;
-            Limb limb = Vitals.limbs[UnityEngine.Random.Range(1, Vitals.limbs.Length)]; // starting at 1 means the head can never be selected.
-            limb.muscleHealth -= 30f;
-            limb.skinHealth -= 70f;
-            limb.bleedAmount += 40f;
-            limb.pain += 30f;
+            foreach (var player in ServerMain.GetAllPlayerGameObjects())
+            {
+                Vitals = player.GetComponent<Body>(); // damage a limb on each player
+                Limb limb = Vitals.limbs[UnityEngine.Random.Range(1, Vitals.limbs.Length)]; // starting at 1 means the head can never be selected.
+                limb.muscleHealth -= 30f;
+                limb.skinHealth -= 70f;
+                limb.bleedAmount += 40f;
+                limb.pain += 30f;
+            }
             Sound.Play("harmSting", Vector2.zero, true, false, null, 0.7f, 1f, false, false);
-            DeathLinkText.text = DeathLinkText.text + " Damage done to " + limb.fullName + ".";
-            DeathLinkText.autoSizeTextContainer = true; // fixes linewrapping off the screen
+            Chat.Server_ChatAnnouncement("DEATHLINK", "AP", "Damage done to a random limb on all players.");
         }
     }
 
     void SelectDeathLinkCause()
     {
+        var playerName = ServerMain.GetAllDeadPlayers()[1].playername;
         Dictionary<int, string> DrownDeathMessages = new Dictionary<int, string>()
         {
-            {0,Client.Players.ActivePlayer.Alias + " is part canine, not fish."},
-            {1,Client.Players.ActivePlayer.Alias + " was too heavy to swim."},
-            {2,Client.Players.ActivePlayer.Alias + " forgot their scuba gear."},
-            {3,Client.Players.ActivePlayer.Alias + " forgot the importance of oxygen."}
+            {0,$"{playerName} is part canine, not fish."},
+            {1,$"{playerName} was too heavy to swim."},
+            {2,$"{playerName} forgot their scuba gear."},
+            {3,$"{playerName} forgot the importance of oxygen."}
         };
         Dictionary<int, string> BloodyDeathMessages = new Dictionary<int, string>()
         {
-            {0,Client.Players.ActivePlayer.Alias + " fell off."},
-            {1,Client.Players.ActivePlayer.Alias + " ran out of bandages."},
-            {2,Client.Players.ActivePlayer.Alias + " couldn't stop the bleeding."}
+            {0,$"{playerName} fell off."},
+            {1,$"{playerName} ran out of bandages."},
+            {2,$"{playerName} couldn't stop the bleeding."}
         };
         Dictionary<int, string> GenericDeathMessages = new Dictionary<int, string>()
         {
-            {0,Client.Players.ActivePlayer.Alias + " became a statistic."},
-            {1,"Casualties: Unknown + " + Client.Players.ActivePlayer.Alias},
-            {2,Client.Players.ActivePlayer.Alias + " met the same fate."}
+            {0,$"{playerName} became a statistic."},
+            {1,$"Casualties: Unknown + {playerName}."},
+            {2,$"{playerName} met the same fate."}
         };
         if (Vitals.inWater)
         {
-            DeathLink dlToSend = new DeathLink(Client.Players.ActivePlayer.Alias, DrownDeathMessages[UnityEngine.Random.Range(0, DrownDeathMessages.Count)]);
+            DeathLink dlToSend = new DeathLink(playerName, DrownDeathMessages[UnityEngine.Random.Range(0, DrownDeathMessages.Count)]);
             dlService.SendDeathLink(dlToSend);
         }
         else if (Vitals.totalBleedSpeed > 0.02f) // I know this value seems low, but it is the same value the game uses for the bloody death screen
         {
-            DeathLink dlToSend = new DeathLink(Client.Players.ActivePlayer.Alias, BloodyDeathMessages[UnityEngine.Random.Range(0, BloodyDeathMessages.Count)]);
+            DeathLink dlToSend = new DeathLink(playerName, BloodyDeathMessages[UnityEngine.Random.Range(0, BloodyDeathMessages.Count)]);
             dlService.SendDeathLink(dlToSend);
         }
         else
         {
-            DeathLink dlToSend = new DeathLink(Client.Players.ActivePlayer.Alias, GenericDeathMessages[UnityEngine.Random.Range(0, GenericDeathMessages.Count)]);
+            DeathLink dlToSend = new DeathLink(playerName, GenericDeathMessages[UnityEngine.Random.Range(0, GenericDeathMessages.Count)]);
             dlService.SendDeathLink(dlToSend);
         }
     }
