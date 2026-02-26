@@ -41,7 +41,7 @@ public class LayerLocker : MonoBehaviour
         if (APClientClass.selectedGoal is 1 or 3) // goals 1 and 3
         {
             LayerHandler = APClientClass.LayerUnlockDictionary;
-            if (worldgen.loadingObject.activeSelf && !worldgen.tutorialOverride) // as funny as being in overgrown depths tutorial is, i had to fix this eventually
+            if (worldgen.loadingObject.activeSelf && !(worldgen.biomeOverride == WorldGeneration.OverrideSceneType.Tutorial)) // as funny as being in overgrown depths tutorial is, i had to fix this eventually
             {
                 if (LayerHandler.Count <= 1) // Minimum is 1, since you always have your starting location. Placed a less than as a failsafe.
                 {

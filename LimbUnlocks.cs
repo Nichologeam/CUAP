@@ -1,5 +1,4 @@
-﻿using Archipelago.MultiClient.Net;
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace CUAP;
@@ -32,11 +31,17 @@ public class LimbUnlocks : MonoBehaviour
     private void AmputateAllLimbs()
     {
         limbs[3].dismembered = true; // UpArmF
+        limbs[3].gameObject.SetActive(false);
         limbs[4].dismembered = true; // DownArmF
+        limbs[4].gameObject.SetActive(false);
         limbs[5].dismembered = true; // HandF
+        limbs[5].gameObject.SetActive(false);
         limbs[6].dismembered = true; // UpArmB
+        limbs[6].gameObject.SetActive(false);
         limbs[7].dismembered = true; // DownArmB
+        limbs[7].gameObject.SetActive(false);
         limbs[8].dismembered = true; // HandB
+        limbs[8].gameObject.SetActive(false);
     }
 
     public void RestoreLimbs()
@@ -49,7 +54,24 @@ public class LimbUnlocks : MonoBehaviour
     {
         for (int i = 0; i < unlocks; i++)
         {
-            limbs[startLimb + i].dismembered = false;
+            var thisLimb = limbs[startLimb + i];
+            thisLimb.gameObject.SetActive(true);
+            thisLimb.dismembered = false;
+            // Limbs still take damage when dismembered. Since you normally can't regain limbs, this bug goes unseen in the normal game
+            // But since you CAN regain limbs in Archipelago, I have to fix this, else being sent a Progressive Arm can give you a septic shock jumpscare
+            thisLimb.muscleHealth = 100f;
+            thisLimb.skinHealth = 100f;
+            thisLimb.boneHealTimer = 0f;
+            thisLimb.dislocationTimer = 0f;
+            thisLimb.infectionAmount = 0f;
+            thisLimb.bleedAmount = 0f;
+            thisLimb.pain = 0f;
+            thisLimb.shrapnel = 0;
+            thisLimb.infected = false;
+            if (thisLimb == limbs[8] || thisLimb == limbs[5])
+            {
+                vitals.clawHealth = 100f; // fix basegame oversight (restore claws when unamputating hands)
+            }
         }
     }
 

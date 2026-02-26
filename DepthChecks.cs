@@ -3,7 +3,6 @@ using UnityEngine;
 using TMPro;
 using System.Collections;
 using Archipelago.MultiClient.Net;
-using System;
 
 namespace CUAP;
 
@@ -31,25 +30,21 @@ public class DepthChecks : MonoBehaviour
                 GoalDepth = (long)goaldepthoption;
                 GoalCheckID = 22318000 + (GoalDepth / 100);
                 Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: Reach " + GoalDepth + "m");
-                APClientClass.sendServerMessage.Invoke(null, ["Archipelago", $"Goal is: Reach {GoalDepth}m!"]);
             }
             else if (APClientClass.selectedGoal == 2)
             {
                 GoalCheckID = 22318000 + (1500 / 100);
                 Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: Escape Overgrown Depths");
-                APClientClass.sendServerMessage.Invoke(null, ["Archipelago", "Goal is: Escape Overgrown Depths!"]);
                 GoalDepth = 1534;
             }
             else if (APClientClass.selectedGoal == 3)
             {
                 Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: Defeat Elder Thornback");
-                APClientClass.sendServerMessage.Invoke(null, ["Archipelago", "Goal is: Defeat Elder Thornback!"]);
                 GoalDepth = long.MaxValue; // not needed for this goal
             }
             else if (APClientClass.selectedGoal == 4)
             {
                 Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: Craftsanity");
-                APClientClass.sendServerMessage.Invoke(null, ["Archipelago", "Goal is: Craftsanity!"]);
                 GoalDepth = long.MaxValue; // not needed for this goal
             }
         }
@@ -65,7 +60,7 @@ public class DepthChecks : MonoBehaviour
         if (RoundedMeters > GoalDepth && !worldgen.loadingObject.activeSelf) // fixes a bug with the order the game loads new layers internally
         {
             APClientClass.ChecksToSend.Add(GoalCheckID); // goal location
-            DisplayText.text = "Your group has goaled! Congratulations!";
+            DisplayText.text = "You have goaled! Congratulations!";
             DisplayText.autoSizeTextContainer = true;
             Client.SetGoalAchieved();
             Destroy(this); // no need for this script after the player goals, it would just spam goal every frame.

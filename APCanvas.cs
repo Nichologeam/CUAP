@@ -1,10 +1,11 @@
-﻿using KrokoshaCasualtiesMP;
+﻿using BepInEx;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static CUAP.APClientClass;
 
@@ -15,7 +16,7 @@ public class APCanvas : MonoBehaviour
     public static APCanvas instance;
     public static bool ShowMainGUI = true;
     public static bool ShowSkillTracker = false;
-    public static bool skillsanityEnabled = true;
+    public static bool skillsanityEnabled = false;
     public GameObject ConnectionBackground;
     public GameObject ConnectedBackground;
     public TMP_InputField Ipporttext;
@@ -26,7 +27,15 @@ public class APCanvas : MonoBehaviour
     private static TMP_Text SkillsanitySTR;
     private static TMP_Text SkillsanityRES;
     private static TMP_Text SkillsanityINT;
+    public static List<string> ShuffledQuests = [];
     private GameObject MoodlesanityQuestboard;
+    private static TMP_Text[] MoodleTexts;
+    private static Image[] MoodleImages;
+    private static Button RerollButton;
+    private static TMP_Text RerollText;
+    private static int rerollCooldown;
+    public static int rerollCooldownMax;
+    private static TMP_Text QuestsRemaining;
     private static Image Moodle1Image;
     private static TMP_Text Moodle1Text;
     private static Image Moodle2Image;
@@ -35,7 +44,15 @@ public class APCanvas : MonoBehaviour
     private static TMP_Text Moodle3Text;
     private static Image Moodle4Image;
     private static TMP_Text Moodle4Text;
-    private static int UnlockedSlots = 1;
+    private static Image Moodle5Image;
+    private static TMP_Text Moodle5Text;
+    private static Image Moodle6Image;
+    private static TMP_Text Moodle6Text;
+    private static Image Moodle7Image;
+    private static TMP_Text Moodle7Text;
+    private static Image Moodle8Image;
+    private static TMP_Text Moodle8Text;
+    public static int UnlockedSlots = 2;
     private static GameObject ItemNotif;
     private static TMP_Text ItemText;
     private static bool ItemProcessing;
@@ -63,44 +80,52 @@ public class APCanvas : MonoBehaviour
     private void Start()
     {
         instance = this;
-        togetherAssembly = typeof(KrokoshaScavMultiplayer).Assembly; // run this here to guarentee that both mods are loaded (since we're loading a scene)
-        var serverChat = togetherAssembly.GetType("KrokoshaCasualtiesMP.Chat");
-        sendServerMessage = serverChat.GetMethod("Server_ChatAnnouncement",
-            bindingAttr: BindingFlags.Public | BindingFlags.Static,
-            binder: null,
-            types: [typeof(string), typeof(string)],
-            modifiers: null);
-        ConnectionBackground = GameObject.Find("APCTCanvas(Clone)/APCanvas/Connection Background"); // containing object for the connection ui
-        ConnectedBackground = GameObject.Find("APCTCanvas(Clone)/APCanvas/Connected Background"); // containing object for the connected ui
-        SkillsanityTracker = GameObject.Find("APCTCanvas(Clone)/APCanvas/Skillsanity"); // containing object for the skillsanity tracker
-        SkillsanitySTR = GameObject.Find("APCTCanvas(Clone)/APCanvas/Skillsanity/STR").GetComponent<TMP_Text>();
-        SkillsanityRES = GameObject.Find("APCTCanvas(Clone)/APCanvas/Skillsanity/RES").GetComponent<TMP_Text>();
-        SkillsanityINT = GameObject.Find("APCTCanvas(Clone)/APCanvas/Skillsanity/INT").GetComponent<TMP_Text>();
-        MoodlesanityQuestboard = GameObject.Find("APCTCanvas(Clone)/APCanvas/Questboard"); // containing object for the moodlesanity quests
-        Moodle1Image = GameObject.Find("APCTCanvas(Clone)/APCanvas/Questboard/Moodle Image 1").GetComponent<Image>();
-        Moodle1Text = GameObject.Find("APCTCanvas(Clone)/APCanvas/Questboard/Moodle Name 1").GetComponent<TMP_Text>();
-        Moodle2Image = GameObject.Find("APCTCanvas(Clone)/APCanvas/Questboard/Moodle Image 2").GetComponent<Image>();
-        Moodle2Text = GameObject.Find("APCTCanvas(Clone)/APCanvas/Questboard/Moodle Name 2").GetComponent<TMP_Text>();
-        Moodle3Image = GameObject.Find("APCTCanvas(Clone)/APCanvas/Questboard/Moodle Image 3").GetComponent<Image>();
-        Moodle3Text = GameObject.Find("APCTCanvas(Clone)/APCanvas/Questboard/Moodle Name 3").GetComponent<TMP_Text>();
-        Moodle4Image = GameObject.Find("APCTCanvas(Clone)/APCanvas/Questboard/Moodle Image 4").GetComponent<Image>();
-        Moodle4Text = GameObject.Find("APCTCanvas(Clone)/APCanvas/Questboard/Moodle Name 4").GetComponent<TMP_Text>();
-        Ipporttext = GameObject.Find("APCTCanvas(Clone)/APCanvas/Connection Background/IPandPort").GetComponent<TMP_InputField>(); // address and port input
-        Slot = GameObject.Find("APCTCanvas(Clone)/APCanvas/Connection Background/Slot").GetComponent<TMP_InputField>(); // slot name input
-        Password = GameObject.Find("APCTCanvas(Clone)/APCanvas/Connection Background/Password").GetComponent<TMP_InputField>(); // password input
-        ConnectButton = GameObject.Find("APCTCanvas(Clone)/APCanvas/Connection Background/Connect").GetComponent<Button>(); // connect to archipelago button
-        Status = GameObject.Find("APCTCanvas(Clone)/APCanvas/Connected Background/Status").GetComponent<TMP_Text>(); // goal status tracker
-        versionTag = GameObject.Find("APCTCanvas(Clone)/APCanvas/Version Tag").GetComponent<TMP_Text>();
+        ConnectionBackground = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background"); // containing object for the connection ui
+        ConnectedBackground = GameObject.Find("APCanvas(Clone)/APCanvas/Connected Background"); // containing object for the connected ui
+        SkillsanityTracker = GameObject.Find("APCanvas(Clone)/APCanvas/Skillsanity"); // containing object for the skillsanity tracker
+        SkillsanitySTR = SkillsanityTracker.transform.Find("STR").gameObject.GetComponent<TMP_Text>();
+        SkillsanityRES = SkillsanityTracker.transform.Find("RES").gameObject.GetComponent<TMP_Text>();
+        SkillsanityINT = SkillsanityTracker.transform.Find("INT").gameObject.GetComponent<TMP_Text>();
+        MoodlesanityQuestboard = GameObject.Find("APCanvas(Clone)/APCanvas/Questboard"); // containing object for the moodlesanity quests
+        QuestsRemaining = MoodlesanityQuestboard.transform.Find("Quests Remaining").gameObject.GetComponent<TMP_Text>();
+        RerollButton = MoodlesanityQuestboard.transform.Find("Reroll Button").gameObject.GetComponent<Button>();
+        RerollText = RerollButton.transform.Find("Text (TMP)").gameObject.GetComponent<TMP_Text>();
+        Moodle1Image = MoodlesanityQuestboard.transform.Find("Moodle Image 1").gameObject.GetComponent<Image>();
+        Moodle1Text = MoodlesanityQuestboard.transform.Find("Moodle Name 1").gameObject.GetComponent<TMP_Text>();
+        Moodle2Image = MoodlesanityQuestboard.transform.Find("Moodle Image 2").gameObject.GetComponent<Image>();
+        Moodle2Text = MoodlesanityQuestboard.transform.Find("Moodle Name 2").gameObject.GetComponent<TMP_Text>();
+        Moodle3Image = MoodlesanityQuestboard.transform.Find("Moodle Image 3").gameObject.GetComponent<Image>();
+        Moodle3Text = MoodlesanityQuestboard.transform.Find("Moodle Name 3").gameObject.GetComponent<TMP_Text>();
+        Moodle4Image = MoodlesanityQuestboard.transform.Find("Moodle Image 4").gameObject.GetComponent<Image>();
+        Moodle4Text = MoodlesanityQuestboard.transform.Find("Moodle Name 4").gameObject.GetComponent<TMP_Text>();
+        Moodle5Image = MoodlesanityQuestboard.transform.Find("Moodle Image 5").gameObject.GetComponent<Image>();
+        Moodle5Text = MoodlesanityQuestboard.transform.Find("Moodle Name 5").gameObject.GetComponent<TMP_Text>();
+        Moodle6Image = MoodlesanityQuestboard.transform.Find("Moodle Image 6").gameObject.GetComponent<Image>();
+        Moodle6Text = MoodlesanityQuestboard.transform.Find("Moodle Name 6").gameObject.GetComponent<TMP_Text>();
+        Moodle7Image = MoodlesanityQuestboard.transform.Find("Moodle Image 7").gameObject.GetComponent<Image>();
+        Moodle7Text = MoodlesanityQuestboard.transform.Find("Moodle Name 7").gameObject.GetComponent<TMP_Text>();
+        Moodle8Image = MoodlesanityQuestboard.transform.Find("Moodle Image 8").gameObject.GetComponent<Image>();
+        Moodle8Text = MoodlesanityQuestboard.transform.Find("Moodle Name 8").gameObject.GetComponent<TMP_Text>();
+        MoodleTexts = [Moodle1Text,Moodle2Text,Moodle3Text,Moodle4Text,Moodle5Text,Moodle6Text,Moodle7Text,Moodle8Text];
+        MoodleImages = [Moodle1Image,Moodle2Image,Moodle3Image,Moodle4Image,Moodle5Image,Moodle6Image,Moodle7Image,Moodle8Image];
+        Ipporttext = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background/IPandPort").GetComponent<TMP_InputField>(); // address and port input
+        Slot = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background/Slot").GetComponent<TMP_InputField>(); // slot name input
+        Password = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background/Password").GetComponent<TMP_InputField>(); // password input
+        ConnectButton = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background/Connect").GetComponent<Button>(); // connect to archipelago button
+        Status = GameObject.Find("APCanvas(Clone)/APCanvas/Connected Background/Status").GetComponent<TMP_Text>(); // goal status tracker
+        versionTag = GameObject.Find("APCanvas(Clone)/APCanvas/Version Tag").GetComponent<TMP_Text>();
         ConnectButton.onClick.AddListener(OnConnectPressed); // run connect function when button is pressed
-        ItemNotif = GameObject.Find("APCTCanvas(Clone)/APCanvas/Item Notification");
-        ItemText = GameObject.Find("APCTCanvas(Clone)/APCanvas/Item Notification/Notification Message").GetComponent<TMP_Text>();
-        HintNotif = GameObject.Find("APCTCanvas(Clone)/APCanvas/Hint Notification");
-        HintText = GameObject.Find("APCTCanvas(Clone)/APCanvas/Hint Notification/Notification Message").GetComponent<TMP_Text>();
-        ErrorNotif = GameObject.Find("APCTCanvas(Clone)/APCanvas/Error Notification");
-        ErrorText = GameObject.Find("APCTCanvas(Clone)/APCanvas/Error Notification/Notification Message").GetComponent<TMP_Text>();
+        RerollButton.onClick.AddListener(() => RerollQuests(false));
+        ItemNotif = GameObject.Find("APCanvas(Clone)/APCanvas/Item Notification");
+        ItemText = GameObject.Find("APCanvas(Clone)/APCanvas/Item Notification/Notification Message").GetComponent<TMP_Text>();
+        HintNotif = GameObject.Find("APCanvas(Clone)/APCanvas/Hint Notification");
+        HintText = GameObject.Find("APCanvas(Clone)/APCanvas/Hint Notification/Notification Message").GetComponent<TMP_Text>();
+        ErrorNotif = GameObject.Find("APCanvas(Clone)/APCanvas/Error Notification");
+        ErrorText = GameObject.Find("APCanvas(Clone)/APCanvas/Error Notification/Notification Message").GetComponent<TMP_Text>();
         UpdateSkillsanityValues(0, 60);
         UpdateSkillsanityValues(1, 60);
         UpdateSkillsanityValues(2, 60);
+        versionTag.text = $"Client Mod {Startup.CUAPVersion}";
         if (!File.Exists("ApConnection.txt")) return; // Read saved slot information from file
         var fileText = File.ReadAllText("ApConnection.txt").Replace("\r", "").Split('\n');
         Ipporttext.text = fileText[0];
@@ -115,43 +140,33 @@ public class APCanvas : MonoBehaviour
             Start();
             return;
         }
-        if (!ShowSkillTracker || !skillsanityEnabled)
+        if (skillsanityEnabled)
+        {
+            SkillsanityTracker.SetActive(ShowSkillTracker);
+        }
+        else
         {
             SkillsanityTracker.SetActive(false);
-        }
-        if (ShowSkillTracker)
-        {
-            SkillsanityTracker.SetActive(true);
         }
         if (Moodlesanity.questboardMode)
         {
             MoodlesanityQuestboard.SetActive(InGame);
         }
-        if (!ShowMainGUI)
-        {
-            ConnectedBackground.SetActive(false);
-            MoodlesanityQuestboard.SetActive(false);
-            return;
-        }
         if (!IsConnected())
         {
             ConnectionBackground.SetActive(true);
-        }
-        else
-        {
-            ConnectionBackground.SetActive(false);
-        }
-        if (!InGame)
-        {
             ConnectedBackground.SetActive(false);
         }
-        if (Startup.pauseMenu is not null && Startup.pauseMenu.activeSelf) // gamma panel exists and is open
+        else
         {
             ConnectedBackground.SetActive(true);
+            ConnectionBackground.SetActive(false);
         }
-        else
+        if (!ShowMainGUI)
         {
             ConnectedBackground.SetActive(false);
+            ConnectedBackground.SetActive(false);
+            MoodlesanityQuestboard.SetActive(false);
         }
     }
 
@@ -272,53 +287,80 @@ public class APCanvas : MonoBehaviour
         }
     }
     public static void UpdateQuestboard(bool unlockingSlot = false)
-    {// if you think this looks bad, the basegame moodle code is worse
+    {
         if (unlockingSlot)
         {
             UnlockedSlots++;
         }
         if (!InGame) return;
         CheckIfOutOfSlots();
-        Moodle1Text.text = Moodlesanity.questsAvailable[0].Replace("Moodlesanity - ","");
-        Moodle1Image.sprite = Resources.Load<Sprite>($"moodles/{Moodlesanity.CheckToInternalMoodID.GetValueOrDefault(Moodlesanity.questsAvailable[0])}");
-        Debug.Log($"Moodle/{Moodlesanity.CheckToInternalMoodID.GetValueOrDefault(Moodlesanity.questsAvailable[0])}");
-        if (UnlockedSlots < 2 || !(Moodlesanity.questsAvailable.Count >= 2)) return;
-        Moodle2Text.text = Moodlesanity.questsAvailable[1].Replace("Moodlesanity - ", "");
-        Moodle2Image.sprite = Resources.Load<Sprite>($"moodles/{Moodlesanity.CheckToInternalMoodID.GetValueOrDefault(Moodlesanity.questsAvailable[1])}");
-        if (UnlockedSlots < 3 || !(Moodlesanity.questsAvailable.Count >= 3)) return;
-        Moodle3Text.text = Moodlesanity.questsAvailable[2].Replace("Moodlesanity - ", "");
-        Moodle3Image.sprite = Resources.Load<Sprite>($"moodles/{Moodlesanity.CheckToInternalMoodID.GetValueOrDefault(Moodlesanity.questsAvailable[2])}");
-        if (UnlockedSlots < 4 || !(Moodlesanity.questsAvailable.Count >= 4)) return;
-        Moodle4Text.text = Moodlesanity.questsAvailable[3].Replace("Moodlesanity - ", "");
-        Moodle4Image.sprite = Resources.Load<Sprite>($"moodles/{Moodlesanity.CheckToInternalMoodID.GetValueOrDefault(Moodlesanity.questsAvailable[3])}");
+        int questCount = Moodlesanity.questsAvailable.Count;
+        int maxSlots = Mathf.Min(UnlockedSlots, MoodleTexts.Length, questCount);
+        QuestsRemaining.text = $"{questCount} quests remaining";
+        for (int i = 0; i < maxSlots; i++)
+        {
+            string questName = ShuffledQuests[i];
+            MoodleTexts[i].text = questName.Replace("Moodlesanity - ", "");
+            string internalId = Moodlesanity.CheckToInternalMoodID.GetValueOrDefault(questName);
+            MoodleImages[i].sprite = Resources.Load<Sprite>($"moodles/{internalId}");
+        }
     }
     private static void CheckIfOutOfSlots()
     {
-        if (UnlockedSlots > Moodlesanity.questsAvailable.Count)
+        if (UnlockedSlots <= Moodlesanity.questsAvailable.Count) return;
+        Sprite apLogo = Startup.apassets.LoadAsset<Sprite>("aplogo200");
+        int maxSlots = Mathf.Min(UnlockedSlots, MoodleTexts.Length);
+        for (int i = 0; i < maxSlots; i++)
         {
-            Moodle1Text.text = "Out of quests!";
-            Moodle1Image.sprite = Startup.apassets.LoadAsset<Sprite>("aplogo200");
-            if (UnlockedSlots < 2) return;
-            Moodle2Text.text = "Out of quests!";
-            Moodle2Image.sprite = Startup.apassets.LoadAsset<Sprite>("aplogo200");
-            if (UnlockedSlots < 3) return;
-            Moodle3Text.text = "Out of quests!";
-            Moodle3Image.sprite = Startup.apassets.LoadAsset<Sprite>("aplogo200");
-            if (UnlockedSlots < 4) return;
-            Moodle4Text.text = "Out of quests!";
-            Moodle4Image.sprite = Startup.apassets.LoadAsset<Sprite>("aplogo200");
+            MoodleTexts[i].text = "Out of quests!";
+            MoodleImages[i].sprite = apLogo;
         }
+    }
+    public static void RerollQuests(bool force)
+    {
+        if (rerollCooldown > 0 && !force) return;
+        ShuffledQuests = Moodlesanity.questsAvailable;
+        for (int i = ShuffledQuests.Count - 1; i > 0; i--) // randomize the quest order
+        {
+            int j = UnityEngine.Random.Range(0, i + 1);
+            (ShuffledQuests[i], ShuffledQuests[j]) = (ShuffledQuests[j], ShuffledQuests[i]);
+        };
+        GameObject.Find("EventSystem").GetComponent<EventSystem>().SetSelectedGameObject(null); // stops space presses from being eaten
+        UpdateQuestboard(false);
+        if (!force)
+        {
+            instance.StartCoroutine(instance.RerollCooldown());
+        }
+
+    }
+    private IEnumerator RerollCooldown()
+    {
+        rerollCooldown = rerollCooldownMax;
+        while (rerollCooldown > 0)
+        {
+            rerollCooldown--;
+            RerollText.text = $"({rerollCooldown + 1})";
+            yield return new WaitForSecondsRealtime(1);
+        }
+        RerollText.text = "Reroll Quests";
     }
     public static void EnqueueArchipelagoNotification(string text, int severity)
     {
-        switch(severity)
+        if (ThreadingHelper.Instance == null) // V5.0.2 causes BepInEx's bootstrapper to fail creating this, so we'll do it ourselves.
+        {
+            Startup.Logger.LogWarning("BepInEx.ThreadingHelper is null. Recreating...");
+            var threadingHelperType = typeof(BepInEx.ThreadingHelper);
+            var initializeMethod = threadingHelperType.GetMethod("Initialize", BindingFlags.Static | BindingFlags.NonPublic);
+            initializeMethod!.Invoke(null, null);
+        }
+        switch (severity)
         {
             case 1:
                 ItemQueue.Enqueue(text);
                 if (!ItemProcessing)
                 {
                     ItemProcessing = true;
-                    instance.StartCoroutine(ProcessItemQueue());
+                    ThreadingHelper.Instance.StartSyncInvoke(() => instance.StartCoroutine(ProcessItemQueue()));
                 }
                 break;
             case 2:
@@ -326,7 +368,7 @@ public class APCanvas : MonoBehaviour
                 if (!HintProcessing)
                 {
                     HintProcessing = true;
-                    instance.StartCoroutine(ProcessHintQueue());
+                    ThreadingHelper.Instance.StartSyncInvoke(() => instance.StartCoroutine(ProcessHintQueue()));
                 }
                 break;
             case 3:
@@ -334,7 +376,7 @@ public class APCanvas : MonoBehaviour
                 if (!ErrorProcessing)
                 {
                     ErrorProcessing = true;
-                    instance.StartCoroutine(ProcessErrorQueue());
+                    ThreadingHelper.Instance.StartSyncInvoke(() => instance.StartCoroutine(ProcessErrorQueue()));
                 }
                 break;
         }
@@ -346,7 +388,7 @@ public class APCanvas : MonoBehaviour
             ItemText.text = ItemQueue.Dequeue();
             ItemNotif.SetActive(true);
             Sound.Play("warning", Vector2.zero, true, false, null, 1.2f, 1f, false, false);
-            yield return new WaitForSeconds(3);
+            yield return new WaitForSecondsRealtime(3);
             ItemNotif.SetActive(false);
             yield return 0; // one frame of downtime to make it clearer that the next item is a new one
         }
@@ -359,8 +401,9 @@ public class APCanvas : MonoBehaviour
             HintText.text = HintQueue.Dequeue();
             HintNotif.SetActive(true);
             Sound.Play("shuttleNotice", Vector2.zero, true, false, null, 0.6f, 1f, false, false);
-            yield return new WaitForSeconds(5);
+            yield return new WaitForSecondsRealtime(5);
             HintNotif.SetActive(false);
+            yield return 0; // one frame of downtime to make it clearer that the next hint is a new one
         }
         HintProcessing = false;
     }
@@ -370,7 +413,7 @@ public class APCanvas : MonoBehaviour
         {
             ErrorText.text = ErrorQueue.Dequeue();
             ErrorNotif.SetActive(true);
-            yield return new WaitForSeconds(10);
+            yield return new WaitForSecondsRealtime(10);
             ErrorNotif.SetActive(false);
         }
         ErrorProcessing = false;

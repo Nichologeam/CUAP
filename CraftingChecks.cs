@@ -13,7 +13,6 @@ namespace CUAP;
 
 public class CraftingChecks : MonoBehaviour
 {
-    AssetBundle bundle;
     private Sprite aplogo;
     public static ArchipelagoSession Client;
     private static List<string> RecievedRecipes;
@@ -25,13 +24,6 @@ public class CraftingChecks : MonoBehaviour
     private bool removeBlueprints = false;
     private static readonly long startingRecipeID = 22318500;
     private static HashSet<string> AppliedRecipes = new();
-    private LocationScoutsPacket blueprintsPacket = new LocationScoutsPacket()
-    {
-        Locations = Enumerable.Range(22318500, 22318612 - 22318500 + 1)
-                            .Select(i => (long)i)
-                            .ToArray(),
-        CreateAsHint = 0
-    };
     public static Dictionary<long, string> BlueprintToPlayerName = new Dictionary<long, string>();
     public static Dictionary<long, string> BlueprintToItemName = new Dictionary<long, string>();
     public static Dictionary<string, string> CheckNameToItem = new Dictionary<string, string>()
@@ -102,12 +94,14 @@ public class CraftingChecks : MonoBehaviour
         {"Dressing Recipe","bandage"},
         {"Lantern Recipe","lantern"},
         {"Terrain scanner Recipe","terrainscanner"},
+        {"Lockpicking kit Recipe","lockpickingkit"},
         {"Advanced scuba diving gear Recipe","scubadivinggear"},
         {"Pickaxe Recipe","pickaxe"},
         {"Scaffolding pack Recipe","scaffoldingpack"},
         {"Backpack Recipe","bigpack"},
+        {"Wood sandals Recipe","woodsandals"},
         {"Duffel bag Recipe","duffelbag"},
-        {"Material pouch Recipe","materialpouch"},
+        {"Material bag Recipe","materialpouch"},
         {"Belt Recipe","belt"},
         {"Bowl of cereal Recipe","bowlofcereal"},
         {"Fat Recipe","fat"},
@@ -133,15 +127,18 @@ public class CraftingChecks : MonoBehaviour
         {"L.R.D. Recipe","lrd"},
         {"L.R.D. Serum Recipe","lrdserum"},
         {"Produce juice Recipe","producejuice"},
+        {"Milk Recipe","milk"},
         {"Refined juice Recipe","refinedjuice"},
         {"Drill repair kit Recipe","drillrepairkit"},
         {"Procoagulant Recipe","procoagulant"},
-        {"Antiseptic bottle Recipe","disinfectant"},
+        {"Spray bottle Recipe","spraybottle"},
+        {"Syringe Recipe","syringe"},
         {"Firestarter Recipe","firestarter"},
         {"Campfire Recipe","campfire"},
         {"Water Recipe","water"},
         {"Charcoal Recipe","charcoal"},
         {"Bread Recipe","bread"},
+        {"Pancake Recipe","pancake"},
         {"Rye flour Recipe","ryeflour"},
         {"Torch Recipe","torch"},
         {"Torch (relight) Recipe","torch"},
@@ -226,12 +223,14 @@ public class CraftingChecks : MonoBehaviour
         {"Dressing Recipe",5},
         {"Lantern Recipe",10},
         {"Terrain scanner Recipe",12},
+        {"Lockpicking kit Recipe",10},
         {"Advanced scuba diving gear Recipe",12},
         {"Pickaxe Recipe",12},
         {"Scaffolding pack Recipe",14},
         {"Backpack Recipe",13},
+        {"Wood sandals Recipe",8},
         {"Duffel bag Recipe",11},
-        {"Material pouch Recipe",10},
+        {"Material bag Recipe",10},
         {"Belt Recipe",10},
         {"Bowl of cereal Recipe",2},
         {"Fat Recipe",8},
@@ -257,15 +256,18 @@ public class CraftingChecks : MonoBehaviour
         {"L.R.D. Recipe",15},
         {"L.R.D. Serum Recipe",11},
         {"Produce juice Recipe",2},
+        {"Milk Recipe",0},
         {"Refined juice Recipe",4},
         {"Drill repair kit Recipe",9},
         {"Procoagulant Recipe",14},
-        {"Antiseptic bottle Recipe",7},
+        {"Spray bottle Recipe",7},
+        {"Syringe Recipe",8},
         {"Firestarter Recipe",8},
         {"Campfire Recipe",4},
         {"Water Recipe",4},
         {"Charcoal Recipe",7},
         {"Bread Recipe",7},
+        {"Pancake Recipe",5},
         {"Rye flour Recipe",6},
         {"Torch Recipe",5},
         {"Torch (relight) Recipe",5},
@@ -349,12 +351,14 @@ public class CraftingChecks : MonoBehaviour
         "Dressing Recipe",
         "Lantern Recipe",
         "Terrain scanner Recipe",
+        "Lockpicking kit Recipe",
         "Advanced scuba diving gear Recipe",
         "Pickaxe Recipe",
         "Scaffolding pack Recipe",
         "Backpack Recipe",
-        "Duffel Bag Recipe",
-        "Material Pouch Recipe",
+        "Wood sandals Recipe",
+        "Duffel bag Recipe",
+        "Material bag Recipe",
         "Belt Recipe",
         "Bowl of cereal Recipe",
         "Fat Recipe",
@@ -380,15 +384,18 @@ public class CraftingChecks : MonoBehaviour
         "L.R.D. Recipe",
         "L.R.D. Serum Recipe",
         "Produce juice Recipe",
+        "Milk Recipe",
         "Refined juice Recipe",
         "Drill repair kit Recipe",
         "Procoagulant Recipe",
-        "Antiseptic bottle Recipe",
+        "Spray bottle Recipe",
+        "Syringe Recipe",
         "Firestarter Recipe",
         "Campfire Recipe",
         "Water Recipe",
         "Charcoal Recipe",
         "Bread Recipe",
+        "Pancake Recipe",
         "Rye flour Recipe",
         "Torch Recipe",
         "Torch (relight) Recipe",
@@ -427,10 +434,12 @@ public class CraftingChecks : MonoBehaviour
                 }
                 if (Convert.ToInt16(recipesoption) == 3) // blueprint locations enabled
                 {
-                    APClientClass.session.Socket.SendPacket(blueprintsPacket);
+                    Client.Locations.ScoutLocationsAsync(
+                        Enumerable.Range(22318500, 22318612 - 22318500 + 1)
+                            .Select(i => (long)i)
+                            .ToArray());
                     SetupAPBlueprint();
-                    bundle = AssetBundle.GetAllLoadedAssetBundles().FirstOrDefault(b => b.name == "apctassets");
-                    aplogo = bundle.LoadAsset<Sprite>("aplogo200"); // load custom blueprint asset replacement
+                    aplogo = Startup.apassets.LoadAsset<Sprite>("aplogo200"); // load custom blueprint asset replacement
                 }
                 else // blueprint locations aren't enabled. mark that for later
                 {

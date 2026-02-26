@@ -32,13 +32,22 @@ public class TrapHandler : MonoBehaviour
         moodles = GameObject.Find("Main Camera/Canvas/Moodles").GetComponent<MoodleManager>();
         Startup.Logger.LogMessage("TrapHandler Ready!");
     }
+    private void Start() // run this later so MoodleManager.Awake has indexed the sprites into MoodleManager.icons in time
+    {
+        var APLogo = Sprite.Create(
+            texture: Startup.apassets.LoadAsset<Texture2D>("aplogo200"),
+            pixelsPerUnit: 400,
+            rect: new Rect(0, 0, 200, 200),
+            pivot: new Vector2(0.5f, 0.5f));
+        moodles.icons["death"] = APLogo; // replace unused Deceased moodle sprite
+    }
     private void LateUpdate() // lateupdate so it's after normal moodle updates (no race condition, yippee!)
     {
         if (moodleUpdateTime(moodles) > prevUpdateTime && Vitals.alive) // timer reset, moodles were updated
         {
             if (revControlActive)
             {
-                moodles.AddMoodle(5, "confused", "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Trap: Reversed Controls", trapSender + " reversed your controls! Lasts 10 seconds.", false, false);
+                moodles.AddMoodle(5, "death", "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Trap: Reversed Controls", trapSender + " reversed your controls! Lasts 10 seconds.", false, false);
             }
             if (unchippedActive)
             {
@@ -46,11 +55,11 @@ public class TrapHandler : MonoBehaviour
             }
             if (disfigActive)
             {
-                moodles.AddMoodle(5, "dislocatedjaw", "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Trap: Disfigured", trapSender + " removed your jaw! Lasts 180 seconds.", false, false);
+                moodles.AddMoodle(5, "death", "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Trap: Disfigured", trapSender + " removed your jaw! Lasts 180 seconds.", false, false);
             }
             if (mindwipeActive)
             {
-                moodles.AddMoodle(5, "hollow", "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Trap: Mindwipe", trapSender + " removed your memories! Lasts 70 seconds.", false, false);
+                moodles.AddMoodle(5, "death", "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Trap: Mindwipe", trapSender + " removed your memories! Lasts 70 seconds.", false, false);
             }
         }
         prevUpdateTime = moodleUpdateTime(moodles);
@@ -93,8 +102,7 @@ public class TrapHandler : MonoBehaviour
         if (TrapName == "Elder Thornback Trap")
         {
             plrcam.DoAlert("Trap: " + ItemSender + " sent something big your way. Something <i>really</i> big.", false);
-            plrcam.currentThreatTheme = 15; // play the Elder Thornback first phase theme
-            plrcam.threatMusicTime = 90; // for 90 seconds
+            StartCoroutine(Thornback());
         }
         if (TrapName == "Cave Ticks Trap")
         {
@@ -204,7 +212,7 @@ public class TrapHandler : MonoBehaviour
         MindwipeScript mw = Vitals.gameObject.AddComponent<MindwipeScript>();
         yield return new WaitForSecondsRealtime(70);
         Destroy(mw);
-        Destroy(GameObject.Find("Main Camera/Canvas/MindwipeViginette(Clone)"));
+        Destroy(GameObject.Find("Main Camera/Canvas/MindwipeVignette(Clone)"));
         skills.INT = INTSkillPreWipe;
         skills.expINT = +INTExpPreWipe;
         skills.maxINT = INTMaxPreWipe;
@@ -212,5 +220,15 @@ public class TrapHandler : MonoBehaviour
         Vitals.hearingLoss = preWipehl;
         if (Vitals.alive) Vitals.brainHealth = preWipebh; // only if Experiment didn't die during the mindwipe
         mindwipeActive = false;
+    }
+    IEnumerator Thornback()
+    {
+        plrcam.currentThreatTheme = 15; // play the Elder Thornback first phase theme
+        plrcam.threatMusicTime = 90; // for 90 seconds
+        moodles.horrifiedLevel = 1;
+        yield return new WaitForSecondsRealtime(11); // timed to be on the beat drop for maximum effect (because i'm just cool like that)
+        moodles.horrifiedLevel = 3;
+        yield return new WaitForSecondsRealtime(79);
+        moodles.horrifiedLevel = 0;
     }
 }

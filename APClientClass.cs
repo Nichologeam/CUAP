@@ -1,20 +1,18 @@
 #nullable enable
 using Archipelago.MultiClient.Net;
-using Archipelago.MultiClient.Net.Helpers;
+using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 using Archipelago.MultiClient.Net.Enums;
+using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Packets;
+using BepInEx;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.UIElements.Collections;
-using BepInEx;
-using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
-using HarmonyLib;
-using KrokoshaCasualtiesMP;
-using System.Reflection;
 
 namespace CUAP;
 
@@ -34,15 +32,19 @@ public class APClientClass
     public static int DepthExtendersRecieved = 0;
     public static int leftArmUnlocks;
     public static int rightArmUnlocks;
-    private static bool datapackageprocessed = false;
     public static int selectedGoal;
     public static ArchipelagoSession? session;
     public static DeathLinkService? dlService;
-    public static Assembly? togetherAssembly;
-    public static MethodInfo? sendServerMessage;
 
     public static string[]? TryConnect(string address, string slot, string? password)
     {
+        if (ThreadingHelper.Instance == null) // V5.0.2 causes BepInEx's bootstrapper to fail creating this, so we'll do it ourselves.
+        {
+            Startup.Logger.LogWarning("BepInEx.ThreadingHelper is null. Recreating...");
+            var threadingHelperType = typeof(BepInEx.ThreadingHelper);
+            var initializeMethod = threadingHelperType.GetMethod("Initialize", BindingFlags.Static | BindingFlags.NonPublic);
+            initializeMethod!.Invoke(null, null);
+        }
         try
         {
             Startup.Logger.LogMessage($"Attempting to connect to [{address}], with password: [{password}], on slot: [{slot}]");
@@ -51,8 +53,8 @@ public class APClientClass
                 password = null;
             }
             session = ArchipelagoSessionFactory.CreateSession(address);
-            session!.Items.ItemReceived += (item) => ThreadingHelper.Instance.StartSyncInvoke(() => ProcessItem(item)); // this has to be run on main thread or unity will hard crash
-            var loginResult = session.TryConnectAndLogin("Casualties: Together", slot, ItemsHandlingFlags.AllItems, (new Version(0, 6, 5)), password: password, requestSlotData: true);
+            session!.Items.ItemReceived += (item) => ThreadingHelper.Instance!.StartSyncInvoke(() => ProcessItem(item)); // this has to be run on main thread or unity will hard crash
+            var loginResult = session.TryConnectAndLogin("Casualties: Unknown", slot, ItemsHandlingFlags.AllItems, (new Version(0, 6, 5)), password: password, requestSlotData: true);
             
             if (loginResult is LoginFailure failure)
             {
@@ -84,7 +86,7 @@ public class APClientClass
         slotdata = session!.DataStorage.GetSlotData(session.Players.ActivePlayer.Slot);
         Startup.Logger.LogMessage("Connnected to Archipelago!");
         dlService = session.CreateDeathLinkService();
-        session.Socket.SendPacket(new GetFullDataPackagePacket());
+        GameObject.Find("Console(Clone)").GetComponent<CommandPatch>().Subscribe();
         if (slotdata != null && session != null)
         {
             if (slotdata.TryGetValue("Goal", out var goal))
@@ -99,11 +101,6 @@ public class APClientClass
                     Client Mod {Startup.CUAPVersion}
                     Server APWorld {serverVersion}
                     """;
-                if (!serverVersion.ToString().StartsWith("CT"))
-                {
-                    APCanvas.EnqueueArchipelagoNotification($"Server/Client Version Mismatch! Server is not running the Casualties: Together version!", 3);
-                    Disconnect();
-                }
                 if (!serverVersion.Equals(Startup.CUAPVersion))
                 {
                     APCanvas.EnqueueArchipelagoNotification($"Server/Client Version Mismatch! Client: {Startup.CUAPVersion}, Server: {serverVersion}!",3);
@@ -270,6 +267,7 @@ public class APClientClass
 
     public static void Update()
     {
+        Startup.instance.Update(); // after V5.0.2, Startup gets force disabled at game startup. Reennabling it doesn't work, so I'll just call update manually!
         try
         {
             if (GameObject.Find("Main Camera/Canvas/WoundView").activeSelf) // woundview is open (client covers it)
@@ -277,15 +275,20 @@ public class APClientClass
                 APCanvas.ShowMainGUI = false;
                 APCanvas.ShowSkillTracker = true;
             }
-            else
+            else if (GameObject.Find("Main Camera/Canvas").transform.Find("GammaPanel").gameObject.activeSelf) // gamma panel is open
             {
                 APCanvas.ShowMainGUI = true;
+                APCanvas.ShowSkillTracker = false;
+            }
+            else
+            {
+                APCanvas.ShowMainGUI = false;
                 APCanvas.ShowSkillTracker = false;
             }
         }
         catch
         {
-            APCanvas.ShowMainGUI = true; // default true
+            APCanvas.ShowMainGUI = false; // default false
             APCanvas.ShowSkillTracker = false;
         }
         APCanvas.UpdateGUIDescriptions();
@@ -308,76 +311,11 @@ public class APClientClass
             {
                 foreach (var item in items)
                 {
-                    playerItemIdToName.TryGetValue(item.Player, out Dictionary<long, string> blueprintitemidtoname);
-                    blueprintitemidtoname.TryGetValue(item.Item, out string itemname);
+                    var itemname = session.Items.GetItemName(item.Item, session.Players?.GetPlayerInfo(item.Player).Game);
                     CraftingChecks.BlueprintToItemName.Add(item.Location - 22318500, itemname);
                     CraftingChecks.BlueprintToPlayerName.Add(item.Location - 22318500, 
                         session.Players != null && item.Player >= 0 ? session.Players.GetPlayerName(item.Player) : $"Unknown Player (id:{item.Player})");
                 }
-            }
-        }
-        else if (packet is DataPackagePacket && !datapackageprocessed)
-        {
-            try
-            {
-                Startup.Logger.LogMessage("Received DataPackage");
-                datapackageprocessed = true;
-                var data = packet.ToJObject()["data"];
-                if (data == null) {Startup.Logger.LogError("'data' is null!"); return;}
-                var gamelist = data["games"];
-                JObject? games = gamelist as JObject;
-                if (games == null || session == null) {Startup.Logger.LogError("'Games' is null!"); return;}
-                var allPlayers = session.Players.AllPlayers;
-                foreach (var player in allPlayers)
-                {
-                    Startup.Logger.LogMessage($"Processing {player.Name}");
-                    int playerID = player.Slot;
-                    string gameName = player.Game;
-                    if (!games.TryGetValue(gameName, out JToken? gameDataToken))
-                    {
-                        continue;
-                    }
-                    JObject? gameData = gameDataToken as JObject;
-                    if (gameData == null)
-                    {
-                        continue;
-                    }
-                    JObject? itemNameToIdJson = gameData["item_name_to_id"] as JObject;
-                    if (itemNameToIdJson == null)
-                    {
-                        continue;
-                    }
-                    Dictionary<long, string> itemNameToId = new Dictionary<long, string>();
-                    foreach (var prop in itemNameToIdJson.Properties())
-                    {
-                        long id = prop.Value.Value<long>();
-                        string name = prop.Name;
-
-                        if (!itemNameToId.ContainsKey(id))
-                            itemNameToId[id] = name;
-                    }
-                    playerItemIdToName[playerID] = itemNameToId;
-                    JObject? locNameToIdJson = gameData["location_name_to_id"] as JObject;
-                    if (locNameToIdJson == null)
-                    {
-                        continue;
-                    }
-                    Dictionary<long, string> locNameToId = new Dictionary<long, string>();
-                    foreach (var prop in locNameToIdJson.Properties())
-                    {
-                        long id = prop.Value.Value<long>();
-                        string name = prop.Name;
-
-                        if (!locNameToId.ContainsKey(id))
-                            locNameToId[id] = name;
-                    }
-                    playerLocIdToName[playerID] = locNameToId;
-                }
-            }
-            catch (Exception ex)
-            {
-                APCanvas.EnqueueArchipelagoNotification("Datapackage Error: " + ex.ToString(),3);
-                Startup.Logger.LogError("Datapackage Error: " + ex.ToString());
             }
         }
         else if (packet is RetrievedPacket)

@@ -39,10 +39,11 @@ public class Moodlesanity : MonoBehaviour
         "overdose1",
         "overdose2",
         "overdose3",
-        "withdrawl0",
-        "withdrawl1",
-        "withdrawl2",
-        "withdrawl3",
+        "withdrawal0",
+        "withdrawal1",
+        "withdrawal2",
+        "withdrawal3",
+        "stimulants6",
         "drugoverdose3",
         "bleeding0",
         "bleeding1",
@@ -63,8 +64,8 @@ public class Moodlesanity : MonoBehaviour
         "exertion3",
         "brokenbone",
         "dislocation",
-        "brokenneck1",
-        "brokenribs1",
+        "brokenneck",
+        "brokenribs",
         "dislocatedjaw",
         "dislocatedspine",
         "infected0",
@@ -97,7 +98,7 @@ public class Moodlesanity : MonoBehaviour
         "thirst3",
         "overhydrated0",
         "overhydrated1",
-        "overhydrated2",
+        "overhydrated3",
         "sick0",
         "sick1",
         "sick2",
@@ -148,7 +149,7 @@ public class Moodlesanity : MonoBehaviour
         "irradiated3",
         "energized5",
         "hemothorax1",
-        "hollow0",
+        "hollow",
         "badsleep0",
         "lastleg8",
         "dirty0",
@@ -190,10 +191,11 @@ public class Moodlesanity : MonoBehaviour
         {"overdose1","Moodlesanity - Drugged"},
         {"overdose2","Moodlesanity - Highly drugged"},
         {"overdose3","Moodlesanity - Fatal opioid overdose"},
-        {"withdrawl0","Moodlesanity - Opioid craving"},
-        {"withdrawl1","Moodlesanity - Withdrawl"},
-        {"withdrawl2","Moodlesanity - Severe withdrawl"},
-        {"withdrawl3","Moodlesanity - Dying of withdrawl"},
+        {"withdrawal0","Moodlesanity - Opioid craving"},
+        {"withdrawal1","Moodlesanity - Withdrawal"},
+        {"withdrawal2","Moodlesanity - Severe withdrawal"},
+        {"withdrawal3","Moodlesanity - Dying of withdrawal"},
+        {"stimulants6","Moodlesantiy - Stimulated"},
         {"drugoverdose3","Moodlesanity - Drug overdose"},
         {"bleeding0","Moodlesanity - Minor bleeding"},
         {"bleeding1","Moodlesanity - Bleeding"},
@@ -220,8 +222,14 @@ public class Moodlesanity : MonoBehaviour
         {"dislocation1","Moodlesanity - Dislocated joint"},
         {"dislocation2","Moodlesanity - Dislocated joint"},
         {"dislocation3","Moodlesanity - Dislocated joint"},
+        {"brokenneck0","Moodlesanity - Fractured neck"},
         {"brokenneck1","Moodlesanity - Fractured neck"},
+        {"brokenneck2","Moodlesanity - Fractured neck"},
+        {"brokenneck3","Moodlesanity - Fractured neck"},
+        {"brokenribs0","Moodlesanity - Fractured ribs"},
         {"brokenribs1","Moodlesanity - Fractured ribs"},
+        {"brokenribs2","Moodlesanity - Fractured ribs"},
+        {"brokenribs3","Moodlesanity - Fractured ribs"},
         {"dislocatedjaw0","Moodlesanity - Dislocated jaw"},
         {"dislocatedjaw1","Moodlesanity - Dislocated jaw"},
         {"dislocatedjaw2","Moodlesanity - Dislocated jaw"},
@@ -260,7 +268,7 @@ public class Moodlesanity : MonoBehaviour
         {"thirst3","Moodlesanity - Desiccated"},
         {"overhydrated0","Moodlesanity - Slaked"},
         {"overhydrated1","Moodlesanity - Overhydrated"},
-        {"overhydrated2","Moodlesanity - Water-intoxicated"},
+        {"overhydrated3","Moodlesanity - Water-intoxicated"},
         {"sick0","Moodlesanity - Queasy"},
         {"sick1","Moodlesanity - Nauseous"},
         {"sick2","Moodlesanity - Sick"},
@@ -315,6 +323,7 @@ public class Moodlesanity : MonoBehaviour
         {"energized5","Moodlesanity - Energized"},
         {"hemothorax1","Moodlesanity - Hemothorax"},
         {"hollow0","Moodlesanity - Hollow"},
+        {"hollow5","Moodlesanity - Hollow"},
         {"badsleep0","Moodlesanity - Bad sleep"},
         {"lastleg8","Moodlesanity - Last stand"},
         {"dirty0","Moodlesanity - Dirty"},
@@ -335,7 +344,7 @@ public class Moodlesanity : MonoBehaviour
         {"clawdamage0","Moodlesanity - Dulled claws"},
         {"clawdamage1","Moodlesanity - Broken claws"},
         {"keratinbooster5","Moodlesanity - Boosted regrowth"},
-        {"impendingdoom1","Moodlesantiy - Sense of impending doom"},
+        {"impendingdoom1","Moodlesanity - Sense of impending doom"},
         {"horrified3","Moodlesanity - HORRIFIED"},
     };
     public static Dictionary<string, string> CheckToInternalMoodID = InternalMoodNameToCheck.GroupBy(kv => kv.Value)
@@ -368,6 +377,8 @@ public class Moodlesanity : MonoBehaviour
                     .Select(jv => jv.ToString())
                     .ToList();
                 }
+                options.TryGetValue("QuestboardCooldown", out object timer);
+                APCanvas.rerollCooldownMax = (int)(long)timer;
                 RefreshMaxQuests(false);
             }
         }
@@ -378,16 +389,20 @@ public class Moodlesanity : MonoBehaviour
         Moodle[] moodleComponents = Moodles.GetComponentsInChildren<Moodle>();
         foreach (Moodle mood in moodleComponents) // For each moodle, send its check.
         {
+            if (AlreadySentChecks.Contains(mood.type))
+            {
+                continue; // Avoid spamming the server by not even attempting to send a check we already have sent.
+            }
+            if (mood.type == "lowimmunity1" && worldgen.loadingObject.activeSelf)
+            {
+                continue; // There's a bug where Experiment is Immunocompromised for the first few frames during worldgen. This if statement makes the check not send in that case.
+            }
+            if (mood.type == "death5")
+            {
+                continue; // only used by Archipelago traps. obviously, those don't have checks
+            }
             if (!questboardMode) // normal mode
             {
-                if (AlreadySentChecks.Contains(mood.type))
-                {
-                    continue; // Avoid spamming the server by not even attempting to send a check we already have sent.
-                }
-                if (mood.type == "lowimmunity1" && worldgen.loadingObject.activeSelf)
-                {
-                    continue; // There's a bug where Experiment is Immunocompromised for the first few frames during worldgen. This if statement makes the check not send in that case.
-                }
                 var moodleIndex = MoodleInternalNameList.IndexOf(mood.type);
                 if (moodleIndex == -1) // couldn't find it. try secondary method
                 {
@@ -397,6 +412,7 @@ public class Moodlesanity : MonoBehaviour
                     {
                         Startup.Logger.LogError($"Moodle {mood.type} is not in the Moodlesanity index list!");
                         APCanvas.EnqueueArchipelagoNotification($"Moodlesanity Error! Moodle {mood.type} is not in the Moodlesanity index list!", 3);
+                        AlreadySentChecks.Add(mood.type);
                         continue;
                     }
                 }
@@ -411,9 +427,10 @@ public class Moodlesanity : MonoBehaviour
                 {
                     Startup.Logger.LogError($"Could not find assocaited check for moodle {mood.type}!");
                     APCanvas.EnqueueArchipelagoNotification($"Moodlesanity Error! Could not find assocaited check for moodle {mood.type}!", 3);
+                    AlreadySentChecks.Add(mood.type);
                     continue;
                 }
-                if (questsAvailable.Contains(checkName))
+                if (APCanvas.ShuffledQuests.Take(APCanvas.UnlockedSlots).Contains(checkName)) // check only the slots we are displaying
                 {
                     var CheckID = Client.Locations.GetLocationIdFromName(Client.Players.ActivePlayer.Game, checkName);
                     APClientClass.ChecksToSend.Add(CheckID);
@@ -440,6 +457,6 @@ public class Moodlesanity : MonoBehaviour
                 questsAvailable.Add(moodle);
             }
         }
-        APCanvas.UpdateQuestboard(false);
+        APCanvas.RerollQuests(true);
     }
 }

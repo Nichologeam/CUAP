@@ -5,67 +5,62 @@ using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using HarmonyLib;
+using System.Threading.Tasks;
 
 namespace CUAP;
 
-[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.0.1.0")]
+[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.6.5.0")]
 public class Startup : BaseUnityPlugin
 {
     public static new ManualLogSource Logger;
     public static ArchipelagoSession Client;
-    public static string CUAPVersion = "CT v0.0.1";
+    public static string CUAPVersion = "v0.6.5";
     public static AssetBundle apassets;
     private static Harmony apHarmony;
+    public static Startup instance;
     GameObject Handler;
     GameObject Console;
     GameObject Body;
     GameObject WorldGen;
     GameObject Moodles;
-    public static GameObject pauseMenu;
         
-    private void Awake()
+    private async void Awake()
     {
+        await Task.Delay(1000);
+        instance = this;
         Logger = base.Logger;
-        Logger.LogMessage($"Casualties: Together Archipelago Plugin {CUAPVersion} loaded!");
+        Logger.LogMessage($"Casualties: Unknown Archipelago Plugin {CUAPVersion} loaded!");
         Handler = new GameObject("Archipelago Handler");
         DontDestroyOnLoad(Handler);
-        apassets = AssetBundle.LoadFromFile(Path.Combine(BepInEx.Paths.PluginPath, "CUAP", "apctassets"));
-        var UI = Instantiate(apassets.LoadAsset<GameObject>("APCTCanvas"));
+        apassets = AssetBundle.LoadFromFile(Path.Combine(BepInEx.Paths.PluginPath, "CUAP", "apassets"));
+        var UI = Instantiate(apassets.LoadAsset<GameObject>("APCanvas"));
         DontDestroyOnLoad(UI);
         UI.AddComponent<APCanvas>();
         apHarmony = new Harmony("nichologeam.cuap.harmony");
         apHarmony.PatchAll();
         Logger.LogMessage($"Harmony patches applied!");
     }
-    private void Update()
+    public void Update()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
         if (SceneManager.GetActiveScene().name == "PreGen")
         {
             try
             {
+                ScrollableText.ForceClose(); // skip intoductory story
                 Client = APClientClass.session;
-                if (Client is null || !Client.Socket.Connected) // we aren't connected. disable the start run buttons.
+                GameObject.Find("Canvas/MenuBackground/Experiment/Clickable").SetActive(!(Client is null || !Client.Socket.Connected)); // Experiment on cave floor
+                GameObject.Find("Canvas/MenuBackground/TutorialRadio/Clickable").SetActive(!(Client is null || !Client.Socket.Connected)); // Tutorial Radio on cave floor
+                Console = GameObject.Find("Console(Clone)");
+                if (!Console.GetComponent<CommandPatch>())
                 {
-                    GameObject.Find("Canvas/Button").GetComponent<Button>().interactable = false; // Start Run button
-                    GameObject.Find("Canvas/Button (7)").GetComponent<Button>().interactable = false; // Continue button
-                    GameObject.Find("Canvas/Button (2)").GetComponent<Button>().interactable = false; // Tutorial button
-                }
-                else
-                {
-                    GameObject.Find("Canvas/Button").GetComponent<Button>().interactable = true;
-                    GameObject.Find("Canvas/Button (7)").GetComponent<Button>().interactable = true;
-                    GameObject.Find("Canvas/Button (2)").GetComponent<Button>().interactable = true;
+                    Console.AddComponent<CommandPatch>();
                 }
                 GameObject.Find("Canvas/VersionWarning/Text (TMP) (1)").GetComponent<TextMeshProUGUI>().text =
                 """
-                <alpha=#11><i>...a mod for a mod, actually.<alpha=#FF></i>
-
-                If you find a bug, assume it's with CUAP and not Casualties: Together.
-                Bugs can be reported in either the Target Planet #art or AP: After Dark #future-game-design threads.
-                <alpha=#11><i>Please make sure to note that you are playing the CT version of CUAP.<alpha=#FF></i>
+                Bug reports on the Discord servers would be appreciated.
+                <size=16><alpha=#33>You can also report bugs by using `apreportbug` in the debug console.
                 """;
             }
             catch
@@ -80,13 +75,6 @@ public class Startup : BaseUnityPlugin
                 GameObject.Find("World").GetComponent<WorldGeneration>().SaveAndExit();
                 PlayerCamera.main.ToMainMenu();
             }
-            Console = GameObject.Find("Console/Canvas").transform.Find("Console").gameObject;
-            if (!Console.GetComponent<CommandPatch>())
-            {
-                Console.AddComponent<CommandPatch>();
-                Console.GetComponent<CommandPatch>().Subscribe();
-            }
-            pauseMenu = GameObject.Find("Main Camera/Canvas").transform.Find("GammaPanel").gameObject;
             if (APClientClass.selectedGoal == 3) // elder thornback goal
             {
                 try
