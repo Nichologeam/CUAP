@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-using System.Linq;
-using System.Collections;
+﻿using Archipelago.MultiClient.Net;
 using HarmonyLib;
-using Archipelago.MultiClient.Net;
+using KrokoshaCasualtiesMP;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using Unity.Netcode;
+using UnityEngine;
 
 namespace CUAP;
 
@@ -14,7 +17,7 @@ public class TrapHandler : MonoBehaviour
     private WorldGeneration worldgen;
     private PlayerCamera plrcam;
     private MoodleManager moodles;
-    private readonly AccessTools.FieldRef<MoodleManager, float> moodleUpdateTime = AccessTools.FieldRefAccess<MoodleManager, float>("updateTime"); // this variable is private normally (this is the only reason harmony is included in this project)
+    private readonly AccessTools.FieldRef<MoodleManager, float> moodleUpdateTime = AccessTools.FieldRefAccess<MoodleManager, float>("updateTime"); // this variable is private normally
     private float prevUpdateTime = 0.5f;
     private bool revControlActive;
     private bool unchippedActive;
@@ -69,65 +72,90 @@ public class TrapHandler : MonoBehaviour
         trapSender = ItemSender;
         if (TrapName == "Depression Trap")
         {
-            Vitals.happiness = -20;
-            plrcam.DoAlert("Trap: " + ItemSender + " said something demoralizing. Happiness decreased.", false);
+            foreach (var player in ServerMain.GetAllPlayerGameObjects())
+            {
+                player.GetComponent<Body>().happiness -= 20;
+            }
+            ServerMain.Server_AnnounceAlert($"Archipelago Trap: {ItemSender} said something demoralizing. Mood decreased.", false);
         }
         if (TrapName == "Hearing Loss Trap")
         {
-            Vitals.hearingLoss = +50;
-            plrcam.DoAlert("Trap: <b>WHAT!? I CAN'T HEAR YOU " + ItemSender.ToUpper() + "!</b> Hearing loss increased.", false);
+            foreach (var player in ServerMain.GetAllPlayerGameObjects())
+            {
+                player.GetComponent<Body>().hearingLoss += 50;
+            }
+            ServerMain.Server_AnnounceAlert($"Archipelago Trap: <b>WHAT?! WE CAN'T HEAR YOU {ItemSender.ToUpper()}!</b> Hearing loss increased.", false);
         }
-        if (TrapName == "Earthquake Trap")
-        {
-            plrcam.DoAlert("Trap: " + ItemSender + " hit a fault line.", false);
-            worldgen.earthquakeDelay = 0; // start an earthquake
-            worldgen.earthquakeIntensity = 2; // twice as intense as basegame earthquake
-            worldgen.earthquakeTime = 15; // for 15 seconds
-        }
+        // if (TrapName == "Earthquake Trap") >>>>> not able to be synced in multiplayer. removed from this mod <<<<<
         if (TrapName == "Reverse Controls Trap")
         {
-            plrcam.DoAlert("Trap: " + ItemSender + " made you feel tipsy. Controls reversed.", false);
+            ServerMain.Server_AnnounceAlert($"Archipelago Trap: {ItemSender} made you feel tipsy. Controls reversed.", false);
             StartCoroutine(ReverseControls());
         }
         if (TrapName == "Sleep Trap")
         {
-            Vitals.sleeping = true;
-            plrcam.DoAlert("Trap: " + ItemSender + " thinks it's naptime. Good night!", false);
+            if (ScavWorldMap.rules.DisableSleep)
+            {
+                Chat.Server_ChatAnnouncement("Archipelago", "AP", "Received a Sleep Trap, but the server has sleeping disabled.");
+                return; // sleeping is disabled in this server
+            }
+            foreach (var player in ServerMain.GetAllPlayerGameObjects())
+            {
+                player.GetComponent<Body>().sleeping = true;
+            }
+            ServerMain.Server_AnnounceAlert($"Archipelago Trap: {ItemSender} thinks it's naptime. Good night!", false);
         }
         if (TrapName == "Unchipped Trap")
         {
-            plrcam.DoAlert("Trap: " + ItemSender + " is hacking into your brainchip!", false);
+            ServerMain.Server_AnnounceAlert($"Archipelago Trap: {ItemSender} is hacking into your brainchips!", false);
             StartCoroutine(UnchippedToggle());
         }
-        if (TrapName == "Elder Thornback Trap")
-        {
-            plrcam.DoAlert("Trap: " + ItemSender + " sent something big your way. Something <i>really</i> big.", false);
-            StartCoroutine(Thornback());
-        }
+        // if (TrapName == "Elder Thornback Trap") >>>>> syncing nightmare. removed <<<<<
         if (TrapName == "Cave Ticks Trap")
         {
-            Instantiate(Resources.Load<GameObject>("caveticks"), gameObject.transform.position, Quaternion.identity);
-            plrcam.DoAlert("Trap: " + ItemSender + " alerted the hoard. Good luck!", false);
+            var chosenPlayer = ServerMain.GetAllPlayerGameObjects()[UnityEngine.Random.Range(0, ServerMain.GetAllPlayerGameObjects().Count)];
+            Instantiate(Resources.Load<GameObject>("caveticks"), chosenPlayer.transform.position, Quaternion.identity); // spawn at a random player
+            ServerMain.Server_AnnounceAlert($"Archipelago Trap: {ItemSender} alerted the hoard. Good luck {chosenPlayer.GetComponent<NetPlayer>().playername}!", false);
         }
         if (TrapName == "Bad Rep Trap")
         {
-            plrcam.DoAlert("Trap: " + ItemSender + " spread gossip. All traders on this layer are now hostile.", false);
+            ServerMain.Server_AnnounceAlert($"Archipelago Trap: {ItemSender} spread gossip. All traders on this layer are now hostile.", false);
             foreach (var trader in FindObjectsOfType<TraderScript>())
             {
                 if (trader.hostile) continue; // don't bother making them hostile a second time
-                trader.hostility = 500;
-                Vitals.happiness += 3f; // counteract hostility happiness decrease
+                var packet = new KrokoshaTraderTrackerComponent.TraderStatePacket()
+                {
+                    reputation = 0,
+                    hostility = 500,
+                    freeDressing = false,
+                    didHug = false,
+                    freeAmount = 0,
+                    haggleAmount = 0,
+                    valueGiven = 0,
+                    totalValueGiven = 0,
+                };
+                FastBufferWriter messageStream = new FastBufferWriter(Marshal.SizeOf(typeof(KrokoshaTraderTrackerComponent.TraderStatePacket)) + 8, (Unity.Collections.Allocator)2, -1);
+                messageStream.WriteValueSafe<ulong>(trader.GetComponent<KrokoshaScavMultiGameObjectNetworkTracker>().syncinfo.syncid);
+                KrokoshaTraderTrackerComponent.TraderStatePacket traderStatePacket = packet;
+                messageStream.WriteValueSafe(traderStatePacket, default);
+                NetworkManager.Singleton.CustomMessagingManager.SendNamedMessage("TraderSync_ReputationState", ServerMain.AllClientIdsExceptHost, messageStream, NetworkDelivery.Reliable);
+                messageStream.Dispose();
+            }
+            foreach (var player in ServerMain.GetAllPlayerGameObjects())
+            {
+                player.GetComponent<Body>().happiness += 3; // counteract hostility happiness decrease
             }
         }
         if (TrapName == "Disfigured Trap" && !Vitals.disfigured)
         {
-            plrcam.DoAlert("Trap: " + ItemSender + " thinks you talk too much.", false);
+            ServerMain.Server_AnnounceAlert($"Archipelago Trap: {ItemSender} thinks you all talk too much.", false);
             StartCoroutine(Disfigurement());
         }
         if (TrapName == "Fellow Experiment")
         {
-            Instantiate(Resources.Load<GameObject>("corpse"), gameObject.transform.position, Quaternion.identity);
-            plrcam.DoAlert("Trap: " + ItemSender + " found you a friend! ...wait", false);
+            var chosenPlayer = ServerMain.GetAllPlayerGameObjects()[UnityEngine.Random.Range(0, ServerMain.GetAllPlayerGameObjects().Count)];
+            Instantiate(Resources.Load<GameObject>("corpse"), chosenPlayer.transform.position, Quaternion.identity);
+            ServerMain.Server_AnnounceAlert($"Archipelago Trap: {ItemSender} found {chosenPlayer.GetComponent<NetPlayer>().playername} a friend! ...wait", false);
         }
         if (TrapName == "Fragile Items Trap")
         {
@@ -171,32 +199,49 @@ public class TrapHandler : MonoBehaviour
     IEnumerator ReverseControls()
     {
         revControlActive = true;
-        Vitals.reversedControls = true;
+        foreach (var player in ServerMain.GetAllPlayerGameObjects())
+        {
+            player.GetComponent<Body>().reversedControls = true;
+        }
         yield return new WaitForSecondsRealtime(10);
-        Vitals.reversedControls = false;
+        foreach (var player in ServerMain.GetAllPlayerGameObjects())
+        {
+            player.GetComponent<Body>().reversedControls = false;
+        }
         revControlActive = false;
     }
     IEnumerator UnchippedToggle()
     {
-        if (worldgen.unchippedMode)
-        {
-            yield break; // the layer is solarstuck or the run is already unchipped.
-        }
         unchippedActive = true;
-        worldgen.unchippedMode = true;
+        foreach (var player in ServerMain.GetAllPlayerGameObjects())
+        {
+            player.GetComponent<NetPlayer>().unchipped = true;
+        }
         yield return new WaitForSecondsRealtime(50);
-        worldgen.unchippedMode = false;
+        foreach (var player in ServerMain.GetAllPlayerGameObjects())
+        {
+            player.GetComponent<NetPlayer>().unchipped = false;
+        }
         GameObject.Find("LineOfSight").SetActive(false);
         unchippedActive = false;
     }
     IEnumerator Disfigurement()
     {
         disfigActive = true;
-        var prevHeadHealth = Vitals.limbs[0].muscleHealth; // disfiguring removes 25 muscle health
-        Vitals.disfigured = true;
+        List<float> prevHeadHealth = [];
+        foreach (var player in ServerMain.GetAllPlayerGameObjects())
+        {
+            prevHeadHealth.Add(player.GetComponent<Body>().limbs[0].muscleHealth); // disfiguring removes 25 muscle health
+            player.GetComponent<Body>().Disfigure();
+        }
         yield return new WaitForSecondsRealtime(180);
-        Vitals.disfigured = false;
-        Vitals.limbs[0].muscleHealth = prevHeadHealth; // so we restore that afterwards
+        int playernum = 0;
+        foreach (var player in ServerMain.GetAllPlayerGameObjects())
+        {
+            player.GetComponent<Body>().disfigured = false;
+            player.GetComponent<Body>().limbs[0].muscleHealth = prevHeadHealth[playernum]; // so we restore that afterwards
+            playernum++;
+        }
         disfigActive = false;
     }
     IEnumerator Mindwipe()
