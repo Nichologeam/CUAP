@@ -120,6 +120,47 @@ public class APClientClass
                 return;
             }
             Startup.Logger.LogMessage("Received " + item.ItemName);
+            if (item.ItemName.EndsWith(" Crystal Shard"))
+            {
+                if (APCanvas.InGame)
+                {
+                    switch (item.ItemName)
+                    {
+                        case "Blood Crystal Shard":
+                            UnityEngine.Object.Instantiate(Resources.Load<GameObject>("bloodcrystalshard"),
+                            GameObject.Find("Experiment/Body").transform.position, Quaternion.identity);
+                            break;
+                        case "Digestion Crystal Shard":
+                            UnityEngine.Object.Instantiate(Resources.Load<GameObject>("digestioncrystalshard"),
+                            GameObject.Find("Experiment/Body").transform.position, Quaternion.identity);
+                            break;
+                        case "Emissive Crystal Shard":
+                            UnityEngine.Object.Instantiate(Resources.Load<GameObject>("emissivecrystalshard"),
+                            GameObject.Find("Experiment/Body").transform.position, Quaternion.identity);
+                            break;
+                        case "Oxygen Crystal Shard":
+                            UnityEngine.Object.Instantiate(Resources.Load<GameObject>("oxygencrystalshard"),
+                            GameObject.Find("Experiment/Body").transform.position, Quaternion.identity);
+                            break;
+                        case "Relief Crystal Shard":
+                            UnityEngine.Object.Instantiate(Resources.Load<GameObject>("reliefcrystalshard"),
+                            GameObject.Find("Experiment/Body").transform.position, Quaternion.identity);
+                            break;
+                        case "Soothing Crystal Shard":
+                            UnityEngine.Object.Instantiate(Resources.Load<GameObject>("soothingcrystalshard"),
+                            GameObject.Find("Experiment/Body").transform.position, Quaternion.identity);
+                            break;
+                        case "Turbulent Crystal Shard":
+                            UnityEngine.Object.Instantiate(Resources.Load<GameObject>("turbulentcrystalshard"),
+                            GameObject.Find("Experiment/Body").transform.position, Quaternion.identity);
+                            break;
+                        default:
+                            Startup.Logger.LogWarning($"{item.ItemName} is unhandled!");
+                            APCanvas.EnqueueArchipelagoNotification($"{item.ItemName} is unhandled!",3);
+                            break;
+                    }
+                }
+            }
             if ((bool)(item!.ItemName.EndsWith(" Unlock"))) // <layername> Unlock item. Add it to the list of unlocked layers.
             {
                 LayerUnlockDictionary.Add(item.ItemName);
