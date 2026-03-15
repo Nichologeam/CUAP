@@ -70,7 +70,7 @@ public class TrapHandler : MonoBehaviour
         if (TrapName == "Depression Trap")
         {
             Vitals.happiness = -20;
-            plrcam.DoAlert("Trap: " + ItemSender + " said something demoralizing. Happiness decreased.", false);
+            plrcam.DoAlert("Trap: " + ItemSender + " said something demoralizing. Mood decreased.", false);
         }
         if (TrapName == "Hearing Loss Trap")
         {
