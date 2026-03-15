@@ -192,11 +192,17 @@ public class TrapHandler : MonoBehaviour
     IEnumerator Disfigurement()
     {
         disfigActive = true;
-        var prevHeadHealth = Vitals.limbs[0].muscleHealth; // disfiguring removes 25 muscle health
-        Vitals.disfigured = true;
+        var prevHeadHealth = Vitals.limbs[0].muscleHealth; // disfiguring removes 25 muscle health...
+        var prevHeadSkin = Vitals.limbs[0].skinHealth; // removes 50 skin health...
+        var prevHeadBleed = Vitals.limbs[0].bleedAmount; // causes bleeding...
+        var prevTrauma = Vitals.traumaAmount; // and adds 50 trauma
+        Vitals.Disfigure();
         yield return new WaitForSecondsRealtime(180);
         Vitals.disfigured = false;
-        Vitals.limbs[0].muscleHealth = prevHeadHealth; // so we restore that afterwards
+        Vitals.limbs[0].muscleHealth = prevHeadHealth; // so we restore them all afterwards
+        Vitals.limbs[0].skinHealth = prevHeadSkin;
+        Vitals.limbs[0].bleedAmount = prevHeadBleed;
+        Vitals.traumaAmount = prevTrauma;
         disfigActive = false;
     }
     IEnumerator Mindwipe()
