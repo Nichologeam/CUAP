@@ -87,16 +87,16 @@ public class CommandPatch : MonoBehaviour
             {
                 constructedMessage = $"<color=#FAFAD2>{message.Item.Player}</color> sent <color={itemColor}>{message.Item.ItemName}</color> to <color=#EE00EE>You</color> (<color=#00FF7F>{message.Item.LocationName}</color>)";
             }
+            else // two unrelated players, neither casualites
+            {
+                constructedMessage = $"<color=#FAFAD2>{message.Item.Player}</color> sent <color={itemColor}>{message.Item.ItemName}</color> to <color=#FAFAD2>{message.Receiver}</color> (<color=#00FF7F>{message.Item.LocationName}</color>)";
+            }
         }
         else if (message.Sender == message.Receiver) // player found their own item
         {
             constructedMessage = message.IsReceiverTheActivePlayer 
                 ? $"<color=#EE00EE>You</color> found your <color={itemColor}>{message.Item.ItemName}</color> (<color=#00FF7F>{message.Item.LocationName}</color>)" // true (it is the casualties player)
                 : $"<color=#FAFAD2>{message.Receiver}</color> found their <color={itemColor}>{message.Item.ItemName}</color> (<color=#00FF7F>{message.Item.LocationName}</color>)"; // false (it's someone else)
-        }
-        else // two unrelated players, neither casualites
-        {
-            constructedMessage = $"<color=#FAFAD2>{message.Item.Player}</color> sent <color={itemColor}>{message.Item.ItemName}</color> to <color=#FAFAD2>{message.Receiver}</color> (<color=#00FF7F>{message.Item.LocationName}</color>)";
         }
         LogToConsole(constructedMessage);
     }
