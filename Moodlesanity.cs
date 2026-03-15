@@ -195,7 +195,7 @@ public class Moodlesanity : MonoBehaviour
         {"withdrawal1","Moodlesanity - Withdrawal"},
         {"withdrawal2","Moodlesanity - Severe withdrawal"},
         {"withdrawal3","Moodlesanity - Dying of withdrawal"},
-        {"stimulants6","Moodlesantiy - Stimulated"},
+        {"stimulants6","Moodlesanity - Stimulated"},
         {"drugoverdose3","Moodlesanity - Drug overdose"},
         {"bleeding0","Moodlesanity - Minor bleeding"},
         {"bleeding1","Moodlesanity - Bleeding"},
