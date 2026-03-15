@@ -8,7 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
-using UnityEngine.Windows.Speech;
 
 namespace CUAP;
 
@@ -20,13 +19,11 @@ public class CommandPatch : MonoBehaviour
     private LogMessage LastGotMessage;
     private ItemSendLogMessage LastGotItemMessage;
     private HintItemSendLogMessage LastGotHintMessage;
-    private static MethodInfo LogToConsole;
     private MethodInfo CheckArgumentCount;
 
     private void OnEnable()
     {
         Console = gameObject.GetComponent<ConsoleScript>();
-        LogToConsole = typeof(ConsoleScript).GetMethod("LogToConsole", BindingFlags.NonPublic | BindingFlags.Instance);
         CheckArgumentCount = typeof(ConsoleScript).GetMethod("CheckArgumentCount", BindingFlags.NonPublic | BindingFlags.Instance);
         Startup.Logger.LogMessage("Console has been patched!");
         CreateAPCommands();
@@ -58,7 +55,7 @@ public class CommandPatch : MonoBehaviour
     private void PrintPlainJSON(LogMessage message)
     {
         if (LastGotMessage == message) { return; } // avoids spam
-        LogToConsole.Invoke(Console, [message.ToString()]);
+        LogToConsole(message.ToString());
         LastGotMessage = message;
     }
     private void PrintItemJSON(ItemSendLogMessage message)
@@ -66,7 +63,7 @@ public class CommandPatch : MonoBehaviour
         if (LastGotItemMessage == message) return;
         LastGotItemMessage = message;
         string constructedMessage = "";
-        var itemColor = "";
+        var itemColor = "#00EEEE"; // default to filler color (cyan)
         // a switch statement would be better here, but it would't support items with more than one tag (rare, but they exist)
         if (message.Item.Flags.HasFlag(ItemFlags.Trap))
         {
@@ -80,10 +77,6 @@ public class CommandPatch : MonoBehaviour
         {
             itemColor = "#6D8BE8"; // slateblue (useful)
         }
-        else
-        {
-            itemColor = "#00EEEE"; // cyan (filler/unspecified)
-        }
         if (message.Receiver != message.Sender) // not a local item
         {
             if (message.IsSenderTheActivePlayer)
@@ -94,7 +87,6 @@ public class CommandPatch : MonoBehaviour
             {
                 constructedMessage = $"<color=#FAFAD2>{message.Item.Player}</color> sent <color={itemColor}>{message.Item.ItemName}</color> to <color=#EE00EE>You</color> (<color=#00FF7F>{message.Item.LocationName}</color>)";
             }
-            
         }
         else if (message.Sender == message.Receiver) // player found their own item
         {
@@ -102,13 +94,17 @@ public class CommandPatch : MonoBehaviour
                 ? $"<color=#EE00EE>You</color> found your <color={itemColor}>{message.Item.ItemName}</color> (<color=#00FF7F>{message.Item.LocationName}</color>)" // true (it is the casualties player)
                 : $"<color=#FAFAD2>{message.Receiver}</color> found their <color={itemColor}>{message.Item.ItemName}</color> (<color=#00FF7F>{message.Item.LocationName}</color>)"; // false (it's someone else)
         }
-        LogToConsole.Invoke(Console, [constructedMessage]);
+        else // two unrelated players, neither casualites
+        {
+            constructedMessage = $"<color=#FAFAD2>{message.Item.Player}</color> sent <color={itemColor}>{message.Item.ItemName}</color> to <color=#FAFAD2>{message.Receiver}</color> (<color=#00FF7F>{message.Item.LocationName}</color>)";
+        }
+        LogToConsole(constructedMessage);
     }
     private void PrintHintJSON(HintItemSendLogMessage hint)
     {
         if (LastGotHintMessage == hint || hint.IsFound == true) return; // don't show found hints (less clutter)
         LastGotHintMessage = hint;
-        LogToConsole.Invoke(Console, [$"{hint.Receiver}'s {hint.Item.ItemName} is at {hint.Sender}'s {hint.Item.LocationName}."]);
+        LogToConsole($"{hint.Receiver}'s {hint.Item.ItemName} is at {hint.Sender}'s {hint.Item.LocationName}.");
         APCanvas.EnqueueArchipelagoNotification($"{hint.Receiver}'s {hint.Item.ItemName} is at {hint.Sender}'s {hint.Item.LocationName}.",2);
     }
     private void CreateAPCommands()
@@ -136,7 +132,6 @@ public class CommandPatch : MonoBehaviour
                 {
                     // we're on the main menu. perfectly fine for a command like this
                 }
-                LogToConsole.Invoke(Console, ["CUAP: Deathlink Disabled"]);
             }
             else
             {
@@ -162,9 +157,8 @@ public class CommandPatch : MonoBehaviour
                 else
                 {
                     DeathlinkManager.DeathlinkSeverity = true;
-                    LogToConsole.Invoke(Console, [$"CUAP: Severity of {args[1]} is invalid. Defaulted to 'kill'"]);
+                    LogToConsole($"<color=#FF0000>CUAP: Severity of '{args[1]}' is invalid. Defaulted to 'kill'</color>");
                 }
-                LogToConsole.Invoke(Console, ["CUAP: DeathLink Enabled"]);
             }
         }, new Dictionary<int, List<string>> {
         {
@@ -186,7 +180,6 @@ public class CommandPatch : MonoBehaviour
             }
             string chatMessage = string.Join(" ", args.Skip(1));
             Client.Say(chatMessage);
-            LogToConsole.Invoke(Console, ["CUAP: Chat message sent"]);
         }, null, new ValueTuple<string, string>[]
         {
             new ValueTuple<string, string>("text", "Chat message to send.")
@@ -200,12 +193,10 @@ public class CommandPatch : MonoBehaviour
             if (args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
             {
                 Client.Say("!hint");
-                LogToConsole.Invoke(Console, ["CUAP: Hint status requested"]);
                 return;
             }
             string itemName = string.Join(" ", args.Skip(1));
-            Client.Say("!hint " + itemName);
-            LogToConsole.Invoke(Console, ["CUAP: Hint sent"]);
+            Client.Say($"!hint {itemName}");
         }, null, new ValueTuple<string, string>[]
         {
             new ValueTuple<string, string>("item", "Item to hint for. Leave blank to request hint status.")
@@ -218,11 +209,10 @@ public class CommandPatch : MonoBehaviour
             }
             if (args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
             {
-                throw new Exception("No location was given to check.");
+                throw new Exception("No location was given to hint.");
             }
             string locName = string.Join(" ", args.Skip(1));
-            Client.Say("!hint_location " + locName);
-            LogToConsole.Invoke(Console, ["CUAP: Hint sent"]);
+            Client.Say($"!hint_location {locName}");
         }, null, new ValueTuple<string, string>[]
         {
             new ValueTuple<string, string>("location", "Location to hint.")
@@ -234,7 +224,6 @@ public class CommandPatch : MonoBehaviour
                 throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
             }
             Client.Say("!release");
-            LogToConsole.Invoke(Console, ["CUAP: Release requested"]);
         }, null, Array.Empty<ValueTuple<string, string>>()));
         ConsoleScript.Commands.Add(new Command("apcollect", "Alias for !collect command.", delegate (string[] args)
         {
@@ -243,7 +232,6 @@ public class CommandPatch : MonoBehaviour
                 throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
             }
             Client.Say("!collect");
-            LogToConsole.Invoke(Console, ["CUAP: Collect requested"]);
         }, null, Array.Empty<ValueTuple<string, string>>()));
         ConsoleScript.Commands.Add(new Command("apcheat", "Alias for !getitem command.", delegate (string[] args)
         {
@@ -257,7 +245,6 @@ public class CommandPatch : MonoBehaviour
             }
             string itemName = string.Join(" ", args.Skip(1));
             Client.Say("!getitem " + itemName);
-            LogToConsole.Invoke(Console, ["CUAP: Cheat requested"]);
         }, null, new ValueTuple<string, string>[]
         {
             new ValueTuple<string, string>("item", "Item to request be cheated in.")
@@ -273,8 +260,7 @@ public class CommandPatch : MonoBehaviour
                 throw new Exception("No name was given.");
             }
             string newName = string.Join(" ", args.Skip(1));
-            Client.Say("!alias " + newName);
-            LogToConsole.Invoke(Console, ["CUAP: Alias change requested"]);
+            Client.Say("!alias {newName}");
         }, null, new ValueTuple<string, string>[]
         {
             new ValueTuple<string, string>("name", "Alias to change your slot name to.")
@@ -305,7 +291,7 @@ public class CommandPatch : MonoBehaviour
                 try { CraftingChecks.AlreadySentChecks.Clear(); }
                 catch { }
             }
-            LogToConsole.Invoke(Console, ["CUAP: Data cleared. Run apreportbug if the issue persists."]);
+            LogToConsole("CUAP: Data cleared. Run apreportbug if the issue persists.");
         }, null, Array.Empty<ValueTuple<string, string>>()));
         ConsoleScript.Commands.Add(new Command("apsetskill", "Force set a skill to a certain level. Only works if Skillsanity is enabled.", delegate (string[] args)
         {
@@ -337,7 +323,7 @@ public class CommandPatch : MonoBehaviour
             {
                 Moodlesanity.RefreshMaxQuests(false);
             }
-            LogToConsole.Invoke(Console, ["CUAP: Quests refreshed. Run apreportbug if the issue persists."]);
+            LogToConsole("CUAP: Quests refreshed. Run apreportbug if the issue persists.");
         }, null, Array.Empty<ValueTuple<string, string>>()));
     }
     public static IEnumerator CaptureScreenshot()
@@ -348,6 +334,21 @@ public class CommandPatch : MonoBehaviour
         ScreenCapture.CaptureScreenshot(CUAPFolder + "apreportbug.png"); // Put screenshot in CUAP folder
         yield return 0; // wait ANOTHER frame for the screenshot to actually get taken
         Console.gameObject.GetComponentInChildren<Canvas>().enabled = true; // then finally put the console back
-        LogToConsole.Invoke(Console, [$"CUAP: Screenshot saved to {CUAPFolder}"]);
+        LogToConsole($"CUAP: Screenshot saved to {CUAPFolder}");
+    }
+
+    public static void LogToConsole(string text) // copying the basegame LogToConsole because V5 made it a private method that sometimes breaks when called
+    {
+        TimeSpan timeSpan = TimeSpan.FromSeconds(Time.realtimeSinceStartup);
+        var logs = ConsoleScript.instance.logs;
+        logs.Add("[<alpha=#55>" + timeSpan.ToString("mm\\:ss") + "<alpha=#FF>] " + text);
+        if (logs.Count > 100)
+        {
+            logs.RemoveAt(0);
+        }
+        if (ConsoleScript.instance.active)
+        {
+            ConsoleScript.instance.logText.text = string.Join("\n", logs);
+        }
     }
 }
