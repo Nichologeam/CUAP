@@ -73,7 +73,14 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
         }
         else
         {
-            DeathLinkText.text = dlPacket.Cause;
+            if (dlPacket.Cause.EndsWith(".") || dlPacket.Cause.EndsWith("!") || dlPacket.Cause.EndsWith("?"))
+            {
+                DeathLinkText.text = dlPacket.Cause;
+            }
+            else
+            {
+                DeathLinkText.text = $"{dlPacket.Cause}.";
+            }
         }
         if (DeathlinkSeverity)
         {
