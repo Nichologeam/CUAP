@@ -14,7 +14,7 @@ This mod is made for the V5.1 version of Casualties: Unknown, which can be downl
 # **Creating Your .yaml Settings**
 There are two ways to edit your .yaml file, and what you pick comes down to convenience.
 ### **Through Archipelago**
-1. Download [Archipelago 0.6.5](https://github.com/ArchipelagoMW/Archipelago/releases/tag/0.6.6) or newer (0.6.6 is recommended if you can for security purposes)
+1. Download [Archipelago 0.6.6](https://github.com/ArchipelagoMW/Archipelago/releases/tag/0.6.6) or newer
 2. Download the APWorld and place it into the custom_worlds folder of your Archipelago install, restarting the launcher if it was open
      - If you don't know where this is, the Archipelago Launcher comes with a `Browse Files` option
      - Fresh installs of Archipelago also create a desktop shortcut to the Archipelago folder
