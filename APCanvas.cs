@@ -53,6 +53,12 @@ public class APCanvas : MonoBehaviour
     private static Image Moodle8Image;
     private static TMP_Text Moodle8Text;
     public static int UnlockedSlots = 2;
+    private static GameObject TextNotif1;
+    private static TMP_Text Text1;
+    private static GameObject TextNotif2;
+    private static TMP_Text Text2;
+    private static GameObject TextNotif3;
+    private static TMP_Text Text3;
     private static GameObject ItemNotif;
     private static TMP_Text ItemText;
     private static bool ItemProcessing;
@@ -63,6 +69,7 @@ public class APCanvas : MonoBehaviour
     private static TMP_Text ErrorText;
     public static TMP_Text versionTag;
     private static bool ErrorProcessing;
+    private static Queue<string> TextQueue = new Queue<string>();
     private static Queue<string> ItemQueue = new Queue<string>();
     private static Queue<string> HintQueue = new Queue<string>();
     private static Queue<string> ErrorQueue = new Queue<string>();
@@ -108,6 +115,12 @@ public class APCanvas : MonoBehaviour
         Moodle8Text = MoodlesanityQuestboard.transform.Find("Moodle Name 8").gameObject.GetComponent<TMP_Text>();
         MoodleTexts = [Moodle1Text,Moodle2Text,Moodle3Text,Moodle4Text,Moodle5Text,Moodle6Text,Moodle7Text,Moodle8Text];
         MoodleImages = [Moodle1Image,Moodle2Image,Moodle3Image,Moodle4Image,Moodle5Image,Moodle6Image,Moodle7Image,Moodle8Image];
+        TextNotif1 = GameObject.Find("APCanvas(Clone)/APCanvas/PrintJSON Notification 1");
+        Text1 = TextNotif1.transform.Find("Message").gameObject.GetComponent<TMP_Text>();
+        TextNotif2 = GameObject.Find("APCanvas(Clone)/APCanvas/PrintJSON Notification 2");
+        Text2 = TextNotif2.transform.Find("Message").gameObject.GetComponent<TMP_Text>();
+        TextNotif3 = GameObject.Find("APCanvas(Clone)/APCanvas/PrintJSON Notification 3");
+        Text3 = TextNotif3.transform.Find("Message").gameObject.GetComponent<TMP_Text>();
         Ipporttext = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background/IPandPort").GetComponent<TMP_InputField>(); // address and port input
         Slot = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background/Slot").GetComponent<TMP_InputField>(); // slot name input
         Password = GameObject.Find("APCanvas(Clone)/APCanvas/Connection Background/Password").GetComponent<TMP_InputField>(); // password input
@@ -355,6 +368,10 @@ public class APCanvas : MonoBehaviour
         }
         switch (severity)
         {
+            case 0:
+                TextQueue.Enqueue(text);
+                ThreadingHelper.Instance.StartSyncInvoke(() => instance.StartCoroutine(ProcessTextNotif()));
+                break;
             case 1:
                 ItemQueue.Enqueue(text);
                 if (!ItemProcessing)
@@ -379,6 +396,35 @@ public class APCanvas : MonoBehaviour
                     ThreadingHelper.Instance.StartSyncInvoke(() => instance.StartCoroutine(ProcessErrorQueue()));
                 }
                 break;
+        }
+    }
+
+    private static IEnumerator ProcessTextNotif()
+    {
+        while (TextQueue.Count > 0)
+        {
+            if (!TextNotif1.activeSelf)
+            {
+                TextNotif1.SetActive(true);
+                Text1.text = TextQueue.Dequeue();
+                yield return new WaitForSecondsRealtime(5);
+                TextNotif1.SetActive(false);
+            }
+            else if (!TextNotif2.activeSelf)
+            {
+                TextNotif2.SetActive(true);
+                Text2.text = TextQueue.Dequeue();
+                yield return new WaitForSecondsRealtime(5);
+                TextNotif2.SetActive(false);
+            }
+            else if (!TextNotif3.activeSelf)
+            {
+                TextNotif3.SetActive(true);
+                Text3.text = TextQueue.Dequeue();
+                yield return new WaitForSecondsRealtime(5);
+                TextNotif3.SetActive(false);
+            }
+            yield return null;
         }
     }
     private static IEnumerator ProcessItemQueue()

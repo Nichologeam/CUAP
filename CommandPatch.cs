@@ -45,6 +45,60 @@ public class CommandPatch : MonoBehaviour
                         PrintItemJSON(item);
                         break;
 
+                    case CountdownLogMessage countdown:
+                        var textbox = DepthChecks.instance.DisplayText;
+                        if (countdown.RemainingSeconds > 0)
+                        {
+                            if (APCanvas.InGame)
+                            {
+                                textbox.text = $"Server Countdown: {countdown.RemainingSeconds}";
+                            }
+                            LogToConsole($"Server Countdown: {countdown.RemainingSeconds}");
+                        }
+                        else // countdown is 0, which means server just said GO (but the server just sends '0')
+                        {
+                            if (APCanvas.InGame)
+                            {
+                                textbox.text = $"Server Countdown: GO!";
+                            }
+                            LogToConsole($"Server Countdown: GO!");
+                            StartCoroutine(ClearText());
+                        }
+                        break;
+
+                    case JoinLogMessage join:
+                        if (join.Player.Game == "Archipelago") // unsure if this will actually trigger at runtime...
+                        {
+                            APCanvas.EnqueueArchipelagoNotification($"<color=#00FF00>{join.Player.Alias} has started spectating.</color>",0);
+                        }
+                        string verb;
+                        if (join.Tags.Contains("TextOnly"))
+                        {
+                            verb = "viewing";
+                        }
+                        else if (join.Tags.Contains("Tracker") || join.Tags.Contains("PopTracker"))
+                        {
+                            verb = "tracking";
+                        }
+                        else if (join.Tags.Contains("HintGame"))
+                        {
+                            verb = "hinting";
+                        }
+                        else
+                        {
+                            verb = "playing";
+                        }
+                        APCanvas.EnqueueArchipelagoNotification($"<color=#00FF00>{join.Player.Alias} has joined</color> {verb} {join.Player.Game}.<br>[{string.Join(", ", join.Tags)}]",0);
+                        break;
+
+                    case LeaveLogMessage leave:
+                        APCanvas.EnqueueArchipelagoNotification($"<color=#FF0000>{leave.Player.Alias} has left.</color>",0);
+                        break;
+
+                    case GoalLogMessage goal:
+                        APCanvas.EnqueueArchipelagoNotification($"{goal.Player.Alias} has reached their goal!",0);
+                        break;
+
                     default:
                         PrintPlainJSON(message);
                         break;
@@ -56,6 +110,7 @@ public class CommandPatch : MonoBehaviour
     {
         if (LastGotMessage == message) { return; } // avoids spam
         LogToConsole(message.ToString());
+        APCanvas.EnqueueArchipelagoNotification(message.ToString(),0);
         LastGotMessage = message;
     }
     private void PrintItemJSON(ItemSendLogMessage message)
@@ -63,20 +118,7 @@ public class CommandPatch : MonoBehaviour
         if (LastGotItemMessage == message) return;
         LastGotItemMessage = message;
         string constructedMessage = "";
-        var itemColor = "#00EEEE"; // default to filler color (cyan)
-        // a switch statement would be better here, but it would't support items with more than one tag (rare, but they exist)
-        if (message.Item.Flags.HasFlag(ItemFlags.Trap))
-        {
-            itemColor = "#FA8072"; // salmon (trap)
-        }
-        else if (message.Item.Flags.HasFlag(ItemFlags.Advancement))
-        {
-            itemColor = "#AF99EF"; // plum (progression)
-        }
-        else if (message.Item.Flags.HasFlag(ItemFlags.NeverExclude))
-        {
-            itemColor = "#6D8BE8"; // slateblue (useful)
-        }
+        var itemColor = ItemDataToPriorityColor(message.Item.Flags);
         if (message.Receiver != message.Sender) // not a local item
         {
             if (message.IsSenderTheActivePlayer)
@@ -104,8 +146,9 @@ public class CommandPatch : MonoBehaviour
     {
         if (LastGotHintMessage == hint || hint.IsFound == true) return; // don't show found hints (less clutter)
         LastGotHintMessage = hint;
-        LogToConsole($"{hint.Receiver}'s {hint.Item.ItemName} is at {hint.Sender}'s {hint.Item.LocationName}.");
-        APCanvas.EnqueueArchipelagoNotification($"{hint.Receiver}'s {hint.Item.ItemName} is at {hint.Sender}'s {hint.Item.LocationName}.",2);
+        var itemColor = ItemDataToPriorityColor(hint.Item.Flags);
+        LogToConsole($"{hint.Receiver}'s <color={itemColor}>{hint.Item.ItemName}</color> is at {hint.Sender}'s <color=#00FF7F>{hint.Item.LocationName}</color>.");
+        APCanvas.EnqueueArchipelagoNotification($"{hint.Receiver}'s <color={itemColor}>{hint.Item.ItemName}</color> is at {hint.Sender}'s <color=#00FF7F>{hint.Item.LocationName}</color>.",2);
     }
     private void CreateAPCommands()
     {
@@ -350,5 +393,30 @@ public class CommandPatch : MonoBehaviour
         {
             ConsoleScript.instance.logText.text = string.Join("\n", logs);
         }
+    }
+
+    public static string ItemDataToPriorityColor(ItemFlags flags)
+    {
+        var itemColor = "#00EEEE"; // default to filler color (cyan)
+        // a switch statement would be better here, but it would't support items with more than one tag (rare, but they exist)
+        if (flags.HasFlag(ItemFlags.Trap))
+        {
+            itemColor = "#FA8072"; // salmon (trap)
+        }
+        else if (flags.HasFlag(ItemFlags.Advancement))
+        {
+            itemColor = "#AF99EF"; // plum (progression)
+        }
+        else if (flags.HasFlag(ItemFlags.NeverExclude))
+        {
+            itemColor = "#6D8BE8"; // slateblue (useful)
+        }
+        return itemColor;
+    }
+
+    private IEnumerator ClearText()
+    {
+        yield return new WaitForSecondsRealtime(5);
+        DepthChecks.instance.DisplayText.text = "";
     }
 }

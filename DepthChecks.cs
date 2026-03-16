@@ -9,16 +9,18 @@ namespace CUAP;
 public class DepthChecks : MonoBehaviour
 {
     public static ArchipelagoSession Client;
+    public static DepthChecks instance;
     private WorldGeneration worldgen;
     private int RoundedMeters;
     private long CheckID;
     private long GoalDepth;
     private long GoalCheckID;
-    private TextMeshProUGUI DisplayText;
+    public TextMeshProUGUI DisplayText;
     public List<long> AlreadySentChecks = [];
 
     private void OnEnable()
     {
+        instance = this;
         Client = APClientClass.session;
         worldgen = this.gameObject.GetComponent<WorldGeneration>();
         DisplayText = GameObject.Find("Main Camera/Canvas/TimeScaleShow/Text (TMP)").GetComponent<TextMeshProUGUI>();
