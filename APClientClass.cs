@@ -120,177 +120,128 @@ public class APClientClass
                 return;
             }
             Startup.Logger.LogMessage("Received " + item.ItemName);
-            if (item.ItemName.EndsWith(" Crystal Shard"))
+            bool processed = false;
+            // Start with item groups
+            if (item.ItemName.EndsWith(" Trap") || item.ItemName == "Fellow Experiment") // Trap item. Send off to the TrapHandler to deal with.
             {
                 if (APCanvas.InGame)
-                {
-                    switch (item.ItemName)
-                    {
-                        case "Blood Crystal Shard":
-                            UnityEngine.Object.Instantiate(Resources.Load<GameObject>("bloodcrystalshard"),
-                            GameObject.Find("Experiment/Body").transform.position, Quaternion.identity);
-                            break;
-                        case "Digestion Crystal Shard":
-                            UnityEngine.Object.Instantiate(Resources.Load<GameObject>("digestioncrystalshard"),
-                            GameObject.Find("Experiment/Body").transform.position, Quaternion.identity);
-                            break;
-                        case "Emissive Crystal Shard":
-                            UnityEngine.Object.Instantiate(Resources.Load<GameObject>("emissivecrystalshard"),
-                            GameObject.Find("Experiment/Body").transform.position, Quaternion.identity);
-                            break;
-                        case "Oxygen Crystal Shard":
-                            UnityEngine.Object.Instantiate(Resources.Load<GameObject>("oxygencrystalshard"),
-                            GameObject.Find("Experiment/Body").transform.position, Quaternion.identity);
-                            break;
-                        case "Relief Crystal Shard":
-                            UnityEngine.Object.Instantiate(Resources.Load<GameObject>("reliefcrystalshard"),
-                            GameObject.Find("Experiment/Body").transform.position, Quaternion.identity);
-                            break;
-                        case "Soothing Crystal Shard":
-                            UnityEngine.Object.Instantiate(Resources.Load<GameObject>("soothingcrystalshard"),
-                            GameObject.Find("Experiment/Body").transform.position, Quaternion.identity);
-                            break;
-                        case "Turbulent Crystal Shard":
-                            UnityEngine.Object.Instantiate(Resources.Load<GameObject>("turbulentcrystalshard"),
-                            GameObject.Find("Experiment/Body").transform.position, Quaternion.identity);
-                            break;
-                        default:
-                            Startup.Logger.LogWarning($"{item.ItemName} is unhandled!");
-                            APCanvas.EnqueueArchipelagoNotification($"{item.ItemName} is unhandled!",3);
-                            break;
-                    }
-                }
-            }
-            if ((bool)(item!.ItemName.EndsWith(" Unlock"))) // <layername> Unlock item. Add it to the list of unlocked layers.
-            {
-                LayerUnlockDictionary.Add(item.ItemName);
-            }
-            if (item.ItemName == ("Progressive Layer"))
-            {
-                DepthExtendersRecieved++; // reusing this since it would be unused in Overgrown Depths goal
-            }
-            if ((bool)(item!.ItemName.EndsWith(" Trap")) || item!.ItemName == "Fellow Experiment") // Trap item. Send off to the TrapHandler to deal with.
-            {
-                try
                 {
                     TrapHandler Traps = GameObject.Find("Experiment/Body").GetComponent<TrapHandler>();
                     Traps.ProcessTraps(item.ItemName, item.Player.Name);
                 }
-                catch
-                {
-                    return; // we're on the main menu
-                }
+                processed = true;
             }
-            if ((bool)(item!.ItemName.EndsWith(" Recipe"))) // Recipe item. Add it to the list of unlocked recipes.
+            if (item.ItemName.EndsWith(" Recipe")) // Recipe item. Add it to the list of unlocked recipes.
             {
                 RecipeUnlockDictionary.Add(item.ItemName);
-                try
+                if (APCanvas.InGame && CraftingChecks.freesamples)
                 {
-                    if (CraftingChecks.freesamples)
-                    {
-                        UnityEngine.Object.Instantiate(Resources.Load<GameObject>(CraftingChecks.CheckNameToItem.Get(item.ItemName)),
-                        GameObject.Find("Experiment/Body").transform.position, Quaternion.identity);
-                    }
+                    UnityEngine.Object.Instantiate(Resources.Load<GameObject>(CraftingChecks.CheckNameToItem.Get(item.ItemName)),
+                    GameObject.Find("Experiment/Body").transform.position, Quaternion.identity);
                 }
-                catch
-                {
-                    return; // we're on the main menu
-                }
+                processed = true;
             }
-            if (item.ItemName == "Depth Extender")
+            if (item.ItemName.EndsWith(" Crystal Shard"))
             {
-                DepthExtendersRecieved++;
+                string objectName = item.ItemName.ToLower().Replace(" ",""); // lowercase. remove spaces
+                if (APCanvas.InGame)
+                {
+                    UnityEngine.Object.Instantiate(Resources.Load<GameObject>(objectName),
+                    GameObject.Find("Experiment/Body").transform.position, Quaternion.identity);
+                }
+                processed = true;
             }
-            if (item.ItemName == "Progressive Quests")
+            if (!processed)
             {
-                Moodlesanity.RefreshMaxQuests(true);
+                switch (item.ItemName) // then put everything else in a switch statement to make it cleaner
+                {
+                    case "Hope":
+                        if (APCanvas.InGame)
+                        {
+                            var plr = GameObject.Find("Experiment/Body");
+                            plr.GetComponent<Body>().happiness += 3;
+                            Sound.Play("moodup", plr.transform.position, true);
+                        }
+                        break;
+                    case "Despair":
+                        if (APCanvas.InGame)
+                        {
+                            var plr = GameObject.Find("Experiment/Body");
+                            plr.GetComponent<Body>().happiness -= 1;
+                            Sound.Play("moodup", plr.transform.position, true);
+                        }
+                        break;
+                    case "Gravel Lands Unlock":
+                        LayerUnlockDictionary.Add(item.ItemName);
+                        break;
+                    case "Deeper Gravel Lands Unlock":
+                        LayerUnlockDictionary.Add(item.ItemName);
+                        break;
+                    case "Dried Desert Unlock":
+                        LayerUnlockDictionary.Add(item.ItemName);
+                        break;
+                    case "Wasteland Unlock":
+                        LayerUnlockDictionary.Add(item.ItemName);
+                        break;
+                    case "Overgrown Depths Unlock":
+                        LayerUnlockDictionary.Add(item.ItemName);
+                        break;
+                    case "Progressive Layer":
+                        DepthExtendersRecieved++; // reusing this since it would be unused in Overgrown Depths goal
+                        break;
+                    case "Depth Extender":
+                        DepthExtendersRecieved++;
+                        break;
+                    case "Progressive Quests":
+                        Moodlesanity.RefreshMaxQuests(true);
+                        break;
+                    case "Questboard Slot":
+                        APCanvas.UpdateQuestboard(true);
+                        break;
+                    case "Progressive Left Arm":
+                        leftArmUnlocks++;
+                        if (APCanvas.InGame)
+                        {
+                            LimbUnlocks.instance.RestoreLimbs();
+                        }
+                        break;
+                    case "Progressive Right Arm":
+                        rightArmUnlocks++;
+                        if (APCanvas.InGame)
+                        {
+                            LimbUnlocks.instance.RestoreLimbs();
+                        }
+                        break;
+                    case "Progressive STR":
+                        MaxSTR++;
+                        if (APCanvas.InGame)
+                        {
+                            SkillReceiving.playerSkills.UpdateExpBoundaries();
+                        }
+                        break;
+                    case "Progressive RES":
+                        MaxRES++;
+                        if (APCanvas.InGame)
+                        {
+                            SkillReceiving.playerSkills.UpdateExpBoundaries();
+                        }
+                        break;
+                    case "Progressive INT":
+                        MaxINT++;
+                        if (APCanvas.InGame)
+                        {
+                            SkillReceiving.playerSkills.UpdateExpBoundaries();
+                        }
+                        break;
+                    default:
+                        Startup.Logger.LogWarning($"{item.ItemName} is unhandled!");
+                        APCanvas.EnqueueArchipelagoNotification($"{item.ItemName} is unhandled!", 3);
+                        break;
+                }
             }
-            if (item.ItemName == "Questboard Slot")
-            {
-                APCanvas.UpdateQuestboard(unlockingSlot: true);
-            }
-            if (item.ItemName == "Progressive Left Arm")
-            {
-                leftArmUnlocks++;
-                if (!APCanvas.InGame) // we're on the main menu
-                {
-                    return;
-                }
-                LimbUnlocks.instance.RestoreLimbs();
-            }
-            if (item.ItemName == "Progressive Right Arm")
-            {
-                rightArmUnlocks++;
-                if (!APCanvas.InGame) // we're on the main menu
-                {
-                    return;
-                }
-                LimbUnlocks.instance.RestoreLimbs();
-            }
-            if (item.ItemName.StartsWith("Progressive ") && item.ItemName != "Progressive Layer")
-            {
-                string Skill = item.ItemName.Substring(12);
-                if (Skill == "STR")
-                {
-                    MaxSTR++;
-                    if (!APCanvas.InGame) // we're on the main menu
-                    {
-                        return;
-                    }
-                    SkillReceiving.playerSkills.UpdateExpBoundaries();
-                }
-                else if (Skill == "RES")
-                {
-                    MaxRES++;
-                    if (!APCanvas.InGame) // we're on the main menu
-                    {
-                        return;
-                    }
-                    SkillReceiving.playerSkills.UpdateExpBoundaries();
-                }
-                else if (Skill == "INT")
-                {
-                    MaxINT++;
-                    if (!APCanvas.InGame) // we're on the main menu
-                    {
-                        return;
-                    }
-                    SkillReceiving.playerSkills.UpdateExpBoundaries();
-                }
-            }
-            if (item.ItemName == "Hope")
-            {
-                try
-                {
-                    var plr = GameObject.Find("Experiment/Body");
-                    plr.GetComponent<Body>().happiness += 3;
-                    Sound.Play("moodup", plr.transform.position, true);
-                }
-                catch
-                {
-                    return;
-                }
-            }
-            if (item.ItemName == "Despair")
-            {
-                try
-                {
-                    var plr = GameObject.Find("Experiment/Body");
-                    plr.GetComponent<Body>().happiness -= 1;
-                    Sound.Play("mooddown", plr.transform.position, true);
-                }
-                catch
-                {
-                    return;
-                }
-            }
-            try
+            if (APCanvas.InGame)
             {
                 ExperimentDialog.ProcessDialog(item);
-            }
-            catch
-            {
-                return;
             }
         }
         catch (Exception ex)
