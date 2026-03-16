@@ -26,6 +26,8 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
         DeathLinkText.text = ""; // remove the 1x in there, as this is actually an unused version of the speedup overlay.
         GameObject.Find("Main Camera/Canvas/TimeScaleShow").transform.SetAsLastSibling(); // overlay over top of everything else by moving to bottom of heirarchy
         DeathLinkText.transform.localPosition = Vector3.zero; // by default this is pushed to the left slightly for a sprite. i removed said sprite and the text is better centered.
+        DeathLinkText.enableWordWrapping = false;
+        DeathLinkText.alignment = TextAlignmentOptions.Center;
         if (!APCanvas.DeathlinkEnabled)
         {
             Startup.Logger.LogWarning("Deathlink is disabled, destroying script.");
@@ -85,13 +87,11 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
         if (DeathlinkSeverity)
         {
             DeathLinkText.text = DeathLinkText.text + " Your run has ended.";
-            DeathLinkText.autoSizeTextContainer = true; // fixes linewrapping off the screen
             Vitals.brainHealth = 0; // Instantly kill Experiment
             Destroy(this); // Destroy script so we don't send a deathlink next frame. No damage will be done, because the player is forced back to main menu.
         }
         else // Nearly exact replica of the V4 version of SelfHarmer.SelfHarm because we can't actually call it
         {
-            DeathLinkText.autoSizeTextContainer = false;
             Limb limb = Vitals.limbs[UnityEngine.Random.Range(1, Vitals.limbs.Length)]; // starting at 1 means the head can never be selected.
             limb.muscleHealth -= 30f;
             limb.skinHealth -= 70f;
@@ -99,7 +99,6 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
             limb.pain += 30f;
             Sound.Play("harmSting", Vector2.zero, true, false, null, 0.7f, 1f, false, false);
             DeathLinkText.text = DeathLinkText.text + " Damage done to " + limb.fullName + ".";
-            DeathLinkText.autoSizeTextContainer = true; // fixes linewrapping off the screen
         }
     }
 

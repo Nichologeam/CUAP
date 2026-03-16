@@ -63,7 +63,6 @@ public class DepthChecks : MonoBehaviour
         {
             APClientClass.ChecksToSend.Add(GoalCheckID); // goal location
             DisplayText.text = "You have goaled! Congratulations!";
-            DisplayText.autoSizeTextContainer = true;
             Client.SetGoalAchieved();
             Destroy(this); // no need for this script after the player goals, it would just spam goal every frame.
         }
