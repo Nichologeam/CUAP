@@ -91,37 +91,37 @@ public class ExperimentDialog : MonoBehaviour
         instance.CompanionTextbox(item);
         if (item.ItemName == "Depth Extender") // depth extender
         {
-            PlayerTalker.Talk(ExtenderItemDialog[UnityEngine.Random.Range(0, ExtenderItemDialog.Count + 1)], null, true, false);
+            PlayerTalker.Talk(ExtenderItemDialog[UnityEngine.Random.Range(0, ExtenderItemDialog.Count)], null, true, false);
             return;
         }
         if (item.ItemName.Contains("Recipe")) // recipe
         {
-            PlayerTalker.Talk(RecipeItemDialog[UnityEngine.Random.Range(0, RecipeItemDialog.Count + 1)], null, true, false);
+            PlayerTalker.Talk(RecipeItemDialog[UnityEngine.Random.Range(0, RecipeItemDialog.Count)], null, true, false);
             return;
         }
         if (item.ItemName.EndsWith("Unlock")) // layer unlock
         {
-            PlayerTalker.Talk(LayerItemDialog[UnityEngine.Random.Range(0, LayerItemDialog.Count + 1)], null, true, false);
+            PlayerTalker.Talk(LayerItemDialog[UnityEngine.Random.Range(0, LayerItemDialog.Count)], null, true, false);
             return;
         }
         if (item.ItemName == "Progressive Left Arm" || item.ItemName == "Progressive Right Arm") // limbs
         {
-            PlayerTalker.Talk(LimbItemDialog[UnityEngine.Random.Range(0, LimbItemDialog.Count + 1)], null, true, false);
+            PlayerTalker.Talk(LimbItemDialog[UnityEngine.Random.Range(0, LimbItemDialog.Count)], null, true, false);
             return;
         }
         if (item.ItemName == "Progressive STR") // str
         {
-            PlayerTalker.Talk(STRItemDialog[UnityEngine.Random.Range(0, STRItemDialog.Count + 1)], null, true, false);
+            PlayerTalker.Talk(STRItemDialog[UnityEngine.Random.Range(0, STRItemDialog.Count)], null, true, false);
             return;
         }
         if (item.ItemName == "Progressive RES") // res
         {
-            PlayerTalker.Talk(RESItemDialog[UnityEngine.Random.Range(0, RESItemDialog.Count + 1)], null, true, false);
+            PlayerTalker.Talk(RESItemDialog[UnityEngine.Random.Range(0, RESItemDialog.Count)], null, true, false);
             return;
         }
         if (item.ItemName == "Progressive INT") // int
         {
-            PlayerTalker.Talk(INTItemDialog[UnityEngine.Random.Range(0, INTItemDialog.Count + 1)], null, true, false);
+            PlayerTalker.Talk(INTItemDialog[UnityEngine.Random.Range(0, INTItemDialog.Count)], null, true, false);
             return;
         }
         if (item.ItemName == "Hope") // hope
