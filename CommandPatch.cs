@@ -104,6 +104,7 @@ public class CommandPatch : MonoBehaviour
                         break;
                 }
             };
+            CheckRaceMode();
         }
     }
     private void PrintPlainJSON(LogMessage message)
@@ -418,5 +419,22 @@ public class CommandPatch : MonoBehaviour
     {
         yield return new WaitForSecondsRealtime(5);
         DepthChecks.instance.DisplayText.text = "";
+    }
+
+    private async void CheckRaceMode()
+    {
+        bool raceMode = await Client.DataStorage.GetRaceModeAsync();
+        if (raceMode)
+        {
+            Startup.Logger.LogWarning("Archipelago server is in Race Mode! Disabling basegame console commands.");
+            ConsoleScript.Commands.Clear(); // remove all basegame commands
+            CreateAPCommands(); // re-add ap commands
+            var playerDetails = typeof(ConsoleScript).GetField("playerDetailsRegistered", BindingFlags.NonPublic | BindingFlags.Instance);
+            playerDetails.SetValue(ConsoleScript.instance, true); // This is something that runs once a session that gets information about the player for command autofill.
+            // Since we disable all of the commands in race mode, this breaks and causes NREs trying to update commands that don't exist anymore.
+            // So we force it to say it has already happened (a lie, but it doesn't matter)
+            var spawnEntities = typeof(ConsoleScript).GetField("registeredSpawnEntities", BindingFlags.NonPublic | BindingFlags.Instance);
+            spawnEntities.SetValue(ConsoleScript.instance, true); // Same thing, but for autofilling the `spawn` command.
+        }
     }
 }
