@@ -51,7 +51,7 @@ public class CommandPatch : MonoBehaviour
                         {
                             if (APCanvas.InGame)
                             {
-                                textbox.text = $"Server Countdown: {countdown.RemainingSeconds}";
+                                textbox.text = $"<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Server Countdown: {countdown.RemainingSeconds}";
                             }
                             LogToConsole($"Server Countdown: {countdown.RemainingSeconds}");
                         }
@@ -59,7 +59,7 @@ public class CommandPatch : MonoBehaviour
                         {
                             if (APCanvas.InGame)
                             {
-                                textbox.text = $"Server Countdown: GO!";
+                                textbox.text = $"<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Server Countdown: GO!";
                             }
                             LogToConsole($"Server Countdown: GO!");
                             StartCoroutine(ClearText());
@@ -384,7 +384,7 @@ public class CommandPatch : MonoBehaviour
     {
         TimeSpan timeSpan = TimeSpan.FromSeconds(Time.realtimeSinceStartup);
         var logs = ConsoleScript.instance.logs;
-        logs.Add("[<alpha=#55>" + timeSpan.ToString("mm\\:ss") + "<alpha=#FF>] " + text);
+        logs.Add("[<alpha=#55>" + timeSpan.ToString("mm\\:ss") + "<alpha=#FF>] " + "[<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF>] " + text);
         if (logs.Count > 100)
         {
             logs.RemoveAt(0);
