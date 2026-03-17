@@ -519,12 +519,18 @@ public class CraftingChecks : MonoBehaviour
                 bp.GetComponent<SpriteRenderer>().sprite = aplogo;
                 var blueprint = bp.GetComponent<BlueprintScript>();
                 var recipeId = blueprint.recipeIndex;
+                int attempts = 0;
+                while (AlreadySentChecks.Contains(recipeId) && attempts < 10)
+                {
+                    recipeId = UnityEngine.Random.Range(0, Recipes.recipes.Count); // rerandomize it
+                    attempts++;
+                }
                 if (AlreadySentChecks.Contains(recipeId))
                 {
-                    bp.gameObject.GetComponent<BlueprintScript>().recipeIndex = UnityEngine.Random.Range(0, 112); // rerandomize it
-                    continue; // the game internally only spawns blueprints up to the amount that are in the game,
-                    // since I remove them to randomize them, we need to rerandomize up to all 112, because the game doesn't
+                    Destroy(bp);
+                    continue;
                 }
+                blueprint.recipeIndex = recipeId;
             }
             if (GameObject.Find("blueprint(Clone)")) // does at least one blueprint still exist?
             {
