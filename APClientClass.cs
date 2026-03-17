@@ -342,9 +342,3 @@ public class APClientClass
         }
     }
 }
-
-public class GetFullDataPackagePacket : ArchipelagoPacketBase
-{// Because 'Games' is required to have a value in the real datapackage, we can't set it to null for all games.
-    // So I'll just make my own without a games value! Problem solved!
-    public override ArchipelagoPacketType PacketType => ArchipelagoPacketType.GetDataPackage;
-}
