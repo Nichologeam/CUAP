@@ -165,6 +165,18 @@ public class TrapHandler : MonoBehaviour
                 barrelContents.AddLiquid("fentanyl",10000);
                 plrcam.DoAlert($"Trap: {ItemSender} is tempting you...", false);
                 break;
+            case "Trip Trap":
+                Vitals.Scream();
+                Vitals.DropItem(0);
+                Vitals.DropItem(1);
+                Vitals.DropItem(2);
+                Vitals.DropItem(3);
+                Vitals.DropItem(4);
+                Vitals.DropItem(5);
+                Vitals.Ragdoll();
+                Vitals.shock = 50;
+                plrcam.DoAlert($"Trap: {ItemSender} tripped you!", false);
+                break;
             default:
                 Startup.Logger.LogError($"Trap item {TrapName} is unhandled!");
                 APCanvas.EnqueueArchipelagoNotification($"Trap item {TrapName} is unhandled!",3);
