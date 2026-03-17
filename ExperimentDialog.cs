@@ -1,4 +1,5 @@
 ﻿using Archipelago.MultiClient.Net;
+using Archipelago.MultiClient.Net.Models;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -141,6 +142,7 @@ public class ExperimentDialog : MonoBehaviour
     }
     void CompanionTextbox(Archipelago.MultiClient.Net.Models.ItemInfo info)
     {
-        APCanvas.EnqueueArchipelagoNotification($"Received {info.ItemName} from {info.Player}!",1);
+        string color = CommandPatch.ItemDataToPriorityColor(info.Flags);
+        APCanvas.EnqueueArchipelagoNotification($"Received <color={color}>{info.ItemName}</color> from <color=#FAFAD2>{info.Player}</color>!",1);
     }
 }
