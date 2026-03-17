@@ -240,6 +240,10 @@ public class CommandPatch : MonoBehaviour
             }
             string chatMessage = string.Join(" ", args.Skip(1));
             Client.Say(chatMessage);
+            if (APCanvas.InGame)
+            {
+                GameObject.Find("Experiment/Body").GetComponent<Talker>().Talk(chatMessage, force: true);
+            }
         }, null, new ValueTuple<string, string>[]
         {
             new ValueTuple<string, string>("text", "Chat message to send.")
