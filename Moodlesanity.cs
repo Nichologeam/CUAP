@@ -11,6 +11,7 @@ public class Moodlesanity : MonoBehaviour
 {
     public static ArchipelagoSession Client;
     private MoodleManager Moodles;
+    private PlayerCamera plrcam;
     public List<string> AlreadySentChecks = new List<string>();
     private WorldGeneration worldgen;
     public static bool questboardMode = false;
@@ -358,6 +359,7 @@ public class Moodlesanity : MonoBehaviour
         Client = APClientClass.session;
         Moodles = this.gameObject.GetComponent<MoodleManager>();
         worldgen = GameObject.Find("World").GetComponent<WorldGeneration>();
+        plrcam = GameObject.Find("Main Camera").GetComponent<PlayerCamera>();
         var options = APClientClass.slotdata;
         if (options.TryGetValue("Moodlesanity", out var moodlesanityoption)) // check if moodlesanity is enabled.
         {
@@ -435,6 +437,8 @@ public class Moodlesanity : MonoBehaviour
                     var CheckID = Client.Locations.GetLocationIdFromName(Client.Players.ActivePlayer.Game, checkName);
                     APClientClass.ChecksToSend.Add(CheckID);
                     questsAvailable.Remove(checkName); // this acts as our duplicate protection. no need to use AlreadySentChecks
+                    plrcam.DoAlert($"Sent {checkName}!");
+                    Sound.Play("close", Vector2.zero, true, false, null, 1f, 1f, true, true);
                     APCanvas.UpdateQuestboard(false);
                 }
             }
