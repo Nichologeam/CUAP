@@ -148,8 +148,24 @@ public class CommandPatch : MonoBehaviour
         if (LastGotHintMessage == hint || hint.IsFound == true) return; // don't show found hints (less clutter)
         LastGotHintMessage = hint;
         var itemColor = ItemDataToPriorityColor(hint.Item.Flags);
-        LogToConsole($"{hint.Receiver}'s <color={itemColor}>{hint.Item.ItemName}</color> is at {hint.Sender}'s <color=#00FF7F>{hint.Item.LocationName}</color>.");
-        APCanvas.EnqueueArchipelagoNotification($"{hint.Receiver}'s <color={itemColor}>{hint.Item.ItemName}</color> is at {hint.Sender}'s <color=#00FF7F>{hint.Item.LocationName}</color>.",2);
+        string constructedMessage = "";
+        if (hint.IsReceiverTheActivePlayer)
+        {
+            if (hint.IsSenderTheActivePlayer) // casualties item in casualties world (not barbie)
+            {
+                constructedMessage = $"<color=#EE00EE>Your</color> <color={itemColor}>{hint.Item.ItemName}</color> is at <color=#00FF7F>{hint.Item.LocationName}</color>.";
+            }
+            else // casualties item in other world
+            {
+                constructedMessage = $"<color=#EE00EE>Your</color> <color={itemColor}>{hint.Item.ItemName}</color> is at <color=#FAFAD2>{hint.Sender}</color>'s <color=#00FF7F>{hint.Item.LocationName}</color>.";
+            }
+        }
+        else if (hint.IsSenderTheActivePlayer) // other item in casualties world
+        {
+            constructedMessage = $"<color=#FAFAD2>{hint.Receiver}</color>'s <color={itemColor}>{hint.Item.ItemName}</color> is at <color=#00FF7F>{hint.Item.LocationName}</color>.";
+        }
+        LogToConsole(constructedMessage);
+        APCanvas.EnqueueArchipelagoNotification(constructedMessage,2);
     }
     private void CreateAPCommands()
     {
