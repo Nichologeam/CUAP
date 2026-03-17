@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections;
 using HarmonyLib;
 using Archipelago.MultiClient.Net;
+using System;
 
 namespace CUAP;
 
@@ -128,19 +129,17 @@ public class TrapHandler : MonoBehaviour
                 heldItems.Clear();
                 foreach (var slot in FindObjectsOfType<InventorySlot>())
                 {
-                    try
+                    var item = slot.gameObject.GetComponentInChildren<Item>();
+                    if (item != null)
                     {
-                        heldItems.Add(slot.gameObject.GetComponentInChildren<Item>());
-                        Debug.Log(slot.limb.fullName + " has " + slot.gameObject.GetComponentInChildren<Item>().fullName);
-                    }
-                    catch
-                    {
-                        continue;
+                        heldItems.Add(item);
+                        Debug.Log(slot.limb.fullName + " has " + item.fullName);
                     }
                 }
-                Item chosenItem = heldItems.ElementAt(UnityEngine.Random.Range(0, heldItems.Count + 1));
+                if (heldItems.Count == 0) break; // return early if there are no items
+                Item chosenItem = heldItems[UnityEngine.Random.Range(0, heldItems.Count)];
                 Debug.Log($"{chosenItem.fullName} was chosen to be damaged");
-                if (chosenItem.TryGetComponent<WaterContainerItem>(out WaterContainerItem _))
+                if (chosenItem.TryGetComponent(out WaterContainerItem _))
                 {
                     plrcam.DoAlert("Trap: " + ItemSender + " poked a hole in your " + chosenItem.fullName, false);
                 }
