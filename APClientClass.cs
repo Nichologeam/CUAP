@@ -129,7 +129,7 @@ public class APClientClass
                     TrapHandler Traps = GameObject.Find("Experiment/Body").GetComponent<TrapHandler>();
                     Traps.ProcessTraps(item.ItemName, item.Player.Name);
                 }
-                processed = true;
+                return;
             }
             if (item.ItemName.EndsWith(" Recipe")) // Recipe item. Add it to the list of unlocked recipes.
             {
