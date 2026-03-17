@@ -409,7 +409,7 @@ public class CommandPatch : MonoBehaviour
     {
         TimeSpan timeSpan = TimeSpan.FromSeconds(Time.realtimeSinceStartup);
         var logs = ConsoleScript.instance.logs;
-        logs.Add("[<alpha=#55>" + timeSpan.ToString("mm\\:ss") + "<alpha=#FF>] " + "[<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF>] " + text);
+        logs.Add($"<color=#FFFFFF>[<alpha=#55>{timeSpan.ToString("mm\\:ss")}<alpha=#FF>] [{APCanvas.coloredAPText}]<color=#FFFFFF> {text}");
         if (logs.Count > 100)
         {
             logs.RemoveAt(0);

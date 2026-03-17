@@ -565,11 +565,11 @@ public class CraftingChecks : MonoBehaviour
                 item.condition = 0f;
                 body.skills.AddExp(2, 35f);
                 CraftingChecks.SendBlueprintLocation(item.gameObject.GetComponent<BlueprintScript>().recipeIndex);
-                PlayerCamera.main.DoAlert("Item sent to <color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o!", false);
+                PlayerCamera.main.DoAlert($"Item sent to {APCanvas.coloredAPText}!", false);
                 Sound.Play("combine", item.transform.position, false, true, null, 1f, 1f, false, false);
             },
             value = 0, // i think setting this to 0 makes it unsellable? makes it useless to regardless
-            fullName = "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Item",
+            fullName = $"{APCanvas.coloredAPText} Item",
             rec = new Recognition(0)
         };
         Item.GlobalItems.Add(itemname, patchAPinfo);

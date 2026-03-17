@@ -17,6 +17,16 @@ public class APCanvas : MonoBehaviour
     public static bool ShowMainGUI = true;
     public static bool ShowSkillTracker = false;
     public static bool skillsanityEnabled = false;
+    public static string coloredAPText = "Archipelago";
+    private readonly Color[] APTextColors = new Color[] // stores the Archipelago logo colors as Color32
+    {// (too lazy to do proper conversion, so it's just the raw hex from the TMP <color> tags)
+        new Color32(0xc9, 0x76, 0x82, 255), // top circle color
+        new Color32(0x75, 0xc2, 0x75, 255), // top right
+        new Color32(0xca, 0x94, 0xc2, 255), // bottom right
+        new Color32(0xd9, 0xa0, 0x7d, 255), // bottom
+        new Color32(0x76, 0x7e, 0xbd, 255), // bottom left
+        new Color32(0xee, 0xe3, 0x91, 255), // top left
+    };
     public GameObject ConnectionBackground;
     public GameObject ConnectedBackground;
     public TMP_InputField Ipporttext;
@@ -139,6 +149,7 @@ public class APCanvas : MonoBehaviour
         UpdateSkillsanityValues(1, 60);
         UpdateSkillsanityValues(2, 60);
         versionTag.text = $"Client Mod {Startup.CUAPVersion}";
+        StartCoroutine(CycleAPColors());
         if (!File.Exists("ApConnection.txt")) return; // Read saved slot information from file
         var fileText = File.ReadAllText("ApConnection.txt").Replace("\r", "").Split('\n');
         Ipporttext.text = fileText[0];
@@ -212,6 +223,26 @@ public class APCanvas : MonoBehaviour
     }
 
     private void Update() => APClientClass.Update();
+
+    private IEnumerator CycleAPColors()
+    {
+        int offset = 0;
+        while (true)
+        {
+            var sb = new System.Text.StringBuilder();
+            var baseText = "Archipelago";
+            for (int i = 0; i < baseText.Length; i++) // "Archipelago" is 11 characters long
+            {
+                var color = APTextColors[(i + offset) % APTextColors.Length];
+                string hex = ColorUtility.ToHtmlStringRGB(color);
+                sb.Append($"<color=#{hex}>{baseText[i]}");
+            }
+            sb.Append("<color=#FFFFFF>");
+            coloredAPText = sb.ToString(); // wherever you're storing it
+            offset = (offset + 1) % APTextColors.Length;
+            yield return new WaitForSecondsRealtime(0.3f);
+        }
+    }
 
     public static void UpdateGUIDescriptions()
     {
