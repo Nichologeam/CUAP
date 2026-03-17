@@ -67,105 +67,108 @@ public class TrapHandler : MonoBehaviour
     public void ProcessTraps(string TrapName, string ItemSender)
     {
         trapSender = ItemSender;
-        if (TrapName == "Depression Trap")
+        switch (TrapName)
         {
-            Vitals.happiness = -20;
-            plrcam.DoAlert("Trap: " + ItemSender + " said something demoralizing. Mood decreased.", false);
-        }
-        if (TrapName == "Hearing Loss Trap")
-        {
-            Vitals.hearingLoss = +50;
-            plrcam.DoAlert("Trap: <b>WHAT!? I CAN'T HEAR YOU " + ItemSender.ToUpper() + "!</b> Hearing loss increased.", false);
-        }
-        if (TrapName == "Earthquake Trap")
-        {
-            plrcam.DoAlert("Trap: " + ItemSender + " hit a fault line.", false);
-            worldgen.earthquakeDelay = 0; // start an earthquake
-            worldgen.earthquakeIntensity = 2; // twice as intense as basegame earthquake
-            worldgen.earthquakeTime = 15; // for 15 seconds
-        }
-        if (TrapName == "Reverse Controls Trap")
-        {
-            plrcam.DoAlert("Trap: " + ItemSender + " made you feel tipsy. Controls reversed.", false);
-            StartCoroutine(ReverseControls());
-        }
-        if (TrapName == "Sleep Trap")
-        {
-            Vitals.sleeping = true;
-            plrcam.DoAlert("Trap: " + ItemSender + " thinks it's naptime. Good night!", false);
-        }
-        if (TrapName == "Unchipped Trap")
-        {
-            plrcam.DoAlert("Trap: " + ItemSender + " is hacking into your brainchip!", false);
-            StartCoroutine(UnchippedToggle());
-        }
-        if (TrapName == "Elder Thornback Trap")
-        {
-            plrcam.DoAlert("Trap: " + ItemSender + " sent something big your way. Something <i>really</i> big.", false);
-            StartCoroutine(Thornback());
-        }
-        if (TrapName == "Cave Ticks Trap")
-        {
-            Instantiate(Resources.Load<GameObject>("caveticks"), gameObject.transform.position, Quaternion.identity);
-            plrcam.DoAlert("Trap: " + ItemSender + " alerted the hoard. Good luck!", false);
-        }
-        if (TrapName == "Bad Rep Trap")
-        {
-            plrcam.DoAlert("Trap: " + ItemSender + " spread gossip. All traders on this layer are now hostile.", false);
-            foreach (var trader in FindObjectsOfType<TraderScript>())
-            {
-                if (trader.hostile) continue; // don't bother making them hostile a second time
-                trader.hostility = 500;
-                Vitals.happiness += 3f; // counteract hostility happiness decrease
-            }
-        }
-        if (TrapName == "Disfigured Trap" && !Vitals.disfigured)
-        {
-            plrcam.DoAlert("Trap: " + ItemSender + " thinks you talk too much.", false);
-            StartCoroutine(Disfigurement());
-        }
-        if (TrapName == "Fellow Experiment")
-        {
-            Instantiate(Resources.Load<GameObject>("corpse"), gameObject.transform.position, Quaternion.identity);
-            plrcam.DoAlert("Trap: " + ItemSender + " found you a friend! ...wait", false);
-        }
-        if (TrapName == "Fragile Items Trap")
-        {
-            heldItems.Clear();
-            foreach (var slot in FindObjectsOfType<InventorySlot>())
-            {
-                try
+            case "Depression Trap":
+                Vitals.happiness = -20;
+                plrcam.DoAlert("Trap: " + ItemSender + " said something demoralizing. Mood decreased.", false);
+                break;
+            case "Hearing Loss Trap":
+                Vitals.hearingLoss = +50;
+                plrcam.DoAlert("Trap: <b>WHAT!? I CAN'T HEAR YOU " + ItemSender.ToUpper() + "!</b> Hearing loss increased.", false);
+                break;
+            case "Earthquake Trap":
+                plrcam.DoAlert("Trap: " + ItemSender + " hit a fault line.", false);
+                worldgen.earthquakeDelay = 0; // start an earthquake
+                worldgen.earthquakeIntensity = 2; // twice as intense as basegame earthquake
+                worldgen.earthquakeTime = 15; // for 15 seconds
+                break;
+            case "Reverse Controls Trap":
+                plrcam.DoAlert("Trap: " + ItemSender + " made you feel tipsy. Controls reversed.", false);
+                StartCoroutine(ReverseControls());
+                break;
+            case "Sleep Trap":
+                Vitals.sleeping = true;
+                plrcam.DoAlert("Trap: " + ItemSender + " thinks it's naptime. Good night!", false);
+                break;
+            case "Unchipped Trap":
+                plrcam.DoAlert("Trap: " + ItemSender + " is hacking into your brainchip!", false);
+                StartCoroutine(UnchippedToggle());
+                break;
+            case "Elder Thornback Trap":
+                plrcam.DoAlert("Trap: " + ItemSender + " sent something big your way. Something <i>really</i> big.", false);
+                StartCoroutine(Thornback());
+                break;
+            case "Cave Ticks Trap":
+                Instantiate(Resources.Load<GameObject>("caveticks"), gameObject.transform.position, Quaternion.identity);
+                plrcam.DoAlert("Trap: " + ItemSender + " alerted the hoard. Good luck!", false);
+                break;
+            case "Bad Rep Trap":
+                plrcam.DoAlert("Trap: " + ItemSender + " spread gossip. All traders on this layer are now hostile.", false);
+                foreach (var trader in FindObjectsOfType<TraderScript>())
                 {
-                    heldItems.Add(slot.gameObject.GetComponentInChildren<Item>());
-                    Debug.Log(slot.limb.fullName + " has " + slot.gameObject.GetComponentInChildren<Item>().fullName);
+                    if (trader.hostile) continue; // don't bother making them hostile a second time
+                    trader.hostility = 500;
+                    Vitals.happiness += 3f; // counteract hostility happiness decrease
                 }
-                catch
+                break;
+            case "Disfigured Trap":
+                if (Vitals.disfigured)
                 {
-                    continue;
+                    break;
                 }
-            }
-            Item chosenItem = heldItems.ElementAt(UnityEngine.Random.Range(0, heldItems.Count + 1));
-            Debug.Log(chosenItem.fullName + " was chosen to be damaged");
-            if (chosenItem.TryGetComponent<WaterContainerItem>(out WaterContainerItem _))
-            {
-                plrcam.DoAlert("Trap: " + ItemSender + " poked a hole in your " + chosenItem.fullName, false);
-            }
-            else
-            {
-                plrcam.DoAlert("Trap: " + ItemSender + " made your warranty expire. " + chosenItem.fullName + " was destroyed.", false);
-            }
-            chosenItem.condition = 0;
-        }
-        if (TrapName == "Mindwipe Trap")
-        {
-            plrcam.DoAlert("Trap: " + ItemSender + " thinks you know too much.", false);
-            StartCoroutine(Mindwipe());
-        }
-        if (TrapName == "Pushup Trap")
-        {
-            plrcam.DoAlert("Trap: " + ItemSender + " demands you get on the ground and give them twenty!", false);
-            plrcam.DoBodyWorkout(0);
-            plrcam.ToggleWoundView(false); // DoBodyWorkout forces the woundview open/closed. this reverses that. nothing i can do about the sound effect though
+                plrcam.DoAlert("Trap: " + ItemSender + " thinks you talk too much.", false);
+                StartCoroutine(Disfigurement());
+                break;
+            case "Fellow Experiment":
+                Instantiate(Resources.Load<GameObject>("corpse"), gameObject.transform.position, Quaternion.identity);
+                plrcam.DoAlert("Trap: " + ItemSender + " found you a friend! ...wait", false);
+                break;
+            case "Fragile Items Trap":
+                heldItems.Clear();
+                foreach (var slot in FindObjectsOfType<InventorySlot>())
+                {
+                    try
+                    {
+                        heldItems.Add(slot.gameObject.GetComponentInChildren<Item>());
+                        Debug.Log(slot.limb.fullName + " has " + slot.gameObject.GetComponentInChildren<Item>().fullName);
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                }
+                Item chosenItem = heldItems.ElementAt(UnityEngine.Random.Range(0, heldItems.Count + 1));
+                Debug.Log($"{chosenItem.fullName} was chosen to be damaged");
+                if (chosenItem.TryGetComponent<WaterContainerItem>(out WaterContainerItem _))
+                {
+                    plrcam.DoAlert("Trap: " + ItemSender + " poked a hole in your " + chosenItem.fullName, false);
+                }
+                else
+                {
+                    plrcam.DoAlert("Trap: " + ItemSender + " made your warranty expire. " + chosenItem.fullName + " was destroyed.", false);
+                }
+                chosenItem.condition = 0;
+                break;
+            case "Mindwipe Trap":
+                plrcam.DoAlert("Trap: " + ItemSender + " thinks you know too much.", false);
+                StartCoroutine(Mindwipe());
+                break;
+            case "Pushup Trap":
+                plrcam.DoAlert("Trap: " + ItemSender + " demands you get on the ground and give them twenty!", false);
+                plrcam.DoBodyWorkout(0);
+                plrcam.ToggleWoundView(false); // DoBodyWorkout forces the woundview open/closed. this reverses that. nothing i can do about the sound effect though
+                break;
+            case "Temptation Trap":
+                GameObject barrel = Instantiate(Resources.Load<GameObject>("minibarrel"), gameObject.transform.position, Quaternion.identity);
+                WaterContainerItem barrelContents = barrel.GetComponent<WaterContainerItem>();
+                barrelContents.AddLiquid("fentanyl",10000);
+                plrcam.DoAlert($"Trap: {ItemSender} is tempting you...", false);
+                break;
+            default:
+                Startup.Logger.LogError($"Trap item {TrapName} is unhandled!");
+                APCanvas.EnqueueArchipelagoNotification($"Trap item {TrapName} is unhandled!",3);
+                break;
         }
     }
     IEnumerator ReverseControls()
