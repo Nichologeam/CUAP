@@ -328,7 +328,7 @@ public class CommandPatch : MonoBehaviour
                 throw new Exception("No name was given.");
             }
             string newName = string.Join(" ", args.Skip(1));
-            Client.Say("!alias {newName}");
+            Client.Say($"!alias {newName}");
         }, null, new ValueTuple<string, string>[]
         {
             new ValueTuple<string, string>("name", "Alias to change your slot name to.")
