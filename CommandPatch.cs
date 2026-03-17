@@ -118,6 +118,10 @@ public class CommandPatch : MonoBehaviour
     {
         if (LastGotItemMessage == message) return;
         LastGotItemMessage = message;
+        if (message.Item.LocationName == "Cheat Console")
+        {
+            return; // cheated in item.
+        }
         string constructedMessage = "";
         var itemColor = ItemDataToPriorityColor(message.Item.Flags);
         if (message.Receiver != message.Sender) // not a local item
