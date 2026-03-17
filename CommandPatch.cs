@@ -175,7 +175,7 @@ public class CommandPatch : MonoBehaviour
     {
         ConsoleScript.Commands.Add(new Command("apdeathlink", "Toggles DeathLink for the current game session.", delegate (string[] args)
         {
-            if (APClientClass.session is null)
+            if (!APClientClass.IsConnected())
             {
                 throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
             }
@@ -234,7 +234,7 @@ public class CommandPatch : MonoBehaviour
         }));
         ConsoleScript.Commands.Add(new Command("apchat", "Sends a message to Archipelago chat.", delegate (string[] args)
         {
-            if (APClientClass.session is null)
+            if (!APClientClass.IsConnected())
             {
                 throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
             }
@@ -254,7 +254,7 @@ public class CommandPatch : MonoBehaviour
         }));
         ConsoleScript.Commands.Add(new Command("aphint", "Alias for !hint command.", delegate (string[] args)
         {
-            if (APClientClass.session is null)
+            if (!APClientClass.IsConnected())
             {
                 throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
             }
@@ -271,7 +271,7 @@ public class CommandPatch : MonoBehaviour
         }));
         ConsoleScript.Commands.Add(new Command("aphintlocation", "Alias for !hint_location command.", delegate (string[] args)
         {
-            if (APClientClass.session is null)
+            if (!APClientClass.IsConnected())
             {
                 throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
             }
@@ -287,7 +287,7 @@ public class CommandPatch : MonoBehaviour
         }));
         ConsoleScript.Commands.Add(new Command("aprelease", "Alias for !release command.", delegate (string[] args)
         {
-            if (APClientClass.session is null)
+            if (!APClientClass.IsConnected())
             {
                 throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
             }
@@ -295,7 +295,7 @@ public class CommandPatch : MonoBehaviour
         }, null, Array.Empty<ValueTuple<string, string>>()));
         ConsoleScript.Commands.Add(new Command("apcollect", "Alias for !collect command.", delegate (string[] args)
         {
-            if (APClientClass.session is null)
+            if (!APClientClass.IsConnected())
             {
                 throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
             }
@@ -303,7 +303,7 @@ public class CommandPatch : MonoBehaviour
         }, null, Array.Empty<ValueTuple<string, string>>()));
         ConsoleScript.Commands.Add(new Command("apcheat", "Alias for !getitem command.", delegate (string[] args)
         {
-            if (APClientClass.session is null)
+            if (!APClientClass.IsConnected())
             {
                 throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
             }
@@ -319,7 +319,7 @@ public class CommandPatch : MonoBehaviour
         }));
         ConsoleScript.Commands.Add(new Command("apalias", "Alias for !alias command.", delegate (string[] args)
         {
-            if (APClientClass.session is null)
+            if (!APClientClass.IsConnected())
             {
                 throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
             }

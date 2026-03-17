@@ -180,6 +180,7 @@ public class APCanvas : MonoBehaviour
         {
             ConnectionBackground.SetActive(true);
             ConnectedBackground.SetActive(false);
+            APClientClass.Disconnect();
         }
         else
         {

@@ -74,6 +74,7 @@ public class Startup : BaseUnityPlugin
             {
                 GameObject.Find("World").GetComponent<WorldGeneration>().SaveAndExit();
                 PlayerCamera.main.ToMainMenu();
+                APClientClass.Disconnect();
             }
             if (APClientClass.selectedGoal == 3) // elder thornback goal
             {
