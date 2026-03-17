@@ -126,17 +126,17 @@ public class ExperimentDialog : MonoBehaviour
         }
         if (item.ItemName == "Hope") // hope
         {
-            PlayerTalker.Talk(HopefulItemDialog[UnityEngine.Random.Range(0, HopefulItemDialog.Count + 1)], null, true, false);
+            PlayerTalker.Talk(HopefulItemDialog[UnityEngine.Random.Range(0, HopefulItemDialog.Count)], null, true, false);
             return;
         }
         if (item.ItemName == "Despair") // despair
         {
-            PlayerTalker.Talk(DespairItemDialog[UnityEngine.Random.Range(0, DespairItemDialog.Count + 1)], null, true, false);
+            PlayerTalker.Talk(DespairItemDialog[UnityEngine.Random.Range(0, DespairItemDialog.Count)], null, true, false);
             return;
         }
         else // something else...
         {
-            PlayerTalker.Talk(NormalItemDialog[UnityEngine.Random.Range(0, NormalItemDialog.Count + 1)], null, true, false);
+            PlayerTalker.Talk(NormalItemDialog[UnityEngine.Random.Range(0, NormalItemDialog.Count)], null, true, false);
         }
     }
     void CompanionTextbox(Archipelago.MultiClient.Net.Models.ItemInfo info)
