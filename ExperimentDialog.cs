@@ -142,12 +142,6 @@ public class ExperimentDialog : MonoBehaviour
     }
     void CompanionTextbox(Archipelago.MultiClient.Net.Models.ItemInfo info)
     {
-        string itemColor = CommandPatch.ItemDataToPriorityColor(info.Flags);
-        string playerColor = "#FAFAD2"; // unrelated player (tan)
-        if (info.Player == Client.Players.ActivePlayer)
-        {
-            playerColor = "#EE00EE"; // local player (purple)
-        }
-        APCanvas.EnqueueArchipelagoNotification($"Received <color={itemColor}>{info.ItemName}</color> from <color={playerColor}>{info.Player}</color>!",1);
+        
     }
 }

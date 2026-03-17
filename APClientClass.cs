@@ -8,6 +8,7 @@ using Archipelago.MultiClient.Net.Packets;
 using BepInEx;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -33,6 +34,7 @@ public class APClientClass
     public static int leftArmUnlocks;
     public static int rightArmUnlocks;
     public static int selectedGoal;
+    private static float reconnectCountdown;
     public static ArchipelagoSession? session;
     public static DeathLinkService? dlService;
 
@@ -107,6 +109,17 @@ public class APClientClass
                 }
             }
         }
+        APCanvas.instance.StartCoroutine(NewConnectionCountdown()); // i need StartCoroutine, so i'll use APCanvas just because it is guarenteed to exist
+    }
+
+    private static IEnumerator NewConnectionCountdown()
+    {
+        reconnectCountdown = 5; // don't display item notifications for the first 5 seconds upon connecting (hides re-receiving every item)
+        while (reconnectCountdown > 0)
+        {
+            yield return new WaitForSecondsRealtime(1);
+            reconnectCountdown--;
+        }
     }
 
     private static void ProcessItem(ReceivedItemsHelper helper)
@@ -120,6 +133,16 @@ public class APClientClass
                 return;
             }
             Startup.Logger.LogMessage("Received " + item.ItemName);
+            if (reconnectCountdown <= 0) // countdown has passed
+            {
+                string itemColor = CommandPatch.ItemDataToPriorityColor(item.Flags);
+                string playerColor = "#FAFAD2"; // unrelated player (tan)
+                if (item.Player == session!.Players.ActivePlayer)
+                {
+                    playerColor = "#EE00EE"; // local player (purple)
+                }
+                APCanvas.EnqueueArchipelagoNotification($"Received <color={itemColor}>{item.ItemName}</color> from <color={playerColor}>{item.Player}</color>!", 1);
+            }
             bool processed = false;
             // Start with item groups
             if (item.ItemName.EndsWith(" Trap") || item.ItemName == "Fellow Experiment") // Trap item. Send off to the TrapHandler to deal with.
