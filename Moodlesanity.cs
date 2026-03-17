@@ -421,6 +421,9 @@ public class Moodlesanity : MonoBehaviour
                 var CheckID = moodleIndex + startingMoodleId;
                 APClientClass.ChecksToSend.Add(CheckID);
                 AlreadySentChecks.Add(mood.type);
+                InternalMoodNameToCheck.TryGetValue(mood.type, out string checkName);
+                plrcam.DoAlert($"Sent {checkName}!");
+                Sound.Play("close", Vector2.zero, true, false, null, 1f, 1f, true, true);
             }
             else // questboard mode
             {
