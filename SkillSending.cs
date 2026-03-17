@@ -78,7 +78,7 @@ class SkillSending
                     break; // we've reached all checks for this skill.
                 }
                 toNextSTR -= multexp; // apply the earned exp to the count
-                if (toNextSTR <= 0) // have we reached a new level?
+                while (toNextSTR <= 0) // have we reached a new level?
                 {
                     APClientClass.ChecksToSend.Add(22318800 + APSTR); // "STR Level 1" ID plus current level. max 15
                     APSTR++; // increase the skillsanity level count
@@ -95,7 +95,7 @@ class SkillSending
                     break; // we've reached all checks for this skill.
                 }
                 toNextRES -= multexp; // apply the earned exp to the count
-                if (toNextRES <= 0) // have we reached a new level?
+                while (toNextRES <= 0) // have we reached a new level?
                 {
                     APClientClass.ChecksToSend.Add(22318815 + APRES); // "RES Level 1" ID plus current level. max 15
                     APRES++; // increase the skillsanity level count
@@ -112,7 +112,7 @@ class SkillSending
                     break; // we've reached all checks for this skill.
                 }
                 toNextINT -= multexp; // apply the earned exp to the count
-                if (toNextINT <= 0) // have we reached a new level?
+                while (toNextINT <= 0) // have we reached a new level?
                 {
                     APClientClass.ChecksToSend.Add(22318830 + APINT); // "INT Level 1" ID plus current level. max 15
                     APINT++; // increase the skillsanity level count
