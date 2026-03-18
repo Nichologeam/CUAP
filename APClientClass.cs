@@ -333,7 +333,7 @@ public class APClientClass
                 }
             }
         }
-        else if (packet is RetrievedPacket)
+        /*else if (packet is RetrievedPacket)
         {
             var data = packet.ToJObject()["data"];
             if (data == null) { Startup.Logger.LogError("'data' is null!"); return; }
@@ -346,7 +346,7 @@ public class APClientClass
                 CraftingChecks.RecipeCraftedBefore = token.ToObject<Dictionary<int, bool>>() ?? [];
                 CraftingChecks.CraftedRecipes = CraftingChecks.RecipeCraftedBefore.Count(kvp => kvp.Value);
             }
-        }
+        }*/
     }
 
     private static async void SendChecks()
