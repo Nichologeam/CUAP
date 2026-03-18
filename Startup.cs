@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using HarmonyLib;
 using System.Threading.Tasks;
+using UnityEngine.UI;
 
 namespace CUAP;
 
@@ -62,6 +63,7 @@ public class Startup : BaseUnityPlugin
                 Bug reports on the Discord servers would be appreciated.
                 <size=16><alpha=#33>You can also report bugs by using `apreportbug` in the debug console.
                 """;
+                GameObject.Find("Canvas/Logo").GetComponent<Image>().sprite = apassets.LoadAsset<Sprite>("logotext");
             }
             catch
             {
