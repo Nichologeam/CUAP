@@ -89,7 +89,6 @@ public class ExperimentDialog : MonoBehaviour
             {3,$"Alright. As long as you don't call me a nerd, {item.Player}."},
             {4,$"Erm, achkually, {item.Player}..."},
         };
-        instance.CompanionTextbox(item);
         if (item.ItemName == "Depth Extender") // depth extender
         {
             PlayerTalker.Talk(ExtenderItemDialog[UnityEngine.Random.Range(0, ExtenderItemDialog.Count)], null, true, false);
@@ -139,9 +138,5 @@ public class ExperimentDialog : MonoBehaviour
         {
             PlayerTalker.Talk(NormalItemDialog[UnityEngine.Random.Range(0, NormalItemDialog.Count)], null, true, false);
         }
-    }
-    void CompanionTextbox(Archipelago.MultiClient.Net.Models.ItemInfo info)
-    {
-        
     }
 }
