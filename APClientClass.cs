@@ -81,6 +81,7 @@ public class APClientClass
     {
         session?.Socket.DisconnectAsync();
         session = null;
+        APCanvas.versionTag.text = $"Client Mod {Startup.CUAPVersion}";
     }
 
     public static void HasConnected()
