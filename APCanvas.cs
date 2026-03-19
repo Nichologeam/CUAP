@@ -247,17 +247,22 @@ public class APCanvas : MonoBehaviour
 
     public static void UpdateGUIDescriptions()
     {
+        if (!InGame)
+        {
+            return; // you can't see this on the main menu anyway
+        }
         if (selectedGoal == 1)
         {
             var maxDepth = (300 * DepthExtendersRecieved) + 300;
             Status.text =
                 """
-                Goal: Reach Depth
+                Goal: Reach <gd>
                 Depth Extenders: <de>
                 Max Depth: <md>
                 """;
+            Status.text = Status.text.Replace("<gd>", $"{DepthChecks.instance.GoalDepth}m");
             Status.text = Status.text.Replace("<de>", DepthExtendersRecieved.ToString());
-            Status.text = Status.text.Replace("<md>", maxDepth.ToString());
+            Status.text = Status.text.Replace("<md>", $"{maxDepth}m");
         }
         else if (selectedGoal == 2)
         {

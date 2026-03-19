@@ -13,7 +13,7 @@ public class DepthChecks : MonoBehaviour
     private WorldGeneration worldgen;
     private int RoundedMeters;
     private long CheckID;
-    private long GoalDepth;
+    public long GoalDepth;
     private long GoalCheckID;
     public TextMeshProUGUI DisplayText;
     public List<long> AlreadySentChecks = [];
