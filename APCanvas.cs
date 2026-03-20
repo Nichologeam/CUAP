@@ -239,7 +239,7 @@ public class APCanvas : MonoBehaviour
                 sb.Append($"<color=#{hex}>{baseText[i]}");
             }
             sb.Append("<color=#FFFFFF>");
-            coloredAPText = sb.ToString(); // wherever you're storing it
+            coloredAPText = sb.ToString();
             offset = (offset + 1) % APTextColors.Length;
             yield return new WaitForSecondsRealtime(0.3f);
         }
@@ -260,9 +260,9 @@ public class APCanvas : MonoBehaviour
                 Depth Extenders: <de>
                 Max Depth: <md>
                 """;
-            Status.text = Status.text.Replace("<gd>", $"{DepthChecks.instance.GoalDepth}m");
-            Status.text = Status.text.Replace("<de>", DepthExtendersRecieved.ToString());
-            Status.text = Status.text.Replace("<md>", $"{maxDepth}m");
+            Status.text = Status.text.Replace("<gd>", $"{DepthChecks.instance.GoalDepth}m"); // gd for Goal Depth
+            Status.text = Status.text.Replace("<de>", DepthExtendersRecieved.ToString()); // de for Depth Extenders
+            Status.text = Status.text.Replace("<md>", $"{maxDepth}m"); // md for Max Depth
         }
         else if (selectedGoal == 2)
         {
@@ -272,8 +272,8 @@ public class APCanvas : MonoBehaviour
                 Layer Unlocks: <lu>
                 Deepest Layer: <dl>
                 """;
-            Status.text = Status.text.Replace("<lu>", DepthExtendersRecieved.ToString());
-            Status.text = Status.text.Replace("<dl>", LayerLocker.LayerIDToName[DepthExtendersRecieved]).Replace(" Unlock", "");
+            Status.text = Status.text.Replace("<lu>", DepthExtendersRecieved.ToString()); // lu for Layer Unlocks
+            Status.text = Status.text.Replace("<dl>", LayerLocker.LayerIDToName[DepthExtendersRecieved]).Replace(" Unlock", ""); // dl for Deepest Layer
         }
         else if (selectedGoal == 3)
         {
@@ -282,9 +282,9 @@ public class APCanvas : MonoBehaviour
                 Goal: Defeat Elder
                 Overgrown: <ou>
                 """;
-            Status.text = Status.text.Replace("<ou>", LayerUnlockDictionary.Contains("Overgrown Depths Unlock") ? "Unlocked" : "Locked");
+            Status.text = Status.text.Replace("<ou>", LayerUnlockDictionary.Contains("Overgrown Depths Unlock") ? "Unlocked" : "Locked"); // ou for Overgrown Unlocked
         }
-        else if (selectedGoal == 4)
+        else if (selectedGoal == 4) // this is heavily outdated
         {
             Status.text =
                 """
