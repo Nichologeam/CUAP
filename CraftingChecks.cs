@@ -565,7 +565,7 @@ public class CraftingChecks : MonoBehaviour
             useAction = delegate (Body body, Item item)
             {
                 item.condition = 0f;
-                body.skills.AddExp(2, 35f);
+                body.skills.AddExp(2, 10f);
                 CraftingChecks.SendBlueprintLocation(item.gameObject.GetComponent<BlueprintScript>().recipeIndex);
                 PlayerCamera.main.DoAlert($"Item sent to {APCanvas.coloredAPText}!", false);
                 Sound.Play("combine", item.transform.position, false, true, null, 1f, 1f, false, false);
