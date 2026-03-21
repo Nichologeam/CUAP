@@ -17,6 +17,7 @@ public class CraftingChecks : MonoBehaviour
     public static ArchipelagoSession Client;
     private static List<string> RecievedRecipes;
     public static List<int> AlreadySentChecks = new List<int>();
+    public static bool bpLocations = false;
     private int lastFrameRecipeCount = 0;
     public static bool freesamples = false;
     private int RecipeNum = 0;
@@ -439,6 +440,7 @@ public class CraftingChecks : MonoBehaviour
                             .Select(i => (long)i)
                             .ToArray());
                     SetupAPBlueprint();
+                    bpLocations = true;
                     aplogo = Startup.apassets.LoadAsset<Sprite>("aplogo200"); // load custom blueprint asset replacement
                 }
                 else // blueprint locations aren't enabled. mark that for later
