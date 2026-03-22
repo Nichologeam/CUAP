@@ -79,6 +79,12 @@ public class APCanvas : MonoBehaviour
     private static TMP_Text ErrorText;
     public static TMP_Text versionTag;
     private static bool ErrorProcessing;
+    public static GameObject layerSelector;
+    public static Button glButton;
+    public static Button dglButton;
+    public static Button ddButton;
+    public static Button wlButton;
+    public static Button odButton;
     private static Queue<string> TextQueue = new Queue<string>();
     private static Queue<string> ItemQueue = new Queue<string>();
     private static Queue<string> HintQueue = new Queue<string>();
@@ -145,6 +151,12 @@ public class APCanvas : MonoBehaviour
         HintText = GameObject.Find("APCanvas(Clone)/APCanvas/Hint Notification/Notification Message").GetComponent<TMP_Text>();
         ErrorNotif = GameObject.Find("APCanvas(Clone)/APCanvas/Error Notification");
         ErrorText = GameObject.Find("APCanvas(Clone)/APCanvas/Error Notification/Notification Message").GetComponent<TMP_Text>();
+        layerSelector = GameObject.Find("APCanvas(Clone)/APCanvas/Layer Selector");
+        glButton = layerSelector.transform.Find("Gravel Lands Button").gameObject.GetComponent<Button>();
+        dglButton = layerSelector.transform.Find("Deeper Gravel Lands Button").gameObject.GetComponent<Button>();
+        ddButton = layerSelector.transform.Find("Dried Desert Button").gameObject.GetComponent<Button>();
+        wlButton = layerSelector.transform.Find("Wasteland Button").gameObject.GetComponent<Button>();
+        odButton = layerSelector.transform.Find("Overgrown Depths Button").gameObject.GetComponent<Button>();
         UpdateSkillsanityValues(0, 60);
         UpdateSkillsanityValues(1, 60);
         UpdateSkillsanityValues(2, 60);

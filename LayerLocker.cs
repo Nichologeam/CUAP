@@ -1,7 +1,12 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using Archipelago.MultiClient.Net;
+using HarmonyLib;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
-using Archipelago.MultiClient.Net;
+using System.Reflection;
+using UnityEngine;
+using UnityEngine.UI;
+using static CUAP.APCanvas;
 
 namespace CUAP;
 
@@ -38,33 +43,7 @@ public class LayerLocker : MonoBehaviour
     }
     private void Update()
     {
-        if (APClientClass.selectedGoal is 1 or 3) // goals 1 and 3
-        {
-            LayerHandler = APClientClass.LayerUnlockDictionary;
-            if (worldgen.loadingObject.activeSelf && worldgen.biomeOverride != WorldGeneration.OverrideSceneType.Tutorial) // as funny as being in overgrown depths tutorial is, i had to fix this eventually
-            {
-                if (LayerHandler.Count <= 1) // Minimum is 1, since you always have your starting location. Placed a less than as a failsafe.
-                {
-                    LayerNameToID.TryGetValue(LayerHandler.FirstOrDefault(), out int LayerId); // If we for some reason have nothing, this goes to Gravel Lands
-                    worldgen.biomeDepth = LayerId; // We don't have any unlocks, don't randomize and instead just go back to what we had.
-                }
-                else
-                {
-                    if (LayerId == -1) // If LayerId has already been randomized, don't randomize it again.
-                    {
-                        SelectedLayer = LayerHandler[UnityEngine.Random.Range(0, LayerHandler.Count)];
-                        LayerNameToID.TryGetValue(SelectedLayer, out int SelectedId);
-                        LayerId = SelectedId;
-                    }
-                    worldgen.biomeDepth = LayerId;
-                }
-            }
-            else
-            {
-                LayerId = -1;
-            }
-        }
-        else if (APClientClass.selectedGoal is 2 or 4) // goals 2 and 4
+        if (APClientClass.selectedGoal is 2 or 4) // goals 2 and 4
         {
             if (worldgen.loadingObject.activeSelf)
             {
@@ -79,5 +58,69 @@ public class LayerLocker : MonoBehaviour
                 }
             }
         }
+    }
+}
+
+[HarmonyPatch(typeof(WorldGeneration), "GenerateWorld")]
+// Allows the player to select what the next layer will be from the ones they have unlocked
+class PickLayerBeforeGeneration
+{
+    static bool resuming = false;
+    static bool Prefix(WorldGeneration __instance)
+    {
+        if (resuming)
+        {
+            resuming = false;
+            return true;
+        }
+        if (__instance.biomeOverride == WorldGeneration.OverrideSceneType.Tutorial)
+        {
+            return true; // tutorial level. don't pick a layer
+        }
+        if (APClientClass.selectedGoal is 2 or 4)
+        {
+            return true; // layers are progressive. don't pick a layer
+        }
+        __instance.loadingObject.SetActive(true);
+        __instance.generatingWorld = true;
+        ShowLayerSelector(__instance);
+        return false;
+    }
+    static void ShowLayerSelector(WorldGeneration instance)
+    {
+        layerSelector.SetActive(true);
+        SetupLayerButton(glButton, instance, 0);
+        SetupLayerButton(dglButton, instance, 1);
+        SetupLayerButton(ddButton, instance, 2);
+        SetupLayerButton(wlButton, instance, 3);
+        SetupLayerButton(odButton, instance, 4);
+    }
+    static void SetupLayerButton(Button button, WorldGeneration instance, int layerID)
+    {
+        button.onClick.RemoveAllListeners();
+        LayerLocker.LayerIDToName.TryGetValue(layerID, out var name);
+        bool unlocked = APClientClass.LayerUnlockDictionary.Contains(name);
+        var text = button.GetComponentInChildren<TMPro.TMP_Text>();
+        if (unlocked) // we have this layer
+        {
+            text.text = name.Replace(" Unlock",""); // strip the unlock
+            text.fontSize = 13;
+            button.interactable = true;
+            button.onClick.AddListener(() => LayerButtonPressed(instance, layerID));
+        }
+        else
+        {
+            text.text = "Layer Locked!";
+            text.fontSize = 17;
+            button.interactable = false;
+            // don't even bother adding the listener
+        }
+    }
+    public static void LayerButtonPressed(WorldGeneration instance, int layerID)
+    {
+        layerSelector.SetActive(false);
+        resuming = true;
+        instance.biomeDepth = layerID;
+        instance.StartCoroutine("GenerateWorld");
     }
 }

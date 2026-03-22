@@ -13,7 +13,7 @@ public class TrapHandler : MonoBehaviour
     public static ArchipelagoSession Client;
     private Body Vitals;
     private WorldGeneration worldgen;
-    private PlayerCamera plrcam;
+    public static PlayerCamera plrcam;
     private MoodleManager moodles;
     private readonly AccessTools.FieldRef<MoodleManager, float> moodleUpdateTime = AccessTools.FieldRefAccess<MoodleManager, float>("updateTime"); // this variable is private normally (this is the only reason harmony is included in this project)
     private float prevUpdateTime = 0.5f;
