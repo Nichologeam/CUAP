@@ -357,7 +357,7 @@ public class Moodlesanity : MonoBehaviour
     private void OnEnable()
     {
         Client = APClientClass.session;
-        Moodles = this.gameObject.GetComponent<MoodleManager>();
+        Moodles = gameObject.GetComponent<MoodleManager>();
         worldgen = GameObject.Find("World").GetComponent<WorldGeneration>();
         plrcam = GameObject.Find("Main Camera").GetComponent<PlayerCamera>();
         var options = APClientClass.slotdata;
@@ -397,7 +397,8 @@ public class Moodlesanity : MonoBehaviour
             }
             if (mood.type == "lowimmunity1" && worldgen.loadingObject.activeSelf)
             {
-                continue; // There's a bug where Experiment is Immunocompromised for the first few frames during worldgen. This if statement makes the check not send in that case.
+                continue; // There's a bug where Experiment is Immunocompromised for the first few frames during worldgen.
+                          // This if statement makes the check not send in that case.
             }
             if (mood.type == "death5")
             {
@@ -449,10 +450,7 @@ public class Moodlesanity : MonoBehaviour
     }
     public static void RefreshMaxQuests(bool increase)
     {
-        if (increase)
-        {
-            maxQuests += 15;
-        }
+        if (increase) maxQuests += 15;
         questsAvailable.Clear();
         int max = Mathf.Min(maxQuests, questboardList.Count);
         for (int i = 0; i < max; i++)

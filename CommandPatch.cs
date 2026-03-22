@@ -20,6 +20,7 @@ public class CommandPatch : MonoBehaviour
     private ItemSendLogMessage LastGotItemMessage;
     private HintItemSendLogMessage LastGotHintMessage;
     private MethodInfo CheckArgumentCount;
+    private bool raceMode;
 
     private void OnEnable()
     {
@@ -51,7 +52,7 @@ public class CommandPatch : MonoBehaviour
                         {
                             if (APCanvas.InGame)
                             {
-                                textbox.text = $"<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Server Countdown: {countdown.RemainingSeconds}";
+                                textbox.text = $"{APCanvas.coloredAPText} Server Countdown: {countdown.RemainingSeconds}";
                             }
                             LogToConsole($"Server Countdown: {countdown.RemainingSeconds}");
                         }
@@ -59,7 +60,7 @@ public class CommandPatch : MonoBehaviour
                         {
                             if (APCanvas.InGame)
                             {
-                                textbox.text = $"<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Server Countdown: GO!";
+                                textbox.text = $"{APCanvas.coloredAPText} Server Countdown: GO!";
                             }
                             LogToConsole($"Server Countdown: GO!");
                             StartCoroutine(ClearText());
@@ -118,10 +119,7 @@ public class CommandPatch : MonoBehaviour
     {
         if (LastGotItemMessage == message) return;
         LastGotItemMessage = message;
-        if (message.Item.LocationName == "Cheat Console")
-        {
-            return; // cheated in item.
-        }
+        if (message.Item.LocationName == "Cheat Console") return; // cheated in item.
         string constructedMessage = "";
         var itemColor = ItemDataToPriorityColor(message.Item.Flags);
         if (message.Receiver != message.Sender) // not a local item
@@ -301,22 +299,6 @@ public class CommandPatch : MonoBehaviour
             }
             Client.Say("!collect");
         }, null, Array.Empty<ValueTuple<string, string>>()));
-        ConsoleScript.Commands.Add(new Command("apcheat", "Alias for !getitem command.", delegate (string[] args)
-        {
-            if (!APClientClass.IsConnected())
-            {
-                throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
-            }
-            if (args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
-            {
-                throw new Exception("No item was given to cheat in.");
-            }
-            string itemName = string.Join(" ", args.Skip(1));
-            Client.Say("!getitem " + itemName);
-        }, null, new ValueTuple<string, string>[]
-        {
-            new ValueTuple<string, string>("item", "Item to request be cheated in.")
-        }));
         ConsoleScript.Commands.Add(new Command("apalias", "Alias for !alias command.", delegate (string[] args)
         {
             if (!APClientClass.IsConnected())
@@ -361,6 +343,31 @@ public class CommandPatch : MonoBehaviour
             }
             LogToConsole("CUAP: Data cleared. Run apreportbug if the issue persists.");
         }, null, Array.Empty<ValueTuple<string, string>>()));
+        ConsoleScript.Commands.Add(new Command("apfixquests", "Forces the questboard to refresh sent checks. Use this if a quest didn't send properly.", delegate (string[] args)
+        {
+            if (APCanvas.InGame)
+            {
+                Moodlesanity.RefreshMaxQuests(false);
+            }
+            LogToConsole("CUAP: Quests refreshed. Run apreportbug if the issue persists.");
+        }, null, Array.Empty<ValueTuple<string, string>>()));
+        if (raceMode) return; // commands after this can be used to cheat. disable them in race mode
+        ConsoleScript.Commands.Add(new Command("apcheat", "Alias for !getitem command.", delegate (string[] args)
+        {
+            if (!APClientClass.IsConnected())
+            {
+                throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
+            }
+            if (args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
+            {
+                throw new Exception("No item was given to cheat in.");
+            }
+            string itemName = string.Join(" ", args.Skip(1));
+            Client.Say("!getitem " + itemName);
+        }, null, new ValueTuple<string, string>[]
+        {
+            new ValueTuple<string, string>("item", "Item to request be cheated in.")
+        }));
         ConsoleScript.Commands.Add(new Command("apsetskill", "Force set a skill to a certain level. Only works if Skillsanity is enabled.", delegate (string[] args)
         {
             CheckArgumentCount.Invoke(Console, [args, 2]);
@@ -385,14 +392,6 @@ public class CommandPatch : MonoBehaviour
             new ValueTuple<string, string>("skill", "Which skill to change the level of."),
             new ValueTuple<string, string>("level", "What level to set the skill to.")
         }));
-        ConsoleScript.Commands.Add(new Command("apfixquests", "Forces the questboard to refresh sent checks. Use this if a quest didn't send properly.", delegate (string[] args)
-        {
-            if (APCanvas.InGame)
-            {
-                Moodlesanity.RefreshMaxQuests(false);
-            }
-            LogToConsole("CUAP: Quests refreshed. Run apreportbug if the issue persists.");
-        }, null, Array.Empty<ValueTuple<string, string>>()));
     }
     public static IEnumerator CaptureScreenshot()
     {   // this is incredibly dumb, but it works
@@ -447,7 +446,7 @@ public class CommandPatch : MonoBehaviour
 
     private async void CheckRaceMode()
     {
-        bool raceMode = await Client.DataStorage.GetRaceModeAsync();
+        raceMode = await Client.DataStorage.GetRaceModeAsync();
         if (raceMode)
         {
             Startup.Logger.LogWarning("Archipelago server is in Race Mode! Disabling basegame console commands.");

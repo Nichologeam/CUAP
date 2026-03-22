@@ -157,7 +157,7 @@ public class APCanvas : MonoBehaviour
         Slot.text = fileText[2];
     }
 
-    void OnGUI()
+    private void OnGUI()
     {
         if (Ipporttext is null) // some race condition nonsense can make Start fail to find input fields. just rerun Start if it happens.
         {
@@ -195,7 +195,7 @@ public class APCanvas : MonoBehaviour
         }
     }
 
-    void OnConnectPressed()
+    public void OnConnectPressed()
     {
         if (!Ipporttext.text.Equals("localhost"))
         {
@@ -247,10 +247,7 @@ public class APCanvas : MonoBehaviour
 
     public static void UpdateGUIDescriptions()
     {
-        if (!InGame)
-        {
-            return; // you can't see this on the main menu anyway
-        }
+        if (!InGame) return; // you can't see this on the main menu anyway
         if (selectedGoal == 1)
         {
             var maxDepth = (300 * DepthExtendersRecieved) + 300;
@@ -284,7 +281,7 @@ public class APCanvas : MonoBehaviour
                 """;
             Status.text = Status.text.Replace("<ou>", LayerUnlockDictionary.Contains("Overgrown Depths Unlock") ? "Unlocked" : "Locked"); // ou for Overgrown Unlocked
         }
-        else if (selectedGoal == 4) // this is heavily outdated
+        else if (selectedGoal == 4) // this is heavily outdated (and unused!)
         {
             Status.text =
                 """
@@ -388,9 +385,9 @@ public class APCanvas : MonoBehaviour
         rerollCooldown = rerollCooldownMax;
         while (rerollCooldown > 0)
         {
-            rerollCooldown--;
-            RerollText.text = $"({rerollCooldown + 1})";
             yield return new WaitForSecondsRealtime(1);
+            rerollCooldown--;
+            RerollText.text = $"({rerollCooldown})";
         }
         RerollText.text = "Reroll Quests";
     }
@@ -399,7 +396,7 @@ public class APCanvas : MonoBehaviour
         if (ThreadingHelper.Instance == null) // V5.0.2 causes BepInEx's bootstrapper to fail creating this, so we'll do it ourselves.
         {
             Startup.Logger.LogWarning("BepInEx.ThreadingHelper is null. Recreating...");
-            var threadingHelperType = typeof(BepInEx.ThreadingHelper);
+            var threadingHelperType = typeof(ThreadingHelper);
             var initializeMethod = threadingHelperType.GetMethod("Initialize", BindingFlags.Static | BindingFlags.NonPublic);
             initializeMethod!.Invoke(null, null);
         }
@@ -446,6 +443,7 @@ public class APCanvas : MonoBehaviour
                 Text1.text = TextQueue.Dequeue();
                 yield return new WaitForSecondsRealtime(5);
                 TextNotif1.SetActive(false);
+                yield return 0; // one frame of downtime to make it clearer that the next notification is a new one
             }
             else if (!TextNotif2.activeSelf)
             {
@@ -453,6 +451,7 @@ public class APCanvas : MonoBehaviour
                 Text2.text = TextQueue.Dequeue();
                 yield return new WaitForSecondsRealtime(5);
                 TextNotif2.SetActive(false);
+                yield return 0; // one frame of downtime to make it clearer that the next notification is a new one
             }
             else if (!TextNotif3.activeSelf)
             {
@@ -460,6 +459,7 @@ public class APCanvas : MonoBehaviour
                 Text3.text = TextQueue.Dequeue();
                 yield return new WaitForSecondsRealtime(5);
                 TextNotif3.SetActive(false);
+                yield return 0; // one frame of downtime to make it clearer that the next notification is a new one
             }
             yield return null;
         }
@@ -498,6 +498,7 @@ public class APCanvas : MonoBehaviour
             ErrorNotif.SetActive(true);
             yield return new WaitForSecondsRealtime(10);
             ErrorNotif.SetActive(false);
+            yield return 0; // one frame of downtime to make it clearer that the next error is a new one
         }
         ErrorProcessing = false;
     }

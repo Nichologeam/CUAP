@@ -13,7 +13,7 @@ public class ElderThornback : MonoBehaviour
     }
     private void OnDestroy()
     {
-        if (build.health < 0.5 && build.fullName == "Elder thornback" && APClientClass.selectedGoal == 3) // the game checks at 0.5, so I will too
+        if (build.health < 0.5) // the game checks at 0.5, so I will too
         {
             Client.SetGoalAchieved();
         }

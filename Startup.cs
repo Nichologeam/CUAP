@@ -11,12 +11,12 @@ using UnityEngine.UI;
 
 namespace CUAP;
 
-[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.6.6.0")]
+[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.7.0.0")]
 public class Startup : BaseUnityPlugin
 {
     public static new ManualLogSource Logger;
     public static ArchipelagoSession Client;
-    public static string CUAPVersion = "v0.6.6";
+    public static string CUAPVersion = "v0.7.0";
     public static AssetBundle apassets;
     private static Harmony apHarmony;
     public static Startup instance;
@@ -41,10 +41,13 @@ public class Startup : BaseUnityPlugin
         apHarmony = new Harmony("nichologeam.cuap.harmony");
         apHarmony.PatchAll();
         Logger.LogMessage($"Harmony patches applied!");
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        MainMenuPatches();
+        Console = GameObject.Find("Console(Clone)");
+        Console.AddComponent<CommandPatch>();
     }
     public void Update()
     {
-        SceneManager.sceneLoaded += OnSceneLoaded;
         if (SceneManager.GetActiveScene().name == "PreGen")
         {
             try
@@ -53,17 +56,6 @@ public class Startup : BaseUnityPlugin
                 Client = APClientClass.session;
                 GameObject.Find("Canvas/MenuBackground/Experiment/Clickable").SetActive(!(Client is null || !Client.Socket.Connected)); // Experiment on cave floor
                 GameObject.Find("Canvas/MenuBackground/TutorialRadio/Clickable").SetActive(!(Client is null || !Client.Socket.Connected)); // Tutorial Radio on cave floor
-                Console = GameObject.Find("Console(Clone)");
-                if (!Console.GetComponent<CommandPatch>())
-                {
-                    Console.AddComponent<CommandPatch>();
-                }
-                GameObject.Find("Canvas/VersionWarning/Text (TMP) (1)").GetComponent<TextMeshProUGUI>().text =
-                """
-                Bug reports on the Discord servers would be appreciated.
-                <size=16><alpha=#33>You can also report bugs by using `apreportbug` in the debug console.
-                """;
-                GameObject.Find("Canvas/Logo").GetComponent<Image>().sprite = apassets.LoadAsset<Sprite>("logotext");
             }
             catch
             {
@@ -93,7 +85,7 @@ public class Startup : BaseUnityPlugin
             }
         }
     }
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (scene.name == "SampleScene") // Loading into the game, let's apply Archipelago patches.
         {
@@ -122,6 +114,20 @@ public class Startup : BaseUnityPlugin
             Body = null;
             WorldGen = null;
             Moodles = null;
+            MainMenuPatches();
         }
+    }
+    // due to a change in Cas: Unk version 5.0.2, the mod stopped loading properly without some odd workarounds (hence the `await Task.Delay` in Awake)
+    // because of this nonsense, I can't actually hook SceneManager.sceneLoaded quick enough to catch the main menu loading on game start
+    // so I have to put this both in Awake, and in OnSceneLoaded. why duplicate code when I can just make it a function instead?
+    // that's why this random function with two lines is here.
+    private void MainMenuPatches()
+    {
+        GameObject.Find("Canvas/VersionWarning/Text (TMP) (1)").GetComponent<TextMeshProUGUI>().text =
+        """
+                Bug reports on the Discord servers would be appreciated.
+                <size=16><alpha=#33>You can also report bugs by using `apreportbug` in the debug console.
+                """;
+        GameObject.Find("Canvas/Logo").GetComponent<Image>().sprite = apassets.LoadAsset<Sprite>("logotext");
     }
 }

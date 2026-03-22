@@ -30,7 +30,6 @@ public class CraftingChecks : MonoBehaviour
     public static int CraftedRecipes = 0;
     private bool removeBlueprints = false;
     private SemaphoreSlim spriteSemaphore = new(1, 1);
-    private List<long> locsToScout = new();
     private static readonly long startingRecipeID = 22318500;
     private static HashSet<string> AppliedRecipes = new();
     public static Dictionary<long, string> BlueprintToPlayerName = new Dictionary<long, string>();
@@ -421,13 +420,6 @@ public class CraftingChecks : MonoBehaviour
         "Climbing rope Recipe",
     };
     public static Dictionary<int, bool> RecipeCraftedBefore = new Dictionary<int, bool>();
-    private Dictionary<int, string> APItemDescriptions = new Dictionary<int, string>()
-    {
-        {0,"A mysterious item from another world. It looks like <plr>'s <item>."},
-        {1,"This looks just like <plr>'s <item>! What is it doing here?"},
-        {2,"It's a <item>. You don't know how to use it, but you know <plr> would."},
-        {3,"<plr>'s <item>. Did the company get ahold of this?"}
-    };
 
     private void OnEnable()
     {
@@ -562,9 +554,10 @@ public class CraftingChecks : MonoBehaviour
                            .FirstOrDefault(); // find the closest one
                 var item = closest.gameObject.GetComponent<Item>();
                 var recipeId = closest.gameObject.GetComponent<BlueprintScript>().recipeIndex;
-                item.Stats.description = APItemDescriptions[UnityEngine.Random.Range(0, APItemDescriptions.Count)]; // get a random description
+                item.Stats.description = "A mysterious item from another world. It looks to be <plr>'s <item>.";
                 item.Stats.description = item.Stats.description.Replace("<plr>", BlueprintToPlayerName.Get(recipeId));
                 item.Stats.description = item.Stats.description.Replace("<item>", BlueprintToItemName.Get(recipeId));
+                item.favourited = true;
             }
         }
         catch (Exception ex)
@@ -584,7 +577,7 @@ public class CraftingChecks : MonoBehaviour
             usable = true,
             usableOnLimb = false,
             destroyAtZeroCondition = true,
-            weight = 0.2f,
+            weight = 0,
             useAction = delegate (Body body, Item item)
             {
                 item.condition = 0f;
@@ -629,7 +622,7 @@ public class CraftingChecks : MonoBehaviour
             foreach (var info in rawScoutData)
             {
                 var itemInfo = info.Value; // get just the ScoutedItemInfo
-                AssetItem formattedInfo = new AssetItem(   // convert to AssetItem
+                AssetItem formattedInfo = new AssetItem( // convert to AssetItem
                     info.Value.ItemGame,
                     info.Value.ItemName,
                     info.Value.Flags
@@ -656,7 +649,7 @@ public class CraftingChecks : MonoBehaviour
                         item.Stats.fullName = sprite.Item;
                     }
                 }
-                else // game is unsupported or the server cannot be reached
+                else // game is unsupported or the github repo cannot be reached
                 {
                     item.Stats.fullName = info.Value.ItemName;
                 }

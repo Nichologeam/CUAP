@@ -1,5 +1,5 @@
 ﻿using Archipelago.MultiClient.Net;
-using Archipelago.MultiClient.Net.Models;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,11 +9,11 @@ public class ExperimentDialog : MonoBehaviour
 {
     public static ArchipelagoSession Client;
     private static Talker PlayerTalker;
-    private static ExperimentDialog instance;
+    // private static ExperimentDialog instance; commenting this out because i might use it later. currently unused though
 
     private void OnEnable()
     {
-        instance = this;
+        // instance = this;
         Client = APClientClass.session;
         PlayerTalker = gameObject.GetComponent<Talker>();
         Startup.Logger.LogMessage("Dialogue patches applied!");
@@ -72,7 +72,7 @@ public class ExperimentDialog : MonoBehaviour
             {0,$"Did... did {item.Player} just give me steriods?"},
             {1,$"I am all pumped up thanks to {item.Player}!"},
             {2,$"*Extends claws dramatically towards {item.Player}* Haha!"},
-            {3,$"Fuck yeah, {item.Player}! I'm {GameObject.Find("Experiment/Body").GetComponent<Body>().weightOffset * 0.34f + 50f} kilos of pure muscle!"}, // prints the player's body mass
+            {3,$"Fuck yeah, {item.Player}! I'm {MathF.Round(GameObject.Find("Experiment/Body").GetComponent<Body>().weightOffset * 0.34f + 50f, 1)} kilos of pure muscle!"}, // prints the player's body mass
         };
         Dictionary<int, string> RESItemDialog = new Dictionary<int, string>()
         {// displayed when receiving Progressive RES

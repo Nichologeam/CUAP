@@ -5,7 +5,7 @@ using System.Linq;
 namespace CUAP;
 
 [HarmonyPatch(typeof(BuildingEntity), "Start")]
-// Guarentees an Archipelago item will drop from all destroyed Buildings, severely helping with Randomize Blueprints on
+// Guarentees an Archipelago item will drop from certain destroyed Buildings, severely helping with Randomize Blueprints on
 class BuildingDropReplacer
 {
     private static readonly HashSet<string> allowedBuildings = new() // objects not in this list cannot have their drop tables changed
@@ -44,20 +44,18 @@ class BuildingDropReplacer
     };
     static void Postfix(BuildingEntity __instance)
     {
-        if (!allowedBuildings.Contains(__instance.id))
+        if (!allowedBuildings.Contains(__instance.id) || !CraftingChecks.bpLocations)
         {
-            return; // banned object. do not change.
+            return; // only do this if Archipelago items over blueprints is enabled and the building isn't banned
         }
-        if (CraftingChecks.bpLocations) // only do this if Archipelago items over blueprints is enabled
-        {// I am aware that this can cause a race condition if a BuildingEntity exists on the frame the scene is loaded, but this shouldn't ever happen (outside of the tutorial)
-            var dropsList = __instance.alwaysDrop?.ToList() ?? new List<ItemDrop>(); // copy to list to make editing easier (also make a list if it doesn't exist)
-            dropsList.Add(new ItemDrop // Add an item to the list of guarented drops
-            {
-                id = "blueprint", // replaced with Archipelago item
-                conditionMax = 1,
-                conditionMin = 1,
-            });
-            __instance.alwaysDrop = dropsList.ToArray();
-        }
+        // I am aware that this can cause a race condition if a BuildingEntity exists on the frame the scene is loaded, but this shouldn't ever happen (outside of maybe the tutorial?)
+        var dropsList = __instance.alwaysDrop?.ToList() ?? new List<ItemDrop>(); // copy to list to make editing easier (also make a list if it doesn't exist)
+        dropsList.Add(new ItemDrop // Add an item to the list of guarented drops
+        {
+            id = "blueprint", // replaced with Archipelago item
+            conditionMax = 1,
+            conditionMin = 1,
+        });
+        __instance.alwaysDrop = dropsList.ToArray();
     }
 }

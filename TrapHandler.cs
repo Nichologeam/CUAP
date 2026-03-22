@@ -48,19 +48,19 @@ public class TrapHandler : MonoBehaviour
         {
             if (revControlActive)
             {
-                moodles.AddMoodle(5, "death", "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Trap: Reversed Controls", trapSender + " reversed your controls! Lasts 10 seconds.", false, false);
+                moodles.AddMoodle(5, "death", $"{APCanvas.coloredAPText} Trap: Reversed Controls", $"{trapSender} reversed your controls! Lasts 10 seconds.", false, false);
             }
             if (unchippedActive)
             {
-                moodles.AddMoodle(5, "death", "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Trap: Unchipped", trapSender + " disabled your brainchip! Lasts 50 seconds.", false, false);
+                moodles.AddMoodle(5, "death", $"{APCanvas.coloredAPText} Trap: Unchipped", $"{trapSender} disabled your brainchip! Lasts 50 seconds.", false, false);
             }
             if (disfigActive)
             {
-                moodles.AddMoodle(5, "death", "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Trap: Disfigured", trapSender + " removed your jaw! Lasts 180 seconds.", false, false);
+                moodles.AddMoodle(5, "death", $"{APCanvas.coloredAPText} Trap: Disfigured", $"{trapSender} removed your jaw! Lasts 180 seconds.", false, false);
             }
             if (mindwipeActive)
             {
-                moodles.AddMoodle(5, "death", "<color=#c97682>Ar<color=#75c275>ch<color=#ca94c2>ip<color=#d9a07d>el<color=#767ebd>ag<color=#eee391>o<color=#FFFFFF> Trap: Mindwipe", trapSender + " removed your memories! Lasts 70 seconds.", false, false);
+                moodles.AddMoodle(5, "death", $"{APCanvas.coloredAPText} Trap: Mindwipe", $"{trapSender} removed your memories! Lasts 70 seconds.", false, false);
             }
         }
         prevUpdateTime = moodleUpdateTime(moodles);
@@ -72,40 +72,40 @@ public class TrapHandler : MonoBehaviour
         {
             case "Depression Trap":
                 Vitals.happiness = -20;
-                plrcam.DoAlert("Trap: " + ItemSender + " said something demoralizing. Mood decreased.", false);
+                plrcam.DoAlert($"Trap: {ItemSender} said something demoralizing. Mood decreased.", false);
                 break;
             case "Hearing Loss Trap":
                 Vitals.hearingLoss = +50;
-                plrcam.DoAlert("Trap: <b>WHAT!? I CAN'T HEAR YOU " + ItemSender.ToUpper() + "!</b> Hearing loss increased.", false);
+                plrcam.DoAlert($"Trap: <b>WHAT!? I CAN'T HEAR YOU {ItemSender.ToUpper()}!</b> Hearing loss increased.", false);
                 break;
             case "Earthquake Trap":
-                plrcam.DoAlert("Trap: " + ItemSender + " hit a fault line.", false);
+                plrcam.DoAlert($"Trap: {ItemSender} hit a fault line.", false);
                 worldgen.earthquakeDelay = 0; // start an earthquake
                 worldgen.earthquakeIntensity = 2; // twice as intense as basegame earthquake
                 worldgen.earthquakeTime = 15; // for 15 seconds
                 break;
             case "Reverse Controls Trap":
-                plrcam.DoAlert("Trap: " + ItemSender + " made you feel tipsy. Controls reversed.", false);
+                plrcam.DoAlert($"Trap: {ItemSender} made you feel tipsy. Controls reversed.", false);
                 StartCoroutine(ReverseControls());
                 break;
             case "Sleep Trap":
                 Vitals.sleeping = true;
-                plrcam.DoAlert("Trap: " + ItemSender + " thinks it's naptime. Good night!", false);
+                plrcam.DoAlert($"Trap: {ItemSender} thinks it's naptime. Good night!", false);
                 break;
             case "Unchipped Trap":
-                plrcam.DoAlert("Trap: " + ItemSender + " is hacking into your brainchip!", false);
+                plrcam.DoAlert($"Trap: {ItemSender} is hacking into your brainchip!", false);
                 StartCoroutine(UnchippedToggle());
                 break;
             case "Elder Thornback Trap":
-                plrcam.DoAlert("Trap: " + ItemSender + " sent something big your way. Something <i>really</i> big.", false);
+                plrcam.DoAlert($"Trap: {ItemSender} sent something big your way. Something <i>really</i> big.", false);
                 StartCoroutine(Thornback());
                 break;
             case "Cave Ticks Trap":
                 Instantiate(Resources.Load<GameObject>("caveticks"), gameObject.transform.position, Quaternion.identity);
-                plrcam.DoAlert("Trap: " + ItemSender + " alerted the hoard. Good luck!", false);
+                plrcam.DoAlert($"Trap: {ItemSender} alerted the hoard. Good luck!", false);
                 break;
             case "Bad Rep Trap":
-                plrcam.DoAlert("Trap: " + ItemSender + " spread gossip. All traders on this layer are now hostile.", false);
+                plrcam.DoAlert($"Trap: {ItemSender} spread gossip. All traders on this layer are now hostile.", false);
                 foreach (var trader in FindObjectsOfType<TraderScript>())
                 {
                     if (trader.hostile) continue; // don't bother making them hostile a second time
@@ -118,12 +118,12 @@ public class TrapHandler : MonoBehaviour
                 {
                     break;
                 }
-                plrcam.DoAlert("Trap: " + ItemSender + " thinks you talk too much.", false);
+                plrcam.DoAlert($"Trap: {ItemSender} thinks you talk too much.", false);
                 StartCoroutine(Disfigurement());
                 break;
             case "Fellow Experiment":
                 Instantiate(Resources.Load<GameObject>("corpse"), gameObject.transform.position, Quaternion.identity);
-                plrcam.DoAlert("Trap: " + ItemSender + " found you a friend! ...wait", false);
+                plrcam.DoAlert($"Trap: {ItemSender} found you a friend! ...wait", false);
                 break;
             case "Fragile Items Trap":
                 heldItems.Clear();
@@ -141,20 +141,20 @@ public class TrapHandler : MonoBehaviour
                 Debug.Log($"{chosenItem.fullName} was chosen to be damaged");
                 if (chosenItem.TryGetComponent(out WaterContainerItem _))
                 {
-                    plrcam.DoAlert("Trap: " + ItemSender + " poked a hole in your " + chosenItem.fullName, false);
+                    plrcam.DoAlert($"Trap: {ItemSender} poked a hole in your {chosenItem.fullName}", false);
                 }
                 else
                 {
-                    plrcam.DoAlert("Trap: " + ItemSender + " made your warranty expire. " + chosenItem.fullName + " was destroyed.", false);
+                    plrcam.DoAlert($"Trap: {ItemSender} made your warranty expire. {chosenItem.fullName} was destroyed.", false);
                 }
                 chosenItem.condition = 0;
                 break;
             case "Mindwipe Trap":
-                plrcam.DoAlert("Trap: " + ItemSender + " thinks you know too much.", false);
+                plrcam.DoAlert($"Trap: {ItemSender} thinks you know too much.", false);
                 StartCoroutine(Mindwipe());
                 break;
             case "Pushup Trap":
-                plrcam.DoAlert("Trap: " + ItemSender + " demands you get on the ground and give them twenty!", false);
+                plrcam.DoAlert($"Trap: {ItemSender} demands you get on the ground and give them twenty!", false);
                 plrcam.DoBodyWorkout(0);
                 plrcam.ToggleWoundView(false); // DoBodyWorkout forces the woundview open/closed. this reverses that. nothing i can do about the sound effect though
                 break;

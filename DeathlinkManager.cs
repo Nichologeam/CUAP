@@ -59,7 +59,7 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
     {
         if (DeathlinkCooldown > 0)
         {
-            return; // so, for some reason, OnDeathLinkPacketReceived is spammed about 350 ish times for each Deathlink sent.
+            return; // so, for some reason, OnDeathLinkReceived is spammed about 350 ish times for each Deathlink sent.
             // This cooldown prevents 349 ish of those deathlinks from going though, as it entierly destroys Experiment if Large Limb Damage is on.
         }   
         if (dlPacket.Source.IsNullOrWhiteSpace()) // should never happen, realistically.
@@ -86,7 +86,7 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
         }
         if (DeathlinkSeverity)
         {
-            DeathLinkText.text = DeathLinkText.text + " Your run has ended.";
+            DeathLinkText.text = $"{DeathLinkText.text} Your run has ended.";
             Vitals.brainHealth = 0; // Instantly kill Experiment
             Destroy(this); // Destroy script so we don't send a deathlink next frame. No damage will be done, because the player is forced back to main menu.
         }
@@ -98,7 +98,7 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
             limb.bleedAmount += 40f;
             limb.pain += 30f;
             Sound.Play("harmSting", Vector2.zero, true, false, null, 0.7f, 1f, false, false);
-            DeathLinkText.text = DeathLinkText.text + " Damage done to " + limb.fullName + ".";
+            DeathLinkText.text = $"{DeathLinkText.text} Damage done to {limb.fullName}.";
         }
     }
 

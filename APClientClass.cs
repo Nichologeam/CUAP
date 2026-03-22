@@ -6,7 +6,6 @@ using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Packets;
 using BepInEx;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -43,21 +42,17 @@ public class APClientClass
         if (ThreadingHelper.Instance == null) // V5.0.2 causes BepInEx's bootstrapper to fail creating this, so we'll do it ourselves.
         {
             Startup.Logger.LogWarning("BepInEx.ThreadingHelper is null. Recreating...");
-            var threadingHelperType = typeof(BepInEx.ThreadingHelper);
+            var threadingHelperType = typeof(ThreadingHelper);
             var initializeMethod = threadingHelperType.GetMethod("Initialize", BindingFlags.Static | BindingFlags.NonPublic);
             initializeMethod!.Invoke(null, null);
         }
         try
         {
             Startup.Logger.LogMessage($"Attempting to connect to [{address}], with password: [{password}], on slot: [{slot}]");
-            if (password.IsNullOrWhiteSpace())
-            {
-                password = null;
-            }
+            if (password.IsNullOrWhiteSpace()) password = null;
             session = ArchipelagoSessionFactory.CreateSession(address);
             session!.Items.ItemReceived += (item) => ThreadingHelper.Instance!.StartSyncInvoke(() => ProcessItem(item)); // this has to be run on main thread or unity will hard crash
             var loginResult = session.TryConnectAndLogin("Casualties: Unknown", slot, ItemsHandlingFlags.AllItems, (new Version(0, 6, 6)), password: password, requestSlotData: true);
-            
             if (loginResult is LoginFailure failure)
             {
                 Disconnect();
@@ -89,7 +84,7 @@ public class APClientClass
         slotdata = session!.DataStorage.GetSlotData(session.Players.ActivePlayer.Slot);
         Startup.Logger.LogMessage("Connnected to Archipelago!");
         dlService = session.CreateDeathLinkService();
-        GameObject.Find("Console(Clone)").GetComponent<CommandPatch>().Subscribe();
+        CommandPatch.Console.GetComponent<CommandPatch>().Subscribe();
         if (slotdata != null && session != null)
         {
             if (slotdata.TryGetValue("Goal", out var goal))
@@ -116,6 +111,7 @@ public class APClientClass
     private static IEnumerator NewConnectionCountdown()
     {
         reconnectCountdown = 5; // don't display item notifications for the first 5 seconds upon connecting (hides re-receiving every item)
+        // this is set to 5 seconds because the client will timeout after 4, so there's no need to wait longer than that, even if it's a 500 item re-recieve
         while (reconnectCountdown > 0)
         {
             yield return new WaitForSecondsRealtime(1);
@@ -133,16 +129,18 @@ public class APClientClass
                 Startup.Logger.LogWarning("ProcessItem called without any items in the queue!");
                 return;
             }
-            Startup.Logger.LogMessage("Received " + item.ItemName);
+            Startup.Logger.LogMessage($"Received {item.ItemName}");
             if (reconnectCountdown <= 0) // countdown has passed
             {
                 string itemColor = CommandPatch.ItemDataToPriorityColor(item.Flags);
-                string playerColor = "#FAFAD2"; // unrelated player (tan)
                 if (item.Player == session!.Players.ActivePlayer)
                 {
-                    playerColor = "#EE00EE"; // local player (purple)
+                    APCanvas.EnqueueArchipelagoNotification($"<color=#EE00EE>You</color> found your <color={itemColor}>{item.ItemName}</color>!", 1);
                 }
-                APCanvas.EnqueueArchipelagoNotification($"Received <color={itemColor}>{item.ItemName}</color> from <color={playerColor}>{item.Player}</color>!", 1);
+                else
+                {
+                    APCanvas.EnqueueArchipelagoNotification($"Received <color={itemColor}>{item.ItemName}</color> from <color=#FAFAD2>{item.Player}</color>!", 1);
+                }
             }
             bool processed = false;
             // Start with item groups
@@ -224,38 +222,23 @@ public class APClientClass
                         break;
                     case "Progressive Left Arm":
                         leftArmUnlocks++;
-                        if (APCanvas.InGame)
-                        {
-                            LimbUnlocks.instance.RestoreLimbs();
-                        }
+                        if (APCanvas.InGame) LimbUnlocks.instance.RestoreLimbs();
                         break;
                     case "Progressive Right Arm":
                         rightArmUnlocks++;
-                        if (APCanvas.InGame)
-                        {
-                            LimbUnlocks.instance.RestoreLimbs();
-                        }
+                        if (APCanvas.InGame) LimbUnlocks.instance.RestoreLimbs();
                         break;
                     case "Progressive STR":
                         MaxSTR++;
-                        if (APCanvas.InGame)
-                        {
-                            SkillReceiving.playerSkills.UpdateExpBoundaries();
-                        }
+                        if (APCanvas.InGame) SkillReceiving.playerSkills.UpdateExpBoundaries();
                         break;
                     case "Progressive RES":
                         MaxRES++;
-                        if (APCanvas.InGame)
-                        {
-                            SkillReceiving.playerSkills.UpdateExpBoundaries();
-                        }
+                        if (APCanvas.InGame) SkillReceiving.playerSkills.UpdateExpBoundaries();
                         break;
                     case "Progressive INT":
                         MaxINT++;
-                        if (APCanvas.InGame)
-                        {
-                            SkillReceiving.playerSkills.UpdateExpBoundaries();
-                        }
+                        if (APCanvas.InGame) SkillReceiving.playerSkills.UpdateExpBoundaries();
                         break;
                     default:
                         Startup.Logger.LogWarning($"{item.ItemName} is unhandled!");
@@ -286,7 +269,7 @@ public class APClientClass
         Startup.instance.Update(); // after V5.0.2, Startup gets force disabled at game startup. Reennabling it doesn't work, so I'll just call update manually!
         try
         {
-            if (GameObject.Find("Main Camera/Canvas/WoundView").activeSelf) // woundview is open (client covers it)
+            if (WoundView.view.gameObject.activeInHierarchy) // woundview is open (client covers it)
             {
                 APCanvas.ShowMainGUI = false;
                 APCanvas.ShowSkillTracker = true;
@@ -360,8 +343,8 @@ public class APClientClass
         }
         catch (Exception ex)
         {
-            APCanvas.EnqueueArchipelagoNotification("SendChecks failed! " + ex.ToString(),3);
-            Startup.Logger.LogError("SendChecks failed! " + ex.ToString());
+            APCanvas.EnqueueArchipelagoNotification($"SendChecks failed! {ex}",3);
+            Startup.Logger.LogError($"SendChecks failed! {ex}");
             Disconnect();
         }
     }
