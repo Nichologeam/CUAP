@@ -8,7 +8,7 @@ class TraderInventory
 {
     static void Postfix(TraderScript __instance)
     {
-        if (!CraftingChecks.bpLocations)
+        if (!CraftingChecks.apItems)
         {
             return; // blueprint locations are disabled
         }

@@ -44,7 +44,7 @@ class BuildingDropReplacer
     };
     static void Postfix(BuildingEntity __instance)
     {
-        if (!allowedBuildings.Contains(__instance.id) || !CraftingChecks.bpLocations)
+        if (!allowedBuildings.Contains(__instance.id) || !CraftingChecks.apItems)
         {
             return; // only do this if Archipelago items over blueprints is enabled and the building isn't banned
         }

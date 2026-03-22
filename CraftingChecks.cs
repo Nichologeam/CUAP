@@ -23,12 +23,14 @@ public class CraftingChecks : MonoBehaviour
     public static ArchipelagoSession Client;
     private static List<string> RecievedRecipes;
     public static List<int> AlreadySentChecks = new List<int>();
-    public static bool bpLocations = false;
+    public static bool apItems = false;
+    private int apItemAmount;
+    private static int currentAPItemNum;
+    private bool randomRecipes = false;
     private int lastFrameRecipeCount = 0;
     public static bool freesamples = false;
     private int RecipeNum = 0;
     public static int CraftedRecipes = 0;
-    private bool removeBlueprints = false;
     private SemaphoreSlim spriteSemaphore = new(1, 1);
     private static readonly long startingRecipeID = 22318500;
     private static HashSet<string> AppliedRecipes = new();
@@ -428,31 +430,31 @@ public class CraftingChecks : MonoBehaviour
         var options = APClientClass.slotdata;
         if (options.TryGetValue("RandomizeRecipes", out var recipesoption)) // check if recipe randomization is enabled.
         {
-            if (Convert.ToInt16(recipesoption) == 1) // disabled
+            if (!Convert.ToBoolean(recipesoption)) // disabled
             {
-                Startup.Logger.LogWarning("Recipe Randomization is disabled, destroying script.");
-                DestroyImmediate(this);
-                return;
+                //Startup.Logger.LogWarning("Recipe Randomization is disabled, destroying script.");
+                randomRecipes = false;
+                //DestroyImmediate(this);
+                //return;
             }
-            else // enabled. both need to learn recipes, so we'll do that first
+            else // enabled
             {
                 foreach (var recipe in Recipes.recipes)
                 {
                     recipe.INT = 999; // Unlearn every recipe. We will recieve them with items later.
                 }
-                if (Convert.ToInt16(recipesoption) == 3) // blueprint locations enabled
-                {
-                    SetupAPBlueprint();
-                    bpLocations = true;
-                    aplogo = Startup.apassets.LoadAsset<Sprite>("aplogo200"); // load custom blueprint asset replacement
-                    bgBlueprint = Resources.Load<GameObject>("blueprint").GetComponent<SpriteRenderer>().sprite; // reference basegame asset from prefab
-                }
-                else // blueprint locations aren't enabled. mark that for later
-                {
-                    removeBlueprints = true;
-                }
+                randomRecipes = true;
             }
         }
+        if (options.TryGetValue("APItemAmount", out var items))
+        {
+            apItems = true;
+            apItemAmount = Convert.ToInt16(items);
+            currentAPItemNum = SkillSending.GetIntFromCheckedLocations(startingRecipeID, Convert.ToInt16(items)); // consider previous sessions
+            aplogo = Startup.apassets.LoadAsset<Sprite>("aplogo200"); // load custom blueprint asset replacement
+            bgBlueprint = Resources.Load<GameObject>("blueprint").GetComponent<SpriteRenderer>().sprite; // reference basegame asset from prefab
+        }
+        SetupAPBlueprint(apItems);
         if (options.TryGetValue("FreeSamples", out var samples))
         {
             freesamples = Convert.ToBoolean(samples);
@@ -510,88 +512,111 @@ public class CraftingChecks : MonoBehaviour
                 Client.SetGoalAchieved();
             }
         }
-        try
+        if (apItems)
         {
-            var blueprints = GameObject.FindObjectsOfType<GameObject>()
-                .Where(o => o.name == "blueprint(Clone)")
-                .ToList();
-            foreach (GameObject bp in blueprints)
+            try
             {
-                if (removeBlueprints) // settings make blueprints not needed. remove them
+                var blueprints = FindObjectsOfType<GameObject>()
+                    .Where(o => o.name == "blueprint(Clone)")
+                    .ToList();
+                foreach (GameObject bp in blueprints)
                 {
-                    Destroy(bp);
-                    continue;
-                }
-                var renderer = bp.GetComponent<SpriteRenderer>();
-                if (renderer.sprite.name == bgBlueprint.name) // do all of this ONLY if it's a new blueprint
-                {
-                    renderer.sprite = aplogo;
-                    var blueprint = bp.GetComponent<BlueprintScript>();
-                    var recipeId = blueprint.recipeIndex;
-                    int attempts = 0;
-                    while (AlreadySentChecks.Contains(recipeId) && attempts < 10)
+                    var renderer = bp.GetComponent<SpriteRenderer>();
+                    if (renderer.sprite.name == bgBlueprint.name) // do all of this ONLY if it's a new blueprint
                     {
-                        recipeId = UnityEngine.Random.Range(0, Recipes.recipes.Count); // rerandomize it
-                        attempts++;
+                        renderer.sprite = aplogo;
+                        var blueprint = bp.GetComponent<BlueprintScript>();
+                        blueprint.recipeIndex = currentAPItemNum;
+                        if (currentAPItemNum > apItemAmount)
+                        {
+                            Debug.LogWarning("All Archipelago Items have been collected! Disabling apItems flag.");
+                            apItems = false;
+                            Destroy(bp);
+                            break;
+                        }
+                        var helper = ThreadingHelper.Instance;
+                        _ = AssignCustomSprite(renderer, bp.GetComponent<Item>(), currentAPItemNum, helper);
                     }
-                    if (AlreadySentChecks.Contains(recipeId))
+                    else
                     {
-                        Destroy(bp);
-                        continue;
+                        continue; // we've already handled this blueprint
                     }
-                    blueprint.recipeIndex = recipeId;
-                    var helper = ThreadingHelper.Instance;
-                    _ = AssignCustomSprite(renderer, bp.GetComponent<Item>(), recipeId, helper);
                 }
-                else
+                if (GameObject.Find("blueprint(Clone)")) // does at least one blueprint still exist?
                 {
-                    continue; // we've already handled this blueprint
+                    var closest = blueprints.OrderBy(o => (o.transform.position - GameObject.Find("Experiment/Body").transform.position).sqrMagnitude)
+                               .FirstOrDefault(); // find the closest one
+                    var item = closest.gameObject.GetComponent<Item>();
+                    var recipeId = closest.gameObject.GetComponent<BlueprintScript>().recipeIndex;
+                    item.Stats.description = "A mysterious item from another world. It looks to be <plr>'s <item>.";
+                    item.Stats.description = item.Stats.description.Replace("<plr>", BlueprintToPlayerName.Get(recipeId));
+                    item.Stats.description = item.Stats.description.Replace("<item>", BlueprintToItemName.Get(recipeId));
+                    item.favourited = true;
                 }
             }
-            if (GameObject.Find("blueprint(Clone)")) // does at least one blueprint still exist?
+            catch (Exception ex)
             {
-                var closest = blueprints.OrderBy(o => (o.transform.position - GameObject.Find("Experiment/Body").transform.position).sqrMagnitude)
-                           .FirstOrDefault(); // find the closest one
-                var item = closest.gameObject.GetComponent<Item>();
-                var recipeId = closest.gameObject.GetComponent<BlueprintScript>().recipeIndex;
-                item.Stats.description = "A mysterious item from another world. It looks to be <plr>'s <item>.";
-                item.Stats.description = item.Stats.description.Replace("<plr>", BlueprintToPlayerName.Get(recipeId));
-                item.Stats.description = item.Stats.description.Replace("<item>", BlueprintToItemName.Get(recipeId));
-                item.favourited = true;
+                Startup.Logger.LogError($"Archipelago Blueprint Error: {ex}");
+                APCanvas.EnqueueArchipelagoNotification($"Archipelago Blueprint Error: {ex}",3);
+                return;
             }
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError(ex);
-            return; // no blueprints currently exist in the world
         }
     }
-    void SetupAPBlueprint() // rebuild the basegame blueprint functions, but with AP code integrated.
+    void SetupAPBlueprint(bool apItemsEnabled) // rebuild the basegame blueprint functions, but with AP code integrated.
     {
         Item.GlobalItems.Remove("blueprint");
         string itemname = "blueprint";
-        ItemInfo patchAPinfo = new ItemInfo
+        if (apItemsEnabled)
         {
-            category = "utility",
-            slotRotation = 0f,
-            usable = true,
-            usableOnLimb = false,
-            destroyAtZeroCondition = true,
-            weight = 0,
-            useAction = delegate (Body body, Item item)
+            ItemInfo patchAPinfo = new ItemInfo
             {
-                item.condition = 0f;
-                body.skills.AddExp(2, 10f);
-                CraftingChecks.SendBlueprintLocation(item.gameObject.GetComponent<BlueprintScript>().recipeIndex);
-                PlayerCamera.main.DoAlert($"Item sent to {APCanvas.coloredAPText}!", false);
-                Sound.Play("combine", item.transform.position, false, true, null, 1f, 1f, false, false);
-            },
-            value = 0, // i think setting this to 0 makes it unsellable? makes it useless to regardless
-            fullName = $"{APCanvas.coloredAPText} Item",
-            rec = new Recognition(0)
-        };
-        Item.GlobalItems.Add(itemname, patchAPinfo);
-        patchAPinfo.SetTags();
+                category = "utility",
+                slotRotation = 0f,
+                usable = true,
+                usableOnLimb = false,
+                destroyAtZeroCondition = true,
+                weight = 0,
+                useAction = delegate (Body body, Item item)
+                {
+                    item.condition = 0f;
+                    body.skills.AddExp(2, 10f);
+                    CraftingChecks.SendBlueprintLocation(item.gameObject.GetComponent<BlueprintScript>().recipeIndex);
+                    PlayerCamera.main.DoAlert($"Item sent to {APCanvas.coloredAPText}!", false);
+                    Sound.Play("combine", item.transform.position, false, true, null, 1f, 1f, false, false);
+                },
+                value = 0, // i think setting this to 0 makes it unsellable? makes it useless to regardless
+                fullName = $"{APCanvas.coloredAPText} Item",
+                description = "A mysterious item from another world. It looks to be <plr>'s <item>.",
+                rec = new Recognition(0)
+            };
+            Item.GlobalItems.Add(itemname, patchAPinfo);
+            patchAPinfo.SetTags();
+        }
+        else
+        {
+            ItemInfo patchAPinfo = new ItemInfo
+            {
+                category = "utility",
+                slotRotation = 0f,
+                usable = true,
+                usableOnLimb = false,
+                destroyAtZeroCondition = true,
+                weight = 0,
+                useAction = delegate (Body body, Item item)
+                {
+                    item.condition = 0f;
+                    body.skills.AddExp(2, 35f);
+                    PlayerCamera.main.DoAlert("Claimed 35 INT Experience!", false);
+                    Sound.Play("combine", item.transform.position, false, true, null, 1f, 1f, false, false);
+                },
+                value = 0,
+                fullName = "INT Experience Bundle (35)",
+                description = "Archipelago has removed the recipe from this blueprint, but you will still get the INT Experience from it.",
+                rec = new Recognition(0)
+            };
+            Item.GlobalItems.Add(itemname, patchAPinfo);
+            patchAPinfo.SetTags();
+        }
         ItemLootPool.InitializePool();
     }
 
@@ -599,7 +624,7 @@ public class CraftingChecks : MonoBehaviour
     {
         var CheckID = recipeIndex + startingRecipeID;
         APClientClass.ChecksToSend.Add(CheckID);
-        AlreadySentChecks.Add(recipeIndex);
+        currentAPItemNum++;
     }
 
     private async Task AssignCustomSprite(SpriteRenderer renderer, Item item, int recipeID, ThreadingHelper helper)

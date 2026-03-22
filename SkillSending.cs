@@ -51,19 +51,19 @@ class SkillSending
             // >>>>> NOTE: I don't know how I'd solve this, nor do I really care to, since all locations are still reachable. <<<<<
             if (Client.Locations.AllLocationsChecked.Contains(22318800)) // "STR Level 1" location. if found, this is NOT a new server
             {
-                APSTR = GetSkillsanityLevelFromCheckedLocations(22318800);
+                APSTR = GetIntFromCheckedLocations(22318800);
                 toNextSTR = EXPRequirementToLevel[APSTR] - EXPRequirementToLevel[APSTR - 1];
                 APCanvas.UpdateSkillsanityValues(0, MathF.Round(toNextSTR, 1));
             }
             if (Client.Locations.AllLocationsChecked.Contains(22318815)) // "RES Level 1" location
             {
-                APRES = GetSkillsanityLevelFromCheckedLocations(22318815);
+                APRES = GetIntFromCheckedLocations(22318815);
                 toNextRES = EXPRequirementToLevel[APRES] - EXPRequirementToLevel[APRES - 1];
                 APCanvas.UpdateSkillsanityValues(1, MathF.Round(toNextRES, 1));
             }
             if (Client.Locations.AllLocationsChecked.Contains(22318830)) // "INT Level 1" location
             {
-                APINT = GetSkillsanityLevelFromCheckedLocations(22318830);
+                APINT = GetIntFromCheckedLocations(22318830);
                 toNextINT = EXPRequirementToLevel[APINT] - EXPRequirementToLevel[APINT - 1];
                 APCanvas.UpdateSkillsanityValues(2, MathF.Round(toNextINT, 1));
             }
@@ -131,8 +131,9 @@ class SkillSending
     }
     // Starting at level 1, find the first unchecked Skillsanity location, then assume that's the player's Skillsanity level.
     // Note: Not immune to players goaling on collect-enabled servers, or running !collect manually, but all locations are still reachable.
-    private static int GetSkillsanityLevelFromCheckedLocations(long baseLocationID, int maxLevel = 15)
+    public static int GetIntFromCheckedLocations(long baseLocationID, int maxLevel = 15)
     {
+        Client = APClientClass.session;
         for (int level = 0; level < maxLevel; level++)
         {
             if (!Client.Locations.AllLocationsChecked.Contains(baseLocationID + level)) // we don't have this one
