@@ -1,12 +1,17 @@
 ﻿using Archipelago.MultiClient.Net;
-using System.Collections.Generic;
-using System;
-using UnityEngine;
-using Newtonsoft.Json.Linq;
-using System.Linq;
-using Archipelago.MultiClient.Net.Packets;
-using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Enums;
+using Archipelago.MultiClient.Net.Models;
+using Archipelago.MultiClient.Net.Packets;
+using BepInEx;
+using KaitoKid.ArchipelagoUtilities.AssetDownloader.ItemSprites;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.UIElements.Collections;
 
 namespace CUAP;
@@ -14,6 +19,7 @@ namespace CUAP;
 public class CraftingChecks : MonoBehaviour
 {
     private Sprite aplogo;
+    private Sprite bgBlueprint; // basegame blueprint
     public static ArchipelagoSession Client;
     private static List<string> RecievedRecipes;
     public static List<int> AlreadySentChecks = new List<int>();
@@ -23,6 +29,8 @@ public class CraftingChecks : MonoBehaviour
     private int RecipeNum = 0;
     public static int CraftedRecipes = 0;
     private bool removeBlueprints = false;
+    private SemaphoreSlim spriteSemaphore = new(1, 1);
+    private List<long> locsToScout = new();
     private static readonly long startingRecipeID = 22318500;
     private static HashSet<string> AppliedRecipes = new();
     public static Dictionary<long, string> BlueprintToPlayerName = new Dictionary<long, string>();
@@ -413,6 +421,13 @@ public class CraftingChecks : MonoBehaviour
         "Climbing rope Recipe",
     };
     public static Dictionary<int, bool> RecipeCraftedBefore = new Dictionary<int, bool>();
+    private Dictionary<int, string> APItemDescriptions = new Dictionary<int, string>()
+    {
+        {0,"A mysterious item from another world. It looks like <plr>'s <item>."},
+        {1,"This looks just like <plr>'s <item>! What is it doing here?"},
+        {2,"It's a <item>. You don't know how to use it, but you know <plr> would."},
+        {3,"<plr>'s <item>. Did the company get ahold of this?"}
+    };
 
     private void OnEnable()
     {
@@ -435,13 +450,10 @@ public class CraftingChecks : MonoBehaviour
                 }
                 if (Convert.ToInt16(recipesoption) == 3) // blueprint locations enabled
                 {
-                    Client.Locations.ScoutLocationsAsync(
-                        Enumerable.Range(22318500, 22318612 - 22318500 + 1)
-                            .Select(i => (long)i)
-                            .ToArray());
                     SetupAPBlueprint();
                     bpLocations = true;
                     aplogo = Startup.apassets.LoadAsset<Sprite>("aplogo200"); // load custom blueprint asset replacement
+                    bgBlueprint = Resources.Load<GameObject>("blueprint").GetComponent<SpriteRenderer>().sprite; // reference basegame asset from prefab
                 }
                 else // blueprint locations aren't enabled. mark that for later
                 {
@@ -518,21 +530,31 @@ public class CraftingChecks : MonoBehaviour
                     Destroy(bp);
                     continue;
                 }
-                bp.GetComponent<SpriteRenderer>().sprite = aplogo;
-                var blueprint = bp.GetComponent<BlueprintScript>();
-                var recipeId = blueprint.recipeIndex;
-                int attempts = 0;
-                while (AlreadySentChecks.Contains(recipeId) && attempts < 10)
+                var renderer = bp.GetComponent<SpriteRenderer>();
+                if (renderer.sprite.name == bgBlueprint.name) // do all of this ONLY if it's a new blueprint
                 {
-                    recipeId = UnityEngine.Random.Range(0, Recipes.recipes.Count); // rerandomize it
-                    attempts++;
+                    renderer.sprite = aplogo;
+                    var blueprint = bp.GetComponent<BlueprintScript>();
+                    var recipeId = blueprint.recipeIndex;
+                    int attempts = 0;
+                    while (AlreadySentChecks.Contains(recipeId) && attempts < 10)
+                    {
+                        recipeId = UnityEngine.Random.Range(0, Recipes.recipes.Count); // rerandomize it
+                        attempts++;
+                    }
+                    if (AlreadySentChecks.Contains(recipeId))
+                    {
+                        Destroy(bp);
+                        continue;
+                    }
+                    blueprint.recipeIndex = recipeId;
+                    var helper = ThreadingHelper.Instance;
+                    _ = AssignCustomSprite(renderer, bp.GetComponent<Item>(), recipeId, helper);
                 }
-                if (AlreadySentChecks.Contains(recipeId))
+                else
                 {
-                    Destroy(bp);
-                    continue;
+                    continue; // we've already handled this blueprint
                 }
-                blueprint.recipeIndex = recipeId;
             }
             if (GameObject.Find("blueprint(Clone)")) // does at least one blueprint still exist?
             {
@@ -540,13 +562,14 @@ public class CraftingChecks : MonoBehaviour
                            .FirstOrDefault(); // find the closest one
                 var item = closest.gameObject.GetComponent<Item>();
                 var recipeId = closest.gameObject.GetComponent<BlueprintScript>().recipeIndex;
-                item.Stats.description = "Six multicolored circles held together by an invisible force. Use it to send <v1> their <v2>.";
-                item.Stats.description = item.Stats.description.Replace("<v1>", BlueprintToPlayerName.Get(recipeId));
-                item.Stats.description = item.Stats.description.Replace("<v2>", BlueprintToItemName.Get(recipeId));
+                item.Stats.description = APItemDescriptions[UnityEngine.Random.Range(0, APItemDescriptions.Count)]; // get a random description
+                item.Stats.description = item.Stats.description.Replace("<plr>", BlueprintToPlayerName.Get(recipeId));
+                item.Stats.description = item.Stats.description.Replace("<item>", BlueprintToItemName.Get(recipeId));
             }
         }
-        catch
+        catch (Exception ex)
         {
+            Debug.LogError(ex);
             return; // no blueprints currently exist in the world
         }
     }
@@ -584,5 +607,69 @@ public class CraftingChecks : MonoBehaviour
         var CheckID = recipeIndex + startingRecipeID;
         APClientClass.ChecksToSend.Add(CheckID);
         AlreadySentChecks.Add(recipeIndex);
+    }
+
+    private async Task AssignCustomSprite(SpriteRenderer renderer, Item item, int recipeID, ThreadingHelper helper)
+    {
+        await spriteSemaphore.WaitAsync();
+        if (renderer is null)
+        {
+            spriteSemaphore.Release();
+            return; // object has been destroyed, don't continue
+        }
+        try
+        {
+            long locationID = recipeID + startingRecipeID;
+            var rawScoutData = await Client.Locations.ScoutLocationsAsync(locationID);
+            if (renderer is null)
+            {
+                spriteSemaphore.Release();
+                return; // object has been destroyed, don't continue (doing this again because it's after an await call)
+            }
+            foreach (var info in rawScoutData)
+            {
+                var itemInfo = info.Value; // get just the ScoutedItemInfo
+                AssetItem formattedInfo = new AssetItem(   // convert to AssetItem
+                    info.Value.ItemGame,
+                    info.Value.ItemName,
+                    info.Value.Flags
+                );
+                var success = SpriteConverter.itemSprites.TryGetCustomAsset(formattedInfo, "Casualties: Unknown", true, true, out ItemSprite sprite);
+                if (success)
+                {
+                    Startup.Logger.LogDebug($"Custom Sprite FilePath = {sprite.FilePath}");
+                    byte[] data = File.ReadAllBytes(sprite.FilePath); // put the file in memory
+                    Texture2D texture = new(200, 200); // make a texture
+                    if (!texture.LoadImage(data)) // load the data into the texture
+                    {
+                        Startup.Logger.LogError($"Failed to load image data for {sprite.Game}'s {sprite.Item}! Path = {sprite.FilePath}");
+                        continue; // couldn't load this one, onto the next
+                    }
+                    Sprite finalSprite = Sprite.Create(texture, new(0, 0, texture.width, texture.height), new(0.5f, 0.5f), 30); // texture > sprite
+                    renderer.sprite = finalSprite; // apply it to the Archipelago item.
+                    if (sprite.Item.IsNullOrWhiteSpace())
+                    {
+                        item.Stats.fullName = info.Value.ItemName;
+                    }
+                    else
+                    {
+                        item.Stats.fullName = sprite.Item;
+                    }
+                }
+                else // game is unsupported or the server cannot be reached
+                {
+                    item.Stats.fullName = info.Value.ItemName;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Startup.Logger.LogError($"AssignCustomSprite Failed! {ex}");
+            APCanvas.EnqueueArchipelagoNotification($"AssignCustomSprite Failed!<br>{ex}", 3);
+        }
+        finally
+        {
+            spriteSemaphore.Release();
+        }
     }
 }
