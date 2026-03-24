@@ -28,6 +28,7 @@ public class CraftingChecks : MonoBehaviour
     private static int currentAPItemNum;
     private bool randomRecipes = false;
     private bool initialSync = false;
+    private static bool updateAllBPs = false;
     private int lastFrameRecipeCount = 0;
     public static bool freesamples = false;
     private int RecipeNum = 0;
@@ -523,7 +524,7 @@ public class CraftingChecks : MonoBehaviour
                 foreach (GameObject bp in blueprints)
                 {
                     var renderer = bp.GetComponent<SpriteRenderer>();
-                    if (renderer.sprite.name == bgBlueprint.name) // do all of this ONLY if it's a new blueprint
+                    if (renderer.sprite.name == bgBlueprint.name || updateAllBPs) // do all of this ONLY if it's a new blueprint OR blueprints should be updated
                     {
                         renderer.sprite = aplogo;
                         var blueprint = bp.GetComponent<BlueprintScript>();
@@ -543,6 +544,7 @@ public class CraftingChecks : MonoBehaviour
                         continue; // we've already handled this blueprint
                     }
                 }
+                updateAllBPs = false;
                 if (GameObject.Find("blueprint(Clone)")) // does at least one blueprint still exist?
                 {
                     var closest = blueprints.OrderBy(o => (o.transform.position - GameObject.Find("Experiment/Body").transform.position).sqrMagnitude)
@@ -626,6 +628,7 @@ public class CraftingChecks : MonoBehaviour
         var CheckID = recipeIndex + startingRecipeID;
         APClientClass.ChecksToSend.Add(CheckID);
         currentAPItemNum++;
+        updateAllBPs = true; // update other blueprint's sprites and names
     }
 
     private async Task AssignCustomSprite(SpriteRenderer renderer, Item item, int recipeID, ThreadingHelper helper)
