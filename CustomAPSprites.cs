@@ -1,5 +1,4 @@
 ﻿using Archipelago.MultiClient.Net.Enums;
-using Archipelago.MultiClient.Net.Models;
 using KaitoKid.ArchipelagoUtilities.AssetDownloader.ItemSprites;
 using KaitoKid.Utilities.Interfaces;
 using Newtonsoft.Json;

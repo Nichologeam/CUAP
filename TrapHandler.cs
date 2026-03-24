@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 using System.Collections;
 using HarmonyLib;
 using Archipelago.MultiClient.Net;
-using System;
 
 namespace CUAP;
 
