@@ -27,6 +27,7 @@ public class CraftingChecks : MonoBehaviour
     private int apItemAmount;
     private static int currentAPItemNum;
     private bool randomRecipes = false;
+    private bool initialSync = false;
     private int lastFrameRecipeCount = 0;
     public static bool freesamples = false;
     private int RecipeNum = 0;
@@ -427,15 +428,13 @@ public class CraftingChecks : MonoBehaviour
     {
         Client = APClientClass.session;
         RecievedRecipes = APClientClass.RecipeUnlockDictionary;
+        AppliedRecipes.Clear();
         var options = APClientClass.slotdata;
         if (options.TryGetValue("RandomizeRecipes", out var recipesoption)) // check if recipe randomization is enabled.
         {
             if (!Convert.ToBoolean(recipesoption)) // disabled
             {
-                //Startup.Logger.LogWarning("Recipe Randomization is disabled, destroying script.");
                 randomRecipes = false;
-                //DestroyImmediate(this);
-                //return;
             }
             else // enabled
             {
@@ -444,6 +443,7 @@ public class CraftingChecks : MonoBehaviour
                     recipe.INT = 999; // Unlearn every recipe. We will recieve them with items later.
                 }
                 randomRecipes = true;
+                initialSync = true;
             }
         }
         if (options.TryGetValue("APItemAmount", out var items))
@@ -466,8 +466,9 @@ public class CraftingChecks : MonoBehaviour
     }
     private void Update()
     {
-        if (RecievedRecipes.Count > lastFrameRecipeCount)
+        if ((RecievedRecipes.Count > lastFrameRecipeCount || initialSync) && randomRecipes)
         {
+            initialSync = false;
             foreach (string gotrecipe in RecievedRecipes)
             {
                 if (!AppliedRecipes.Add(gotrecipe)) continue; // already in the list
