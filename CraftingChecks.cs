@@ -634,7 +634,7 @@ public class CraftingChecks : MonoBehaviour
     private async Task AssignCustomSprite(SpriteRenderer renderer, Item item, int recipeID, ThreadingHelper helper)
     {
         await spriteSemaphore.WaitAsync();
-        if (renderer is null)
+        if (renderer == null)
         {
             spriteSemaphore.Release();
             return; // object has been destroyed, don't continue
@@ -643,7 +643,7 @@ public class CraftingChecks : MonoBehaviour
         {
             long locationID = recipeID + startingRecipeID;
             var rawScoutData = await Client.Locations.ScoutLocationsAsync(locationID);
-            if (renderer is null)
+            if (renderer == null)
             {
                 spriteSemaphore.Release();
                 return; // object has been destroyed, don't continue (doing this again because it's after an await call)
@@ -657,6 +657,11 @@ public class CraftingChecks : MonoBehaviour
                     info.Value.Flags
                 );
                 var success = SpriteConverter.itemSprites.TryGetCustomAsset(formattedInfo, "Casualties: Unknown", true, true, out ItemSprite sprite);
+                if (renderer == null)
+                {
+                    spriteSemaphore.Release();
+                    return; // object has been destroyed, don't continue (doing this again because it's after an async asset check)
+                }
                 if (success)
                 {
                     Startup.Logger.LogDebug($"Custom Sprite FilePath = {sprite.FilePath}");
