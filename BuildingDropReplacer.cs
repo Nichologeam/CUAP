@@ -37,10 +37,12 @@ class BuildingDropReplacer
         "spentfuel", // and this one too!
         "beartrap",
         "stalactite",
+        "skullcrusher",
         // other
         "trader", // all traders share the same building ID
         "corpse", // same with all corpses
-        "glassshards"
+        "glassshards",
+        "ceilingrye"
     };
     static void Postfix(BuildingEntity __instance)
     {
