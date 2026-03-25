@@ -284,6 +284,10 @@ public class APClientClass
                 APCanvas.ShowMainGUI = false;
                 APCanvas.ShowSkillTracker = false;
             }
+            if (WorldGeneration.world.unchippedMode) // player is unchipped
+            {
+                APCanvas.ShowSkillTracker = false;
+            }
         }
         catch
         {
