@@ -447,7 +447,7 @@ public class CraftingChecks : MonoBehaviour
                 initialSync = true;
             }
         }
-        if (options.TryGetValue("APItemAmount", out var items))
+        if (options.TryGetValue("APItemAmount", out var items) && Convert.ToInt16(items) > 0)
         {
             apItems = true;
             apItemAmount = Convert.ToInt16(items);
