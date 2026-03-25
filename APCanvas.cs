@@ -85,6 +85,8 @@ public class APCanvas : MonoBehaviour
     public static Button ddButton;
     public static Button wlButton;
     public static Button odButton;
+    private static GameObject apItemsTracker;
+    public static TMP_Text apItemsCounter;
     private static Queue<string> TextQueue = new Queue<string>();
     private static Queue<string> ItemQueue = new Queue<string>();
     private static Queue<string> HintQueue = new Queue<string>();
@@ -157,6 +159,8 @@ public class APCanvas : MonoBehaviour
         ddButton = layerSelector.transform.Find("Dried Desert Button").gameObject.GetComponent<Button>();
         wlButton = layerSelector.transform.Find("Wasteland Button").gameObject.GetComponent<Button>();
         odButton = layerSelector.transform.Find("Overgrown Depths Button").gameObject.GetComponent<Button>();
+        apItemsTracker = GameObject.Find("APCanvas(Clone)/APCanvas/AP Items Tracker");
+        apItemsCounter = apItemsTracker.transform.Find("Counter").gameObject.GetComponent<TMP_Text>();
         UpdateSkillsanityValues(0, 60);
         UpdateSkillsanityValues(1, 60);
         UpdateSkillsanityValues(2, 60);
@@ -188,6 +192,10 @@ public class APCanvas : MonoBehaviour
         {
             MoodlesanityQuestboard.SetActive(InGame);
         }
+        if (CraftingChecks.apItems)
+        {
+            apItemsTracker.SetActive(InGame);
+        }
         if (!IsConnected())
         {
             ConnectionBackground.SetActive(true);
@@ -204,6 +212,7 @@ public class APCanvas : MonoBehaviour
             ConnectedBackground.SetActive(false);
             ConnectedBackground.SetActive(false);
             MoodlesanityQuestboard.SetActive(false);
+            apItemsTracker.SetActive(false);
         }
     }
 

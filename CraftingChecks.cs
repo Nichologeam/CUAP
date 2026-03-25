@@ -24,7 +24,7 @@ public class CraftingChecks : MonoBehaviour
     private static List<string> RecievedRecipes;
     public static List<int> AlreadySentChecks = new List<int>();
     public static bool apItems = false;
-    private int apItemAmount;
+    private static int apItemAmount;
     private static int currentAPItemNum;
     private bool randomRecipes = false;
     private bool initialSync = false;
@@ -454,6 +454,7 @@ public class CraftingChecks : MonoBehaviour
             currentAPItemNum = SkillSending.GetIntFromCheckedLocations(startingRecipeID, Convert.ToInt16(items)); // consider previous sessions
             aplogo = Startup.apassets.LoadAsset<Sprite>("aplogo200"); // load custom blueprint asset replacement
             bgBlueprint = Resources.Load<GameObject>("blueprint").GetComponent<SpriteRenderer>().sprite; // reference basegame asset from prefab
+            APCanvas.apItemsCounter.text = $"{currentAPItemNum}/{apItemAmount} Archipelago Items collected!";
         }
         SetupAPBlueprint(apItems);
         if (options.TryGetValue("FreeSamples", out var samples))
@@ -629,6 +630,7 @@ public class CraftingChecks : MonoBehaviour
         APClientClass.ChecksToSend.Add(CheckID);
         currentAPItemNum++;
         updateAllBPs = true; // update other blueprint's sprites and names
+        APCanvas.apItemsCounter.text = $"{currentAPItemNum}/{apItemAmount} Archipelago Items collected!";
     }
 
     private async Task AssignCustomSprite(SpriteRenderer renderer, Item item, int recipeID, ThreadingHelper helper)
