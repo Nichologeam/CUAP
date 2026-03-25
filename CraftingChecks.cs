@@ -674,19 +674,13 @@ public class CraftingChecks : MonoBehaviour
                     }
                     Sprite finalSprite = Sprite.Create(texture, new(0, 0, texture.width, texture.height), new(0.5f, 0.5f), 30); // texture > sprite
                     renderer.sprite = finalSprite; // apply it to the Archipelago item.
-                    if (sprite.Item.IsNullOrWhiteSpace())
-                    {
-                        item.Stats.fullName = info.Value.ItemName;
-                    }
-                    else
-                    {
-                        item.Stats.fullName = sprite.Item;
-                    }
                 }
-                else // game is unsupported or the github repo cannot be reached
+                else
                 {
-                    item.Stats.fullName = info.Value.ItemName;
+                    // game is unsupported or the github repo cannot be reached.
+                    // simply do nothing, since the texture was already set beforehand
                 }
+                item.Stats.fullName = $"{info.Value.Player}'s {info.Value.ItemName} ({info.Value.ItemGame})";
             }
         }
         catch (Exception ex)
