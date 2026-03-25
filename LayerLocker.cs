@@ -10,9 +10,6 @@ namespace CUAP;
 public class LayerLocker : MonoBehaviour
 {
     public static ArchipelagoSession Client;
-    private List<string> LayerHandler = new();
-    private string SelectedLayer;
-    private int LayerId = -1;
     public static int LayerCount = 0;
     private WorldGeneration worldgen;
     public static Dictionary<string, int> LayerNameToID = new Dictionary<string, int>()
@@ -68,6 +65,7 @@ class PickLayerBeforeGeneration
         if (resuming)
         {
             resuming = false;
+            Time.timeScale = 1; // surprisingly, the game doesn't unpause automatically
             return true;
         }
         if (__instance.biomeOverride == WorldGeneration.OverrideSceneType.Tutorial)
@@ -80,6 +78,8 @@ class PickLayerBeforeGeneration
         }
         __instance.loadingObject.SetActive(true);
         __instance.generatingWorld = true;
+        Time.timeScale = 0; // the game continues in the background until the player selects an option
+                            // wouldn't want a player to go AFK and die while they can't even see the game
         ShowLayerSelector(__instance);
         return false;
     }
