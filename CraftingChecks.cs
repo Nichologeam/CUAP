@@ -682,7 +682,14 @@ public class CraftingChecks : MonoBehaviour
                     // game is unsupported or the github repo cannot be reached.
                     // simply do nothing, since the texture was already set beforehand
                 }
-                item.Stats.fullName = $"{info.Value.Player}'s {info.Value.ItemName} ({info.Value.ItemGame})";
+                if (info.Value.ItemName.Length >= 50)
+                {
+                    item.Stats.fullName = $"{info.Value.Player}'s {info.Value.ItemName.Substring(0, 50)}... ({info.Value.ItemGame})"; // limit to 50 characters
+                }
+                else
+                {
+                    item.Stats.fullName = $"{info.Value.Player}'s {info.Value.ItemName} ({info.Value.ItemGame})";
+                }
             }
         }
         catch (Exception ex)
