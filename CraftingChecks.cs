@@ -585,6 +585,8 @@ public class CraftingChecks : MonoBehaviour
                     item.condition = 0f;
                     body.skills.AddExp(2, 10f);
                     CraftingChecks.SendBlueprintLocation(item.gameObject.GetComponent<BlueprintScript>().recipeIndex);
+                    item.Stats.fullName = $"{APCanvas.coloredAPText} Item";
+                    item.Stats.description = "A mysterious item from another world. Buy it to see what it is.";
                     PlayerCamera.main.DoAlert($"Item sent to {APCanvas.coloredAPText}!", false);
                     Sound.Play("combine", item.transform.position, false, true, null, 1f, 1f, false, false);
                 },
