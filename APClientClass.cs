@@ -52,7 +52,7 @@ public class APClientClass
             if (password.IsNullOrWhiteSpace()) password = null;
             session = ArchipelagoSessionFactory.CreateSession(address);
             session!.Items.ItemReceived += (item) => ThreadingHelper.Instance!.StartSyncInvoke(() => ProcessItem(item)); // this has to be run on main thread or unity will hard crash
-            var loginResult = session.TryConnectAndLogin("Casualties: Unknown", slot, ItemsHandlingFlags.AllItems, (new Version(0, 6, 6)), password: password, requestSlotData: true);
+            var loginResult = session.TryConnectAndLogin("Casualties: Unknown", slot, ItemsHandlingFlags.AllItems, new Version(0, 6, 7), password: password, requestSlotData: true);
             if (loginResult is LoginFailure failure)
             {
                 Disconnect();
