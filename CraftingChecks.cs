@@ -552,6 +552,7 @@ public class CraftingChecks : MonoBehaviour
                                .FirstOrDefault(); // find the closest one
                     var item = closest.gameObject.GetComponent<Item>();
                     var recipeId = closest.gameObject.GetComponent<BlueprintScript>().recipeIndex;
+                    item.Stats.fullName = $"{APCanvas.coloredAPText} Item";
                     item.Stats.description = "A mysterious item from another world. It looks to be <plr>'s <item>.";
                     item.Stats.description = item.Stats.description.Replace("<plr>", BlueprintToPlayerName.Get(recipeId));
                     item.Stats.description = item.Stats.description.Replace("<item>", BlueprintToItemName.Get(recipeId));
@@ -683,14 +684,6 @@ public class CraftingChecks : MonoBehaviour
                 {
                     // game is unsupported or the github repo cannot be reached.
                     // simply do nothing, since the texture was already set beforehand
-                }
-                if (info.Value.ItemName.Length >= 50)
-                {
-                    item.Stats.fullName = $"{info.Value.Player}'s {info.Value.ItemName.Substring(0, 50)}... ({info.Value.ItemGame})"; // limit to 50 characters
-                }
-                else
-                {
-                    item.Stats.fullName = $"{info.Value.Player}'s {info.Value.ItemName} ({info.Value.ItemGame})";
                 }
             }
         }
