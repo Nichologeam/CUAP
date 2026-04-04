@@ -302,17 +302,6 @@ public class APCanvas : MonoBehaviour
                 """;
             Status.text = Status.text.Replace("<ou>", LayerUnlockDictionary.Contains("Overgrown Depths Unlock") ? "Unlocked" : "Locked"); // ou for Overgrown Unlocked
         }
-        else if (selectedGoal == 4) // this is heavily outdated (and unused!)
-        {
-            Status.text =
-                """
-                Goal: Craftsanity
-                Unlocked: <ru>
-                Crafted: <rc>
-                """;
-            Status.text = Status.text.Replace("<ru>", Recipes.recipes.Count + "/120");
-            Status.text = Status.text.Replace("<rc>", CraftingChecks.CraftedRecipes.ToString() + "/120");
-        }
     }
     public static void UpdateSkillsanityValues(int skill, float newExp)
     {

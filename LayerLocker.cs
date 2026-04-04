@@ -37,7 +37,7 @@ public class LayerLocker : MonoBehaviour
     }
     private void Update()
     {
-        if (APClientClass.selectedGoal is 2 or 4) // goals 2 and 4
+        if (APClientClass.selectedGoal == 2) // goal 2
         {
             if (worldgen.loadingObject.activeSelf)
             {
@@ -72,7 +72,7 @@ class PickLayerBeforeGeneration
         {
             return true; // tutorial level. don't pick a layer
         }
-        if (APClientClass.selectedGoal is 2 or 4)
+        if (APClientClass.selectedGoal == 2)
         {
             return true; // layers are progressive. don't pick a layer
         }

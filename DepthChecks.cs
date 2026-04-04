@@ -44,11 +44,6 @@ public class DepthChecks : MonoBehaviour
                 Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: Defeat Elder Thornback");
                 GoalDepth = long.MaxValue; // not needed for this goal
             }
-            else if (APClientClass.selectedGoal == 4)
-            {
-                Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: Craftsanity");
-                GoalDepth = long.MaxValue; // not needed for this goal
-            }
         }
     }
     private void Update()
@@ -91,7 +86,7 @@ public class DepthChecks : MonoBehaviour
                 worldgen.totalTraveled -= (int)(worldgen.height * 0.3f); // reversing WorldGeneration.IncreaseDepthByLayer
             }
         }
-        else if (APClientClass.selectedGoal is 2 or 4) // logic for Progressive Layers (goal 2 and 4)
+        else if (APClientClass.selectedGoal == 2) // logic for Progressive Layers (goal 2)
         {
             if (worldgen.doPod && (APClientClass.DepthExtendersRecieved < worldgen.biomeDepth)) // true if we are using a drillpod and can't afford 2 layers
             {
