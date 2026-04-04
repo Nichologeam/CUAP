@@ -1,11 +1,7 @@
 ﻿using Archipelago.MultiClient.Net;
-using Archipelago.MultiClient.Net.Enums;
-using Archipelago.MultiClient.Net.Models;
-using Archipelago.MultiClient.Net.Packets;
 using BepInEx;
 using HarmonyLib;
 using KaitoKid.ArchipelagoUtilities.AssetDownloader.ItemSprites;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,7 +10,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements.Collections;
-using static System.Collections.Specialized.BitVector32;
 
 namespace CUAP;
 
@@ -34,7 +29,6 @@ public class CraftingChecks : MonoBehaviour
     private int lastFrameRecipeCount = 0;
     public static bool freesamples = false;
     public static bool craftsanity = false;
-    private int RecipeNum = 0;
     public static int CraftedRecipes = 0;
     private SemaphoreSlim spriteSemaphore = new(1, 1);
     private static readonly long startingRecipeID = 22318500;
@@ -116,7 +110,7 @@ public class CraftingChecks : MonoBehaviour
         {"Backpack Recipe","bigpack"},
         {"Wood sandals Recipe","woodsandals"},
         {"Duffel bag Recipe","duffelbag"},
-        {"Material bag Recipe","materialpouch"},
+        {"Material pouch Recipe","materialpouch"},
         {"Belt Recipe","belt"},
         {"Bowl of cereal Recipe","bowlofcereal"},
         {"Fat Recipe","fat"},
@@ -245,7 +239,7 @@ public class CraftingChecks : MonoBehaviour
         {"Backpack Recipe",13},
         {"Wood sandals Recipe",8},
         {"Duffel bag Recipe",11},
-        {"Material bag Recipe",10},
+        {"Material pouch Recipe",10},
         {"Belt Recipe",10},
         {"Bowl of cereal Recipe",2},
         {"Fat Recipe",8},
@@ -373,7 +367,7 @@ public class CraftingChecks : MonoBehaviour
         "Backpack Recipe",
         "Wood sandals Recipe",
         "Duffel bag Recipe",
-        "Material bag Recipe",
+        "Material pouch Recipe",
         "Belt Recipe",
         "Bowl of cereal Recipe",
         "Fat Recipe",
