@@ -3,6 +3,7 @@ using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Packets;
 using BepInEx;
+using HarmonyLib;
 using KaitoKid.ArchipelagoUtilities.AssetDownloader.ItemSprites;
 using Newtonsoft.Json.Linq;
 using System;
@@ -13,6 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements.Collections;
+using static System.Collections.Specialized.BitVector32;
 
 namespace CUAP;
 
@@ -31,6 +33,7 @@ public class CraftingChecks : MonoBehaviour
     private static bool updateAllBPs = false;
     private int lastFrameRecipeCount = 0;
     public static bool freesamples = false;
+    public static bool craftsanity = false;
     private int RecipeNum = 0;
     public static int CraftedRecipes = 0;
     private SemaphoreSlim spriteSemaphore = new(1, 1);
@@ -461,9 +464,23 @@ public class CraftingChecks : MonoBehaviour
         {
             freesamples = Convert.ToBoolean(samples);
         }
-        if (APClientClass.selectedGoal == 4)
+        if (options.TryGetValue("Craftsanity", out var craft))
         {
-            Client.Socket.SendPacket(new GetPacket {Keys = new[]{"crafted_blueprints"}});
+            craftsanity = Convert.ToBoolean(craft);
+            if (craftsanity)
+            {
+                var checkedLocations = Client.Locations.AllLocationsChecked;
+                long craftsanityLocID = 22318900;
+                foreach (var recipe in Recipes.recipes) // check which ones have been sent already
+                {
+                    long locationId = craftsanityLocID + recipe.index;
+                    if (checkedLocations.Contains(locationId))
+                    {
+                        CraftsanitySender.alreadySentChecks.Add(recipe.index);
+                        recipe.hasMadeBefore = true;
+                    }
+                }
+            }
         }
     }
     private void Update()
@@ -478,42 +495,8 @@ public class CraftingChecks : MonoBehaviour
                 RecipeToINTRequirement.TryGetValue(gotrecipe, out int recipeRequiredINT); // get its int requried to craft
                 Recipes.recipes[recipeToLearn].INT = recipeRequiredINT; // set the int to the vanilla value
                 Recipes.recipes[recipeToLearn].specialKnown = true; // force it visible
-                if (APClientClass.selectedGoal == 4)
-                {
-                    RecipeCraftedBefore.Add(RecipeNum++, false);
-                }
             }
             lastFrameRecipeCount = RecievedRecipes.Count;
-        }
-        if (APClientClass.selectedGoal == 4)
-        {
-            for (int i = 0; i < Recipes.recipes.Count; i++) // >>> FIX: Why are we doing this every frame? I get this is unused code, but still... <<<
-            {
-                var recipe = Recipes.recipes[i]; // check each recipe. the order of recipes in Recipes.recipes will always match RecipeCraftedBefore
-                if (!recipe.hasMadeBefore) continue; // have we made it before? if not, ignore
-                if (RecipeCraftedBefore.TryGetValue(i, out bool alreadyCrafted) && alreadyCrafted) continue; // has it been added before? if so, ignore
-                RecipeCraftedBefore[i] = true; // update the dictionary
-                CraftedRecipes++; // increase our local recipes crafted number
-                APClientClass.session.Socket.SendPacket(new SetPacket // save the data to AP in case of disconnects
-                {
-                    Key = "crafted_blueprints",
-                    Operations = new[]
-                    {
-                    new OperationSpecification
-                    {
-                        OperationType = OperationType.Update,
-                        Value = JToken.FromObject(new Dictionary<int, bool>
-                        {
-                            [i] = true
-                        })
-                    }
-                }
-                });
-            }
-            if (RecipeCraftedBefore.Count == Recipes.recipes.Count && CraftedRecipes == Recipes.recipes.Count) // we have all the recipes and have crafted them all
-            {
-                Client.SetGoalAchieved();
-            }
         }
         if (apItems)
         {
@@ -695,6 +678,31 @@ public class CraftingChecks : MonoBehaviour
         finally
         {
             spriteSemaphore.Release();
+        }
+    }
+}
+
+[HarmonyPatch(typeof(Recipe), "TryMake")]
+class CraftsanitySender
+{
+    static long craftsanityLocID = 22318900;
+    public static HashSet<long> alreadySentChecks = [];
+    static void Prefix(Recipe __instance, out bool __state)
+    {
+        __state = __instance.hasMadeBefore; // before the craft attempt, store if the recipe has been made before
+    }
+
+    static void Postfix(Recipe __instance, bool __state)
+    {
+        if (!CraftingChecks.craftsanity)
+        {
+            return; // craftsanity is disabled. don't send anything.
+        }
+        if ((!__state && __instance.hasMadeBefore) && !alreadySentChecks.Contains(__instance.index)) // if the recipe wasn't made before, but now has been after the function has ran, send the check
+        {
+            long CheckID = craftsanityLocID + __instance.index;
+            APClientClass.ChecksToSend.Add(CheckID);
+            alreadySentChecks.Add(__instance.index); // add to list so we don't send the same check twice
         }
     }
 }

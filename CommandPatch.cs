@@ -338,7 +338,7 @@ public class CommandPatch : MonoBehaviour
                 GameObject.Find("World").GetComponent<DepthChecks>().AlreadySentChecks.Clear();
                 try { GameObject.Find("Main Camera/Canvas/Moodles").GetComponent<Moodlesanity>().AlreadySentChecks.Clear(); }
                 catch { }
-                try { CraftingChecks.AlreadySentChecks.Clear(); }
+                try { CraftingChecks.AlreadySentChecks.Clear(); CraftsanitySender.alreadySentChecks.Clear(); }
                 catch { }
             }
             LogToConsole("CUAP: Data cleared. Run apreportbug if the issue persists.");
