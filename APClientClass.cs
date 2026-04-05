@@ -33,6 +33,7 @@ public class APClientClass
     public static int leftArmUnlocks;
     public static int rightArmUnlocks;
     public static int selectedGoal;
+    public static int minigameRandom;
     private static float reconnectCountdown;
     public static ArchipelagoSession? session;
     public static DeathLinkService? dlService;
@@ -104,6 +105,10 @@ public class APClientClass
                     APCanvas.EnqueueArchipelagoNotification($"Server/Client Version Mismatch! Client: {Startup.CUAPVersion}, Server: {serverVersion}!",3);
                 }
             }
+            if (slotdata.TryGetValue("Minigames", out var minigames))
+            {
+                minigameRandom = Convert.ToInt32(minigames);
+            }
         }
         APCanvas.instance.StartCoroutine(NewConnectionCountdown()); // i need StartCoroutine, so i'll use APCanvas just because it is guarenteed to exist
     }
@@ -173,6 +178,11 @@ public class APClientClass
                 }
                 processed = true;
             }
+            if (item.ItemName.EndsWith(" Minigame"))
+            {
+                MinigameLocker.minigamesUnlocked.Add(item.ItemName);
+                processed = true;
+            }
             if (!processed)
             {
                 switch (item.ItemName) // then put everything else in a switch statement to make it cleaner
@@ -239,6 +249,9 @@ public class APClientClass
                     case "Progressive INT":
                         MaxINT++;
                         if (APCanvas.InGame) SkillReceiving.playerSkills.UpdateExpBoundaries();
+                        break;
+                    case "Minigames":
+                        MinigameLocker.minigameItemObtained = true;
                         break;
                     default:
                         Startup.Logger.LogWarning($"{item.ItemName} is unhandled!");
