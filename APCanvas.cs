@@ -393,6 +393,7 @@ public class APCanvas : MonoBehaviour
     private IEnumerator RerollCooldown()
     {
         rerollCooldown = rerollCooldownMax;
+        RerollText.text = $"({rerollCooldownMax})";
         while (rerollCooldown > 0)
         {
             yield return new WaitForSecondsRealtime(1);
