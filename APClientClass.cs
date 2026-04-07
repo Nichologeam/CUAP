@@ -200,7 +200,7 @@ public class APClientClass
                         {
                             var plr = GameObject.Find("Experiment/Body");
                             plr.GetComponent<Body>().happiness -= 1;
-                            Sound.Play("moodup", plr.transform.position, true);
+                            Sound.Play("mooddown", plr.transform.position, true);
                         }
                         break;
                     case "Gravel Lands Unlock":
