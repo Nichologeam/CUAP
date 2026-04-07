@@ -131,8 +131,8 @@ public class APCanvas : MonoBehaviour
         Moodle7Text = MoodlesanityQuestboard.transform.Find("Moodle Name 7").gameObject.GetComponent<TMP_Text>();
         Moodle8Image = MoodlesanityQuestboard.transform.Find("Moodle Image 8").gameObject.GetComponent<Image>();
         Moodle8Text = MoodlesanityQuestboard.transform.Find("Moodle Name 8").gameObject.GetComponent<TMP_Text>();
-        MoodleTexts = [Moodle1Text,Moodle2Text,Moodle3Text,Moodle4Text,Moodle5Text,Moodle6Text,Moodle7Text,Moodle8Text];
-        MoodleImages = [Moodle1Image,Moodle2Image,Moodle3Image,Moodle4Image,Moodle5Image,Moodle6Image,Moodle7Image,Moodle8Image];
+        MoodleTexts = [Moodle1Text, Moodle2Text, Moodle3Text, Moodle4Text, Moodle5Text, Moodle6Text, Moodle7Text, Moodle8Text];
+        MoodleImages = [Moodle1Image, Moodle2Image, Moodle3Image, Moodle4Image, Moodle5Image, Moodle6Image, Moodle7Image, Moodle8Image];
         TextNotif1 = GameObject.Find("APCanvas(Clone)/APCanvas/PrintJSON Notification 1");
         Text1 = TextNotif1.transform.Find("Message").gameObject.GetComponent<TMP_Text>();
         TextNotif2 = GameObject.Find("APCanvas(Clone)/APCanvas/PrintJSON Notification 2");
@@ -164,7 +164,7 @@ public class APCanvas : MonoBehaviour
         UpdateSkillsanityValues(0, 60);
         UpdateSkillsanityValues(1, 60);
         UpdateSkillsanityValues(2, 60);
-        versionTag.text = $"Client Mod {Startup.CUAPVersion}";
+        versionTag.text = APLocale.Get("versionTag", APLocale.APLanguageType.UI) + Startup.CUAPVersion;
         StartCoroutine(CycleAPColors());
         if (!File.Exists("ApConnection.txt")) return; // Read saved slot information from file
         var fileText = File.ReadAllText("ApConnection.txt").Replace("\r", "").Split('\n');
@@ -222,22 +222,24 @@ public class APCanvas : MonoBehaviour
         {
             if (!Ipporttext.text.Contains(":"))
             {
-                EnqueueArchipelagoNotification($"Connection error: No server port was given.", 3);
-                Startup.Logger.LogError($"Connection error: No server port was given.");
+                EnqueueArchipelagoNotification(APLocale.Get("noPort", APLocale.APLanguageType.Errors), 3);
+                Startup.Logger.LogError("Connection error: No server port was given.");
                 return;
             }
             var ipPortSplit = Ipporttext.text.Split(':');
             if (!int.TryParse(ipPortSplit[1], out var port))
             {
-                EnqueueArchipelagoNotification($"Connection error: [{ipPortSplit[1]}] is not a valid port.", 3);
-                Startup.Logger.LogError($"Connection error: [{ipPortSplit[1]}] is not a valid port");
+                string errorMsg = APLocale.Get("invalidPort", APLocale.APLanguageType.Errors);
+                errorMsg = errorMsg.Replace("<port>", ipPortSplit[1]);
+                EnqueueArchipelagoNotification(errorMsg, 3);
+                Startup.Logger.LogError($"Connection error: {ipPortSplit[1]} is not a valid port.");
                 return;
             }
         }
         var error = TryConnect(Ipporttext.text, Slot.text, Password.text);
         if (error is not null)
         {
-            EnqueueArchipelagoNotification("Connection error: " + string.Join("\n", error),3);
+            EnqueueArchipelagoNotification(APLocale.Get("genericError", APLocale.APLanguageType.Errors) + string.Join("\n", error),3);
             Startup.Logger.LogError("Connection error: " + string.Join("\n", error));
             return;
         }
@@ -252,7 +254,7 @@ public class APCanvas : MonoBehaviour
         while (true)
         {
             var sb = new System.Text.StringBuilder();
-            var baseText = "Archipelago";
+            var baseText = APLocale.Get("archipelago", APLocale.APLanguageType.Messages);
             for (int i = 0; i < baseText.Length; i++) // "Archipelago" is 11 characters long
             {
                 var color = APTextColors[(i + offset) % APTextColors.Length];
@@ -273,10 +275,10 @@ public class APCanvas : MonoBehaviour
         {
             var maxDepth = (300 * DepthExtendersRecieved) + 300;
             Status.text =
-                """
-                Goal: Reach <gd>
-                Depth Extenders: <de>
-                Max Depth: <md>
+                $"""
+                {APLocale.Get("reachDepth1", APLocale.APLanguageType.UI)}
+                {APLocale.Get("reachDepth2", APLocale.APLanguageType.UI)}
+                {APLocale.Get("reachDepth3", APLocale.APLanguageType.UI)}
                 """;
             Status.text = Status.text.Replace("<gd>", $"{DepthChecks.instance.GoalDepth}m"); // gd for Goal Depth
             Status.text = Status.text.Replace("<de>", DepthExtendersRecieved.ToString()); // de for Depth Extenders
@@ -285,10 +287,10 @@ public class APCanvas : MonoBehaviour
         else if (selectedGoal == 2)
         {
             Status.text =
-                """
-                Goal: Escape Overgrown
-                Layer Unlocks: <lu>
-                Deepest Layer: <dl>
+                $"""
+                {APLocale.Get("escapeOvergrown1", APLocale.APLanguageType.UI)}
+                {APLocale.Get("escapeOvergrown2", APLocale.APLanguageType.UI)}
+                {APLocale.Get("escapeOvergrown3", APLocale.APLanguageType.UI)}
                 """;
             Status.text = Status.text.Replace("<lu>", DepthExtendersRecieved.ToString()); // lu for Layer Unlocks
             Status.text = Status.text.Replace("<dl>", LayerLocker.LayerIDToName[DepthExtendersRecieved]).Replace(" Unlock", ""); // dl for Deepest Layer
@@ -296,9 +298,9 @@ public class APCanvas : MonoBehaviour
         else if (selectedGoal == 3)
         {
             Status.text =
-                """
-                Goal: Defeat Elder
-                Overgrown: <ou>
+                $"""
+                {APLocale.Get("defeatElder1", APLocale.APLanguageType.UI)}
+                {APLocale.Get("defeatElder2", APLocale.APLanguageType.UI)}
                 """;
             Status.text = Status.text.Replace("<ou>", LayerUnlockDictionary.Contains("Overgrown Depths Unlock") ? "Unlocked" : "Locked"); // ou for Overgrown Unlocked
         }
@@ -310,36 +312,39 @@ public class APCanvas : MonoBehaviour
             case 0: // STR
                 if (newExp == -1)
                 {
-                    SkillsanitySTR.text = $"STR: All checks sent!";
+                    SkillsanitySTR.text = APLocale.Get("strAllSent", APLocale.APLanguageType.UI);
                 }
                 else
                 {
-                    SkillsanitySTR.text = $"STR: {newExp} exp to next check";
+                    SkillsanitySTR.text = APLocale.Get("strRemaining", APLocale.APLanguageType.UI);
+                    SkillsanitySTR.text = SkillsanitySTR.text.Replace("<exp>",$"{newExp}");
                 }
                 break;
             case 1: // RES
                 if (newExp == -1)
                 {
-                    SkillsanityRES.text = $"RES: All checks sent!";
+                    SkillsanityRES.text = APLocale.Get("resAllSent", APLocale.APLanguageType.UI);
                 }
                 else
                 {
-                    SkillsanityRES.text = $"RES: {newExp} exp to next check";
+                    SkillsanityRES.text = APLocale.Get("resRemaining", APLocale.APLanguageType.UI);
+                    SkillsanityRES.text = SkillsanityRES.text.Replace("<exp>", $"{newExp}");
                 }
                 break;
             case 2: // INT
                 if (newExp == -1)
                 {
-                    SkillsanityINT.text = $"INT: All checks sent!";
+                    SkillsanityINT.text = APLocale.Get("intAllSent", APLocale.APLanguageType.UI);
                 }
                 else
                 {
-                    SkillsanityINT.text = $"INT: {newExp} exp to next check";
+                    SkillsanityINT.text = APLocale.Get("intRemaining", APLocale.APLanguageType.UI);
+                    SkillsanityINT.text = SkillsanityINT.text.Replace("<exp>", $"{newExp}");
                 }
                 break;
             default: // none of the above?
-                Startup.Logger.LogError($"Skillsanity Error: UpdateSkillsanityValues was called with an invalid skill ({skill})");
-                EnqueueArchipelagoNotification($"Skillsanity Error: UpdateSkillsanityValues was called with invald skill ({skill})",3);
+                Startup.Logger.LogError("Skillsanity Error: UpdateSkillsanityValues was called with an invalid skill ({skill})");
+                EnqueueArchipelagoNotification(APLocale.Get("skillUpdate", APLocale.APLanguageType.Errors) + $"({skill})", 3);
                 break;
         }
     }
@@ -353,7 +358,7 @@ public class APCanvas : MonoBehaviour
         CheckIfOutOfSlots();
         int questCount = Moodlesanity.questsAvailable.Count;
         int maxSlots = Mathf.Min(UnlockedSlots, MoodleTexts.Length, questCount);
-        QuestsRemaining.text = $"{questCount} quests remaining";
+        QuestsRemaining.text = questCount + APLocale.Get("questsRemaining", APLocale.APLanguageType.UI);
         for (int i = 0; i < maxSlots; i++)
         {
             string questName = ShuffledQuests[i];
@@ -369,7 +374,7 @@ public class APCanvas : MonoBehaviour
         int maxSlots = Mathf.Min(UnlockedSlots, MoodleTexts.Length);
         for (int i = 0; i < maxSlots; i++)
         {
-            MoodleTexts[i].text = "Out of quests!";
+            MoodleTexts[i].text = APLocale.Get("noQuests", APLocale.APLanguageType.UI);
             MoodleImages[i].sprite = apLogo;
         }
     }
@@ -400,7 +405,7 @@ public class APCanvas : MonoBehaviour
             rerollCooldown--;
             RerollText.text = $"({rerollCooldown})";
         }
-        RerollText.text = "Reroll Quests";
+        RerollText.text = APLocale.Get("reroll", APLocale.APLanguageType.UI);
     }
     public static void EnqueueArchipelagoNotification(string text, int severity)
     {

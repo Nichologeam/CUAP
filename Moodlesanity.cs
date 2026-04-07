@@ -414,7 +414,9 @@ public class Moodlesanity : MonoBehaviour
                     if (moodleIndex == -1) // still not found? throw error
                     {
                         Startup.Logger.LogError($"Moodle {mood.type} is not in the Moodlesanity index list!");
-                        APCanvas.EnqueueArchipelagoNotification($"Moodlesanity Error! Moodle {mood.type} is not in the Moodlesanity index list!", 3);
+                        string msg = APLocale.Get("moodleNotFound", APLocale.APLanguageType.Errors);
+                        msg = msg.Replace("<mood>", mood.type);
+                        APCanvas.EnqueueArchipelagoNotification(msg, 3);
                         AlreadySentChecks.Add(mood.type);
                         continue;
                     }
@@ -423,7 +425,7 @@ public class Moodlesanity : MonoBehaviour
                 APClientClass.ChecksToSend.Add(CheckID);
                 AlreadySentChecks.Add(mood.type);
                 InternalMoodNameToCheck.TryGetValue(mood.type, out string checkName);
-                plrcam.DoAlert($"Sent {checkName}!");
+                plrcam.DoAlert($"{APLocale.Get("sent", APLocale.APLanguageType.UI)}{checkName}!");
                 Sound.Play("close", Vector2.zero, true, false, null, 1f, 1f, true, true);
             }
             else // questboard mode
@@ -432,7 +434,7 @@ public class Moodlesanity : MonoBehaviour
                 if (checkName == null) // not found
                 {
                     Startup.Logger.LogError($"Could not find assocaited check for moodle {mood.type}!");
-                    APCanvas.EnqueueArchipelagoNotification($"Moodlesanity Error! Could not find assocaited check for moodle {mood.type}!", 3);
+                    APCanvas.EnqueueArchipelagoNotification($"{APLocale.Get("moodleCheckMissing", APLocale.APLanguageType.Errors)}{mood.type}!", 3);
                     AlreadySentChecks.Add(mood.type);
                     continue;
                 }
@@ -441,7 +443,7 @@ public class Moodlesanity : MonoBehaviour
                     var CheckID = Client.Locations.GetLocationIdFromName(Client.Players.ActivePlayer.Game, checkName);
                     APClientClass.ChecksToSend.Add(CheckID);
                     questsAvailable.Remove(checkName); // this acts as our duplicate protection. no need to use AlreadySentChecks
-                    plrcam.DoAlert($"Sent {checkName}!");
+                    plrcam.DoAlert($"{APLocale.Get("sent", APLocale.APLanguageType.UI)}{checkName}!");
                     Sound.Play("close", Vector2.zero, true, false, null, 1f, 1f, true, true);
                     APCanvas.UpdateQuestboard(false);
                 }

@@ -82,7 +82,7 @@ class SkillSending
                 {
                     APClientClass.ChecksToSend.Add(22318800 + APSTR); // "STR Level 1" ID plus current level. max 15
                     APSTR++; // increase the skillsanity level count
-                    plrcam.DoAlert($"Skillsanity STR level up! [{APSTR - 1}] -> [{APSTR}]"); // display popup
+                    plrcam.DoAlert($"{APLocale.Get("strLevelUp", APLocale.APLanguageType.UI)} [{APSTR - 1}] -> [{APSTR}]"); // display popup
                     Sound.Play("music/levelup", Vector2.zero, true, false, null, 1f, 1f, true, true); // play vanilla levelup sound
                     toNextSTR += EXPRequirementToLevel[APSTR] - EXPRequirementToLevel[APSTR - 1]; // set new experience requirement
                 }
@@ -99,7 +99,7 @@ class SkillSending
                 {
                     APClientClass.ChecksToSend.Add(22318815 + APRES); // "RES Level 1" ID plus current level. max 15
                     APRES++; // increase the skillsanity level count
-                    plrcam.DoAlert($"Skillsanity RES level up! [{APRES - 1}] -> [{APRES}]"); // display popup
+                    plrcam.DoAlert($"{APLocale.Get("resLevelUp", APLocale.APLanguageType.UI)} [{APRES - 1}] -> [{APRES}]"); // display popup
                     Sound.Play("music/levelup", Vector2.zero, true, false, null, 1f, 1f, true, true); // play vanilla levelup sound
                     toNextRES += EXPRequirementToLevel[APRES] - EXPRequirementToLevel[APRES - 1]; // set new experience requirement
                 }
@@ -116,15 +116,15 @@ class SkillSending
                 {
                     APClientClass.ChecksToSend.Add(22318830 + APINT); // "INT Level 1" ID plus current level. max 15
                     APINT++; // increase the skillsanity level count
-                    plrcam.DoAlert($"Skillsanity INT level up! [{APINT - 1}] -> [{APINT}]"); // display popup
+                    plrcam.DoAlert($"{APLocale.Get("intLevelUp", APLocale.APLanguageType.UI)} [{APINT - 1}] -> [{APINT}]"); // display popup
                     Sound.Play("music/levelup", Vector2.zero, true, false, null, 1f, 1f, true, true); // play vanilla levelup sound
                     toNextINT += EXPRequirementToLevel[APINT] - EXPRequirementToLevel[APINT - 1]; // set new experience requirement
-                }
+                }   
                 APCanvas.UpdateSkillsanityValues(2, MathF.Round(toNextINT, 1));
                 break;
             default: // the basegame just returns INT if the skill is invalid. Not doing that won't cause issues, right Orsoniks?
                 Startup.Logger.LogError("Skillsanity Error: SkillSending Harmony patch received an invalid skill! This is (technically) a basegame bug!");
-                APCanvas.EnqueueArchipelagoNotification("Skillsanity Error: SkillSending Harmony patch received an invalid skill! This is (technically) a basegame bug!",3);
+                APCanvas.EnqueueArchipelagoNotification(APLocale.Get("skillSending", APLocale.APLanguageType.Errors), 3);
                 return false; // void this invalid exp
         }
         return false; // tell harmony not to run the basegame function

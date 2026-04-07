@@ -13,7 +13,7 @@ public class TrapHandler : MonoBehaviour
     private WorldGeneration worldgen;
     public static PlayerCamera plrcam;
     private MoodleManager moodles;
-    private readonly AccessTools.FieldRef<MoodleManager, float> moodleUpdateTime = AccessTools.FieldRefAccess<MoodleManager, float>("updateTime"); // this variable is private normally (this is the only reason harmony is included in this project)
+    private readonly AccessTools.FieldRef<MoodleManager, float> moodleUpdateTime = AccessTools.FieldRefAccess<MoodleManager, float>("updateTime"); // this variable is private normally
     private float prevUpdateTime = 0.5f;
     private bool revControlActive;
     private bool unchippedActive;
@@ -46,19 +46,19 @@ public class TrapHandler : MonoBehaviour
         {
             if (revControlActive)
             {
-                moodles.AddMoodle(5, "death", $"{APCanvas.coloredAPText} Trap: Reversed Controls", $"{trapSender} reversed your controls! Lasts 10 seconds.", false, false);
+                moodles.AddMoodle(5, "death", $"{APCanvas.coloredAPText}{APLocale.Get("revTrap", APLocale.APLanguageType.UI)}", $"{trapSender}{APLocale.Get("revTrapDesc", APLocale.APLanguageType.UI)}", false, false);
             }
             if (unchippedActive)
             {
-                moodles.AddMoodle(5, "death", $"{APCanvas.coloredAPText} Trap: Unchipped", $"{trapSender} disabled your brainchip! Lasts 50 seconds.", false, false);
+                moodles.AddMoodle(5, "death", $"{APCanvas.coloredAPText}{APLocale.Get("unchipTrap", APLocale.APLanguageType.UI)}", $"{trapSender}{APLocale.Get("unchipTrapDesc", APLocale.APLanguageType.UI)}", false, false);
             }
             if (disfigActive)
             {
-                moodles.AddMoodle(5, "death", $"{APCanvas.coloredAPText} Trap: Disfigured", $"{trapSender} removed your jaw! Lasts 180 seconds.", false, false);
+                moodles.AddMoodle(5, "death", $"{APCanvas.coloredAPText}{APLocale.Get("disfigTrap", APLocale.APLanguageType.UI)}", $"{trapSender}{APLocale.Get("disfigTrapDesc", APLocale.APLanguageType.UI)}", false, false);
             }
             if (mindwipeActive)
             {
-                moodles.AddMoodle(5, "death", $"{APCanvas.coloredAPText} Trap: Mindwipe", $"{trapSender} removed your memories! Lasts 70 seconds.", false, false);
+                moodles.AddMoodle(5, "death", $"{APCanvas.coloredAPText}{APLocale.Get("wipeTrap", APLocale.APLanguageType.UI)}", $"{trapSender}{APLocale.Get("wipeTrapDesc", APLocale.APLanguageType.UI)}", false, false);
             }
         }
         prevUpdateTime = moodleUpdateTime(moodles);
@@ -70,40 +70,42 @@ public class TrapHandler : MonoBehaviour
         {
             case "Depression Trap":
                 Vitals.happiness = -20;
-                plrcam.DoAlert($"Trap: {ItemSender} said something demoralizing. Mood decreased.", false);
+                plrcam.DoAlert($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{ItemSender}{APLocale.Get("depression", APLocale.APLanguageType.UI)}", false);
                 break;
             case "Hearing Loss Trap":
                 Vitals.hearingLoss = +50;
-                plrcam.DoAlert($"Trap: <b>WHAT!? I CAN'T HEAR YOU {ItemSender.ToUpper()}!</b> Hearing loss increased.", false);
+                string msg = APLocale.Get("hearing", APLocale.APLanguageType.UI);
+                msg = msg.Replace("<sender>",ItemSender.ToUpper());
+                plrcam.DoAlert(msg, false);
                 break;
             case "Earthquake Trap":
-                plrcam.DoAlert($"Trap: {ItemSender} hit a fault line.", false);
+                plrcam.DoAlert($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{ItemSender}{APLocale.Get("quake", APLocale.APLanguageType.UI)}", false);
                 worldgen.earthquakeDelay = 0; // start an earthquake
                 worldgen.earthquakeIntensity = 2; // twice as intense as basegame earthquake
                 worldgen.earthquakeTime = 15; // for 15 seconds
                 break;
             case "Reverse Controls Trap":
-                plrcam.DoAlert($"Trap: {ItemSender} made you feel tipsy. Controls reversed.", false);
+                plrcam.DoAlert($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{ItemSender}{APLocale.Get("rev", APLocale.APLanguageType.UI)}", false);
                 StartCoroutine(ReverseControls());
                 break;
             case "Sleep Trap":
                 Vitals.sleeping = true;
-                plrcam.DoAlert($"Trap: {ItemSender} thinks it's naptime. Good night!", false);
+                plrcam.DoAlert($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{ItemSender}{APLocale.Get("sleep", APLocale.APLanguageType.UI)}", false);
                 break;
             case "Unchipped Trap":
-                plrcam.DoAlert($"Trap: {ItemSender} is hacking into your brainchip!", false);
+                plrcam.DoAlert($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{ItemSender}{APLocale.Get("chipped", APLocale.APLanguageType.UI)}", false);
                 StartCoroutine(UnchippedToggle());
                 break;
             case "Elder Thornback Trap":
-                plrcam.DoAlert($"Trap: {ItemSender} sent something big your way. Something <i>really</i> big.", false);
+                plrcam.DoAlert($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{ItemSender}{APLocale.Get("elder", APLocale.APLanguageType.UI)}", false);
                 StartCoroutine(Thornback());
                 break;
             case "Cave Ticks Trap":
                 Instantiate(Resources.Load<GameObject>("caveticks"), gameObject.transform.position, Quaternion.identity);
-                plrcam.DoAlert($"Trap: {ItemSender} alerted the hoard. Good luck!", false);
+                plrcam.DoAlert($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{ItemSender}{APLocale.Get("ticks", APLocale.APLanguageType.UI)}", false);
                 break;
             case "Bad Rep Trap":
-                plrcam.DoAlert($"Trap: {ItemSender} spread gossip. All traders on this layer are now hostile.", false);
+                plrcam.DoAlert($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{ItemSender}{APLocale.Get("rep", APLocale.APLanguageType.UI)}", false);
                 foreach (var trader in FindObjectsOfType<TraderScript>())
                 {
                     if (trader.hostile) continue; // don't bother making them hostile a second time
@@ -116,12 +118,12 @@ public class TrapHandler : MonoBehaviour
                 {
                     break;
                 }
-                plrcam.DoAlert($"Trap: {ItemSender} thinks you talk too much.", false);
+                plrcam.DoAlert($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{ItemSender}{APLocale.Get("disfig", APLocale.APLanguageType.UI)}", false);
                 StartCoroutine(Disfigurement());
                 break;
             case "Fellow Experiment":
                 Instantiate(Resources.Load<GameObject>("corpse"), gameObject.transform.position, Quaternion.identity);
-                plrcam.DoAlert($"Trap: {ItemSender} found you a friend! ...wait", false);
+                plrcam.DoAlert($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{ItemSender}{APLocale.Get("experiment", APLocale.APLanguageType.UI)}", false);
                 break;
             case "Fragile Items Trap":
                 heldItems.Clear();
@@ -139,20 +141,22 @@ public class TrapHandler : MonoBehaviour
                 Debug.Log($"{chosenItem.fullName} was chosen to be damaged");
                 if (chosenItem.TryGetComponent(out WaterContainerItem _))
                 {
-                    plrcam.DoAlert($"Trap: {ItemSender} poked a hole in your {chosenItem.fullName}", false);
+                    plrcam.DoAlert($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{ItemSender} {APLocale.Get("fragile", APLocale.APLanguageType.UI)} {chosenItem.fullName}", false);
                 }
                 else
                 {
-                    plrcam.DoAlert($"Trap: {ItemSender} made your warranty expire. {chosenItem.fullName} was destroyed.", false);
+                    string msg2 = APLocale.Get("fragileWater", APLocale.APLanguageType.UI);
+                    msg2 = msg2.Replace("<item>", chosenItem.fullName);
+                    plrcam.DoAlert($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{ItemSender}{msg2}", false);
                 }
                 chosenItem.condition = 0;
                 break;
             case "Mindwipe Trap":
-                plrcam.DoAlert($"Trap: {ItemSender} thinks you know too much.", false);
+                plrcam.DoAlert($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{ItemSender}{APLocale.Get("mindwipe", APLocale.APLanguageType.UI)}", false);
                 StartCoroutine(Mindwipe());
                 break;
             case "Pushup Trap":
-                plrcam.DoAlert($"Trap: {ItemSender} demands you get on the ground and give them twenty!", false);
+                plrcam.DoAlert($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{ItemSender}{APLocale.Get("pushup", APLocale.APLanguageType.UI)}", false);
                 plrcam.DoBodyWorkout(0);
                 plrcam.ToggleWoundView(false); // DoBodyWorkout forces the woundview open/closed. this reverses that. nothing i can do about the sound effect though
                 break;
@@ -160,7 +164,7 @@ public class TrapHandler : MonoBehaviour
                 GameObject barrel = Instantiate(Resources.Load<GameObject>("minibarrel"), gameObject.transform.position, Quaternion.identity);
                 WaterContainerItem barrelContents = barrel.GetComponent<WaterContainerItem>();
                 barrelContents.AddLiquid("fentanyl",10000);
-                plrcam.DoAlert($"Trap: {ItemSender} is tempting you...", false);
+                plrcam.DoAlert($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{ItemSender}{APLocale.Get("temptation", APLocale.APLanguageType.UI)}", false);
                 break;
             case "Trip Trap":
                 Vitals.Scream();
@@ -172,11 +176,11 @@ public class TrapHandler : MonoBehaviour
                 Vitals.DropItem(5);
                 Vitals.Ragdoll();
                 Vitals.shock = 50;
-                plrcam.DoAlert($"Trap: {ItemSender} tripped you!", false);
+                plrcam.DoAlert($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{ItemSender}{APLocale.Get("trip", APLocale.APLanguageType.UI)}", false);
                 break;
             default:
                 Startup.Logger.LogError($"Trap item {TrapName} is unhandled!");
-                APCanvas.EnqueueArchipelagoNotification($"Trap item {TrapName} is unhandled!",3);
+                APCanvas.EnqueueArchipelagoNotification($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{TrapName}{APLocale.Get("trapUnhandled", APLocale.APLanguageType.Errors)}",3);
                 break;
         }
     }

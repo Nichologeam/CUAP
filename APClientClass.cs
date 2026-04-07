@@ -3,6 +3,7 @@ using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
+using Archipelago.MultiClient.Net.MessageLog.Parts;
 using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Packets;
 using BepInEx;
@@ -77,7 +78,7 @@ public class APClientClass
     {
         session?.Socket.DisconnectAsync();
         session = null;
-        APCanvas.versionTag.text = $"Client Mod {Startup.CUAPVersion}";
+        APCanvas.versionTag.text = APLocale.Get("versionTag", APLocale.APLanguageType.UI) + Startup.CUAPVersion;
     }
 
     public static void HasConnected()
@@ -97,12 +98,16 @@ public class APClientClass
                 serverVersion = Convert.ToString(serverVersion);
                 APCanvas.versionTag.text =
                     $"""
-                    Client Mod {Startup.CUAPVersion}
-                    Server APWorld {serverVersion}
+                    {APLocale.Get("versionTag", APLocale.APLanguageType.UI)}{Startup.CUAPVersion}
+                    {APLocale.Get("serverVersion", APLocale.APLanguageType.UI)}{serverVersion}
                     """;
                 if (!serverVersion.Equals(Startup.CUAPVersion))
                 {
-                    APCanvas.EnqueueArchipelagoNotification($"Server/Client Version Mismatch! Client: {Startup.CUAPVersion}, Server: {serverVersion}!",3);
+                    string errorMsg = APLocale.Get("verMismatch", APLocale.APLanguageType.Errors);
+                    errorMsg = errorMsg.Replace("<cli>", Startup.CUAPVersion);
+                    errorMsg = errorMsg.Replace("<ser>", $"{serverVersion}");
+                    Startup.Logger.LogWarning($"Server/Client Version Mismatch! Client: {Startup.CUAPVersion}, Server: {serverVersion}!");
+                    APCanvas.EnqueueArchipelagoNotification(errorMsg, 3);
                 }
             }
             if (slotdata.TryGetValue("Minigames", out var minigames))
@@ -140,11 +145,11 @@ public class APClientClass
                 string itemColor = CommandPatch.ItemDataToPriorityColor(item.Flags);
                 if (item.Player == session!.Players.ActivePlayer)
                 {
-                    APCanvas.EnqueueArchipelagoNotification($"<color=#EE00EE>You</color> found your <color={itemColor}>{item.ItemName}</color>!", 1);
+                    APCanvas.EnqueueArchipelagoNotification($"<color=#EE00EE>{APLocale.Get("you", APLocale.APLanguageType.Messages)}</color> {APLocale.Get("foundLocal", APLocale.APLanguageType.Messages)} <color={itemColor}>{item.ItemName}</color>!", 1);
                 }
                 else
                 {
-                    APCanvas.EnqueueArchipelagoNotification($"Received <color={itemColor}>{item.ItemName}</color> from <color=#FAFAD2>{item.Player}</color>!", 1);
+                    APCanvas.EnqueueArchipelagoNotification($"{APLocale.Get("received", APLocale.APLanguageType.Messages)} <color={itemColor}>{item.ItemName}</color> {APLocale.Get("from", APLocale.APLanguageType.Messages)} <color=#FAFAD2>{item.Player.Name}</color>!", 1);
                 }
             }
             bool processed = false;
@@ -255,19 +260,15 @@ public class APClientClass
                         break;
                     default:
                         Startup.Logger.LogWarning($"{item.ItemName} is unhandled!");
-                        APCanvas.EnqueueArchipelagoNotification($"{item.ItemName} is unhandled!", 3);
+                        APCanvas.EnqueueArchipelagoNotification(item.ItemName + APLocale.Get("unhandledItem", APLocale.APLanguageType.Errors), 3);
                         break;
                 }
-            }
-            if (APCanvas.InGame)
-            {
-                ExperimentDialog.ProcessDialog(item);
             }
         }
         catch (Exception ex)
         {
             Startup.Logger.LogError("ProcessItem Error: " + ex.Message + ex.StackTrace);
-            APCanvas.EnqueueArchipelagoNotification("ProcessItem Error: " + ex.Message + ex.StackTrace,3);
+            APCanvas.EnqueueArchipelagoNotification(APLocale.Get("processitem", APLocale.APLanguageType.Errors) + ex.Message + ex.StackTrace,3);
             return;
         }
     }
@@ -334,20 +335,6 @@ public class APClientClass
                 }
             }
         }
-        /*else if (packet is RetrievedPacket)
-        {
-            var data = packet.ToJObject()["data"];
-            if (data == null) { Startup.Logger.LogError("'data' is null!"); return; }
-            var keylist = data["keys"];
-            JObject? keys = keylist as JObject;
-            if (keys == null || session == null) { Startup.Logger.LogError("'keys' is null!"); return; }
-            var token = keys["crafted_blueprints"];
-            if (token != null && token.Type != JTokenType.Null)
-            {
-                CraftingChecks.RecipeCraftedBefore = token.ToObject<Dictionary<int, bool>>() ?? [];
-                CraftingChecks.CraftedRecipes = CraftingChecks.RecipeCraftedBefore.Count(kvp => kvp.Value);
-            }
-        }*/
     }
 
     private static async void SendChecks()
@@ -360,7 +347,7 @@ public class APClientClass
         }
         catch (Exception ex)
         {
-            APCanvas.EnqueueArchipelagoNotification($"SendChecks failed! {ex}",3);
+            APCanvas.EnqueueArchipelagoNotification(APLocale.Get("sendchecks", APLocale.APLanguageType.Errors) + ex,3);
             Startup.Logger.LogError($"SendChecks failed! {ex}");
             Disconnect();
         }

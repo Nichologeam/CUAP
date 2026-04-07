@@ -64,14 +64,14 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
         }   
         if (dlPacket.Source.IsNullOrWhiteSpace()) // should never happen, realistically.
         {
-            APCanvas.EnqueueArchipelagoNotification("Received a DeathLink packet with no sender. Ignoring.",3);
+            APCanvas.EnqueueArchipelagoNotification(APLocale.Get("dlNoSender", APLocale.APLanguageType.Errors),3);
             Startup.Logger.LogWarning("Received a DeathLink packet with no sender. Ignoring.");
             return;
         }
         DeathlinkCooldown = 15;
         if (dlPacket.Cause.IsNullOrWhiteSpace())
         {
-            DeathLinkText.text = dlPacket.Source + " died.";
+            DeathLinkText.text = dlPacket.Source + APLocale.Get("died", APLocale.APLanguageType.Messages);
         }
         else
         {
@@ -86,7 +86,7 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
         }
         if (DeathlinkSeverity)
         {
-            DeathLinkText.text = $"{DeathLinkText.text} Your run has ended.";
+            DeathLinkText.text = $"{DeathLinkText.text}{APLocale.Get("runEnd", APLocale.APLanguageType.Messages)}";
             Vitals.brainHealth = 0; // Instantly kill Experiment
             Destroy(this); // Destroy script so we don't send a deathlink next frame. No damage will be done, because the player is forced back to main menu.
         }
@@ -98,7 +98,7 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
             limb.bleedAmount += 40f;
             limb.pain += 30f;
             Sound.Play("harmSting", Vector2.zero, true, false, null, 0.7f, 1f, false, false);
-            DeathLinkText.text = $"{DeathLinkText.text} Damage done to {limb.fullName}.";
+            DeathLinkText.text = $"{DeathLinkText.text} {APLocale.Get("damage   ", APLocale.APLanguageType.Messages)} {limb.fullName}.";
         }
     }
 
@@ -106,22 +106,22 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
     {
         Dictionary<int, string> DrownDeathMessages = new Dictionary<int, string>()
         {
-            {0,Client.Players.ActivePlayer.Alias + " is part canine, not fish."},
-            {1,Client.Players.ActivePlayer.Alias + " was too heavy to swim."},
-            {2,Client.Players.ActivePlayer.Alias + " forgot their scuba gear."},
-            {3,Client.Players.ActivePlayer.Alias + " forgot the importance of oxygen."}
+            {0,Client.Players.ActivePlayer.Alias + APLocale.Get("drownDeath1", APLocale.APLanguageType.Messages)},
+            {1,Client.Players.ActivePlayer.Alias + APLocale.Get("drownDeath2", APLocale.APLanguageType.Messages)},
+            {2,Client.Players.ActivePlayer.Alias + APLocale.Get("drownDeath3", APLocale.APLanguageType.Messages)},
+            {3,Client.Players.ActivePlayer.Alias + APLocale.Get("drownDeath4", APLocale.APLanguageType.Messages)}
         };
         Dictionary<int, string> BloodyDeathMessages = new Dictionary<int, string>()
         {
-            {0,Client.Players.ActivePlayer.Alias + " fell off."},
-            {1,Client.Players.ActivePlayer.Alias + " ran out of bandages."},
-            {2,Client.Players.ActivePlayer.Alias + " couldn't stop the bleeding."}
+            {0,Client.Players.ActivePlayer.Alias + APLocale.Get("bleedDeath1", APLocale.APLanguageType.Messages)},
+            {1,Client.Players.ActivePlayer.Alias + APLocale.Get("bleedDeath2", APLocale.APLanguageType.Messages)},
+            {2,Client.Players.ActivePlayer.Alias + APLocale.Get("bleedDeath3", APLocale.APLanguageType.Messages)}
         };
         Dictionary<int, string> GenericDeathMessages = new Dictionary<int, string>()
         {
-            {0,Client.Players.ActivePlayer.Alias + " became a statistic."},
+            {0,Client.Players.ActivePlayer.Alias + APLocale.Get("genericDeath1", APLocale.APLanguageType.Messages)},
             {1,"Casualties: Unknown + " + Client.Players.ActivePlayer.Alias},
-            {2,Client.Players.ActivePlayer.Alias + " met the same fate."}
+            {2,Client.Players.ActivePlayer.Alias + APLocale.Get("genericDeath2", APLocale.APLanguageType.Messages)}
         };
         if (Vitals.inWater)
         {

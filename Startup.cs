@@ -34,6 +34,7 @@ public class Startup : BaseUnityPlugin
         Logger.LogMessage($"Casualties: Unknown Archipelago Plugin {CUAPVersion} loaded!");
         Handler = new GameObject("Archipelago Handler");
         DontDestroyOnLoad(Handler);
+        APLocale.LoadLang("EN.json");
         apassets = AssetBundle.LoadFromFile(Path.Combine(BepInEx.Paths.PluginPath, "CUAP", "apassets"));
         var UI = Instantiate(apassets.LoadAsset<GameObject>("APCanvas"));
         DontDestroyOnLoad(UI);
@@ -98,7 +99,6 @@ public class Startup : BaseUnityPlugin
             {
                 Body.AddComponent<DeathlinkManager>();
                 Body.AddComponent<TrapHandler>();
-                Body.AddComponent<ExperimentDialog>();
                 Body.AddComponent<SkillReceiving>();
                 Body.AddComponent<LimbUnlocks>();
                 WorldGen = GameObject.Find("World");
@@ -124,10 +124,7 @@ public class Startup : BaseUnityPlugin
     private void MainMenuPatches()
     {
         GameObject.Find("Canvas/VersionWarning/Text (TMP) (1)").GetComponent<TextMeshProUGUI>().text =
-        """
-                Bug reports on the Discord servers would be appreciated.
-                <size=16><alpha=#33>You can also report bugs by using `apreportbug` in the debug console.
-                """;
+        $"{APLocale.Get("mainMenuMessage1", APLocale.APLanguageType.UI)}<br><size=16><alpha=#33>{APLocale.Get("mainMenuMessage2", APLocale.APLanguageType.UI)}";
         GameObject.Find("Canvas/Logo").GetComponent<Image>().sprite = apassets.LoadAsset<Sprite>("logotext");
     }
 }

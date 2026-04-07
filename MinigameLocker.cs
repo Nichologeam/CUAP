@@ -14,13 +14,13 @@ class MinigameLocker
     public static HashSet<string> minigamesUnlocked = []; // only used in individual mode
     private static readonly Dictionary<Type, (string itemName, string message)> MinigameMap = new()
     {
-        { typeof(AmputationMinigame), ("Amputation Minigame", "Amputation is") },
-        { typeof(BandageMinigame), ("Bandage Minigame", "Bandages are") },
-        { typeof(DislocationMinigame), ("Dislocation Minigame", "Fixing dislocations is") },
-        { typeof(KeypadMinigame), ("Keypad Minigame", "Keypads are") },
-        { typeof(LockpingMinigame), ("Lockpicking Minigame", "Lockpicking is") },
-        { typeof(ShrapnelMinigame), ("Shrapnel Minigame", "Removing shrapnel is") },
-        { typeof(SyringeMinigame), ("Syringe Minigame", "Injection is") },
+        { typeof(AmputationMinigame), ("Amputation Minigame", APLocale.Get("amputation", APLocale.APLanguageType.UI)) },
+        { typeof(BandageMinigame), ("Bandage Minigame", APLocale.Get("bandages", APLocale.APLanguageType.UI)) },
+        { typeof(DislocationMinigame), ("Dislocation Minigame", APLocale.Get("dislocations", APLocale.APLanguageType.UI)) },
+        { typeof(KeypadMinigame), ("Keypad Minigame", APLocale.Get("keypads", APLocale.APLanguageType.UI)) },
+        { typeof(LockpingMinigame), ("Lockpicking Minigame", APLocale.Get("lockpicking", APLocale.APLanguageType.UI)) },
+        { typeof(ShrapnelMinigame), ("Shrapnel Minigame", APLocale.Get("shrapnel", APLocale.APLanguageType.UI)) },
+        { typeof(SyringeMinigame), ("Syringe Minigame", APLocale.Get("injection", APLocale.APLanguageType.UI)) },
     };
     static bool Prefix(MinigameBase __instance, Minigame minigame, Item item)
     {
@@ -39,7 +39,7 @@ class MinigameLocker
                 {
                     return true; // player has the item
                 }
-                plrcam.DoAlert($"Minigames are locked by {APCanvas.coloredAPText}");
+                plrcam.DoAlert($"{APLocale.Get("minigames", APLocale.APLanguageType.UI)}{APCanvas.coloredAPText}");
                 return false; // player doesn't have the item
 
             case 3:
@@ -49,13 +49,13 @@ class MinigameLocker
                     {
                         return true; // player has the respective item
                     }
-                    plrcam.DoAlert($"{data.message} locked by {APCanvas.coloredAPText}");
+                    plrcam.DoAlert($"{data.message}{ APLocale.Get("locked", APLocale.APLanguageType.UI)} {APCanvas.coloredAPText}");
                     return false; // player does not
                 }
                 return true; // unknown minigame (should only be Suicide and Self Harm)
 
             default: // unset?
-                APCanvas.EnqueueArchipelagoNotification($"minigameRandom is an unhandled value! {APClientClass.minigameRandom}", 3);
+                APCanvas.EnqueueArchipelagoNotification($"{APLocale.Get("minigameUnhandled", APLocale.APLanguageType.Errors)}{APClientClass.minigameRandom}", 3);
                 Startup.Logger.LogError($"minigameRandom is an unhandled value! {APClientClass.minigameRandom}");
                 return false;
         }

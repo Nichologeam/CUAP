@@ -451,7 +451,7 @@ public class CraftingChecks : MonoBehaviour
             currentAPItemNum = SkillSending.GetIntFromCheckedLocations(startingRecipeID, Convert.ToInt16(items)); // consider previous sessions
             aplogo = Startup.apassets.LoadAsset<Sprite>("aplogo200"); // load custom blueprint asset replacement
             bgBlueprint = Resources.Load<GameObject>("blueprint").GetComponent<SpriteRenderer>().sprite; // reference basegame asset from prefab
-            APCanvas.apItemsCounter.text = $"{currentAPItemNum}/{apItemAmount} Archipelago Items collected!";
+            APCanvas.apItemsCounter.text = $"{currentAPItemNum}/{apItemAmount}{APLocale.Get("apItems", APLocale.APLanguageType.UI)}";
         }
         SetupAPBlueprint(apItems);
         if (options.TryGetValue("FreeSamples", out var samples))
@@ -530,7 +530,7 @@ public class CraftingChecks : MonoBehaviour
                     var item = closest.gameObject.GetComponent<Item>();
                     var recipeId = closest.gameObject.GetComponent<BlueprintScript>().recipeIndex;
                     item.Stats.fullName = $"{APCanvas.coloredAPText} Item";
-                    item.Stats.description = "A mysterious item from another world. It looks to be <plr>'s <item>.";
+                    item.Stats.description = APLocale.Get("apItemDesc", APLocale.APLanguageType.UI);
                     item.Stats.description = item.Stats.description.Replace("<plr>", BlueprintToPlayerName.Get(recipeId));
                     item.Stats.description = item.Stats.description.Replace("<item>", BlueprintToItemName.Get(recipeId));
                     item.favourited = true;
@@ -539,7 +539,7 @@ public class CraftingChecks : MonoBehaviour
             catch (Exception ex)
             {
                 Startup.Logger.LogError($"Archipelago Blueprint Error: {ex}");
-                APCanvas.EnqueueArchipelagoNotification($"Archipelago Blueprint Error: {ex}",3);
+                APCanvas.EnqueueArchipelagoNotification($"{APLocale.Get("itemError", APLocale.APLanguageType.Errors)}{ex}",3);
                 return;
             }
         }
@@ -564,13 +564,13 @@ public class CraftingChecks : MonoBehaviour
                     body.skills.AddExp(2, 10f);
                     CraftingChecks.SendBlueprintLocation(item.gameObject.GetComponent<BlueprintScript>().recipeIndex);
                     item.Stats.fullName = $"{APCanvas.coloredAPText} Item";
-                    item.Stats.description = "A mysterious item from another world. Buy it to see what it is.";
+                    item.Stats.description = APLocale.Get("apItemTrader", APLocale.APLanguageType.UI);
                     PlayerCamera.main.DoAlert($"Item sent to {APCanvas.coloredAPText}!", false);
                     Sound.Play("combine", item.transform.position, false, true, null, 1f, 1f, false, false);
                 },
                 value = 0, // i think setting this to 0 makes it unsellable? makes it useless to regardless
                 fullName = $"{APCanvas.coloredAPText} Item",
-                description = "A mysterious item from another world. It looks to be <plr>'s <item>.",
+                description = APLocale.Get("apItemDesc", APLocale.APLanguageType.UI),
                 rec = new Recognition(0)
             };
             Item.GlobalItems.Add(itemname, patchAPinfo);
@@ -590,12 +590,12 @@ public class CraftingChecks : MonoBehaviour
                 {
                     item.condition = 0f;
                     body.skills.AddExp(2, 35f);
-                    PlayerCamera.main.DoAlert("Claimed 35 INT Experience!", false);
+                    PlayerCamera.main.DoAlert(APLocale.Get("intBundleUse", APLocale.APLanguageType.UI), false);
                     Sound.Play("combine", item.transform.position, false, true, null, 1f, 1f, false, false);
                 },
                 value = 0,
-                fullName = "INT Experience Bundle (35)",
-                description = "Archipelago has removed the recipe from this blueprint, but you will still get the INT Experience from it.",
+                fullName = APLocale.Get("intBundle", APLocale.APLanguageType.UI),
+                description = APLocale.Get("intBundleDesc", APLocale.APLanguageType.UI),
                 rec = new Recognition(0)
             };
             Item.GlobalItems.Add(itemname, patchAPinfo);
@@ -610,7 +610,7 @@ public class CraftingChecks : MonoBehaviour
         APClientClass.ChecksToSend.Add(CheckID);
         currentAPItemNum++;
         updateAllBPs = true; // update other blueprint's sprites and names
-        APCanvas.apItemsCounter.text = $"{currentAPItemNum}/{apItemAmount} Archipelago Items collected!";
+        APCanvas.apItemsCounter.text = $"{currentAPItemNum}/{apItemAmount}{APLocale.Get("apItems", APLocale.APLanguageType.UI)}";
     }
 
     private async Task AssignCustomSprite(SpriteRenderer renderer, Item item, int recipeID, ThreadingHelper helper)
@@ -646,7 +646,6 @@ public class CraftingChecks : MonoBehaviour
                 }
                 if (success)
                 {
-                    Startup.Logger.LogDebug($"Custom Sprite FilePath = {sprite.FilePath}");
                     byte[] data = File.ReadAllBytes(sprite.FilePath); // put the file in memory
                     Texture2D texture = new(200, 200); // make a texture
                     if (!texture.LoadImage(data)) // load the data into the texture
@@ -667,7 +666,7 @@ public class CraftingChecks : MonoBehaviour
         catch (Exception ex)
         {
             Startup.Logger.LogError($"AssignCustomSprite Failed! {ex}");
-            APCanvas.EnqueueArchipelagoNotification($"AssignCustomSprite Failed!<br>{ex}", 3);
+            APCanvas.EnqueueArchipelagoNotification($"{APLocale.Get("customSprite", APLocale.APLanguageType.Errors)}<br>{ex}", 3);
         }
         finally
         {

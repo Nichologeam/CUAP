@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace CUAP;
 
@@ -52,17 +53,17 @@ public class CommandPatch : MonoBehaviour
                         {
                             if (APCanvas.InGame)
                             {
-                                textbox.text = $"{APCanvas.coloredAPText} Server Countdown: {countdown.RemainingSeconds}";
+                                textbox.text = APCanvas.coloredAPText + APLocale.Get("countdown", APLocale.APLanguageType.Messages) + countdown.RemainingSeconds;
                             }
-                            LogToConsole($"Server Countdown: {countdown.RemainingSeconds}");
+                            LogToConsole(APLocale.Get("countdown", APLocale.APLanguageType.Messages) + countdown.RemainingSeconds);
                         }
                         else // countdown is 0, which means server just said GO (but the server just sends '0')
                         {
                             if (APCanvas.InGame)
                             {
-                                textbox.text = $"{APCanvas.coloredAPText} Server Countdown: GO!";
+                                textbox.text = APCanvas.coloredAPText + APLocale.Get("countdownOver", APLocale.APLanguageType.Messages);
                             }
-                            LogToConsole($"Server Countdown: GO!");
+                            LogToConsole(APLocale.Get("countdownOver", APLocale.APLanguageType.Messages));
                             StartCoroutine(ClearText());
                         }
                         break;
@@ -70,34 +71,34 @@ public class CommandPatch : MonoBehaviour
                     case JoinLogMessage join:
                         if (join.Player.Game == "Archipelago") // unsure if this will actually trigger at runtime...
                         {
-                            APCanvas.EnqueueArchipelagoNotification($"<color=#00FF00>{join.Player.Alias} has started spectating.</color>",0);
+                            APCanvas.EnqueueArchipelagoNotification($"<color=#00FF00>{join.Player.Alias}{APLocale.Get("joinSpectator", APLocale.APLanguageType.Messages)}</color>",0);
                         }
                         string verb;
                         if (join.Tags.Contains("TextOnly"))
                         {
-                            verb = "viewing";
+                            verb = APLocale.Get("textClient", APLocale.APLanguageType.Messages);
                         }
                         else if (join.Tags.Contains("Tracker") || join.Tags.Contains("PopTracker"))
                         {
-                            verb = "tracking";
+                            verb = APLocale.Get("tracker", APLocale.APLanguageType.Messages);
                         }
                         else if (join.Tags.Contains("HintGame"))
                         {
-                            verb = "hinting";
+                            verb = APLocale.Get("hintGame", APLocale.APLanguageType.Messages);
                         }
                         else
                         {
-                            verb = "playing";
+                            verb = APLocale.Get("playing", APLocale.APLanguageType.Messages);
                         }
-                        APCanvas.EnqueueArchipelagoNotification($"<color=#00FF00>{join.Player.Alias} has joined</color> {verb} {join.Player.Game}.<br>[{string.Join(", ", join.Tags)}]",0);
+                        APCanvas.EnqueueArchipelagoNotification($"<color=#00FF00>{join.Player.Alias}{APLocale.Get("joinGeneric", APLocale.APLanguageType.Messages)}</color> {verb} {join.Player.Game}.<br>[{string.Join(", ", join.Tags)}]",0);
                         break;
 
                     case LeaveLogMessage leave:
-                        APCanvas.EnqueueArchipelagoNotification($"<color=#FF0000>{leave.Player.Alias} has left.</color>",0);
+                        APCanvas.EnqueueArchipelagoNotification($"<color=#FF0000>{leave.Player.Alias}{APLocale.Get("leave", APLocale.APLanguageType.Messages)}</color>",0);
                         break;
 
                     case GoalLogMessage goal:
-                        APCanvas.EnqueueArchipelagoNotification($"{goal.Player.Alias} has reached their goal!",0);
+                        APCanvas.EnqueueArchipelagoNotification($"{goal.Player.Alias}{APLocale.Get("goal", APLocale.APLanguageType.Messages)}",0);
                         break;
 
                     default:
@@ -126,22 +127,22 @@ public class CommandPatch : MonoBehaviour
         {
             if (message.IsSenderTheActivePlayer)
             {
-                constructedMessage = $"<color=#EE00EE>You</color> sent <color={itemColor}>{message.Item.ItemName}</color> to <color=#FAFAD2>{message.Receiver}</color> (<color=#00FF7F>{message.Item.LocationName}</color>)";
+                constructedMessage = $"<color=#EE00EE>{APLocale.Get("you", APLocale.APLanguageType.Messages)}</color> {APLocale.Get("sent", APLocale.APLanguageType.Messages)} <color={itemColor}>{message.Item.ItemName}</color> {APLocale.Get("to", APLocale.APLanguageType.Messages)} <color=#FAFAD2>{message.Receiver}</color> (<color=#00FF7F>{message.Item.LocationName}</color>)";
             }
             else if (message.IsReceiverTheActivePlayer)
             {
-                constructedMessage = $"<color=#FAFAD2>{message.Item.Player}</color> sent <color={itemColor}>{message.Item.ItemName}</color> to <color=#EE00EE>You</color> (<color=#00FF7F>{message.Item.LocationName}</color>)";
+                constructedMessage = $"<color=#FAFAD2>{message.Item.Player}</color> {APLocale.Get("sent", APLocale.APLanguageType.Messages)} <color={itemColor}>{message.Item.ItemName}</color> {APLocale.Get("to", APLocale.APLanguageType.Messages)} <color=#EE00EE>{APLocale.Get("you", APLocale.APLanguageType.Messages)}</color> (<color=#00FF7F>{message.Item.LocationName}</color>)";
             }
             else // two unrelated players, neither casualites
             {
-                constructedMessage = $"<color=#FAFAD2>{message.Item.Player}</color> sent <color={itemColor}>{message.Item.ItemName}</color> to <color=#FAFAD2>{message.Receiver}</color> (<color=#00FF7F>{message.Item.LocationName}</color>)";
+                constructedMessage = $"<color=#FAFAD2>{message.Item.Player}</color> {APLocale.Get("sent", APLocale.APLanguageType.Messages)} <color={itemColor}>{message.Item.ItemName}</color> {APLocale.Get("to", APLocale.APLanguageType.Messages)} <color=#FAFAD2>{message.Receiver}</color> (<color=#00FF7F>{message.Item.LocationName}</color>)";
             }
         }
         else if (message.Sender == message.Receiver) // player found their own item
         {
             constructedMessage = message.IsReceiverTheActivePlayer 
-                ? $"<color=#EE00EE>You</color> found your <color={itemColor}>{message.Item.ItemName}</color> (<color=#00FF7F>{message.Item.LocationName}</color>)" // true (it is the casualties player)
-                : $"<color=#FAFAD2>{message.Receiver}</color> found their <color={itemColor}>{message.Item.ItemName}</color> (<color=#00FF7F>{message.Item.LocationName}</color>)"; // false (it's someone else)
+                ? $"<color=#EE00EE>{APLocale.Get("you", APLocale.APLanguageType.Messages)}</color> {APLocale.Get("foundLocal", APLocale.APLanguageType.Messages)} <color={itemColor}>{message.Item.ItemName}</color> (<color=#00FF7F>{message.Item.LocationName}</color>)" // true (it is the casualties player)
+                : $"<color=#FAFAD2>{message.Receiver}</color> {APLocale.Get("foundRemote", APLocale.APLanguageType.Messages)} <color={itemColor}>{message.Item.ItemName}</color> (<color=#00FF7F>{message.Item.LocationName}</color>)"; // false (it's someone else)
         }
         LogToConsole(constructedMessage);
     }
@@ -155,31 +156,31 @@ public class CommandPatch : MonoBehaviour
         {
             if (hint.IsSenderTheActivePlayer) // casualties item in casualties world (not barbie)
             {
-                constructedMessage = $"<color=#EE00EE>Your</color> <color={itemColor}>{hint.Item.ItemName}</color> is at <color=#00FF7F>{hint.Item.LocationName}</color>.";
+                constructedMessage = $"<color=#EE00EE>{APLocale.Get("your", APLocale.APLanguageType.Messages)}</color> <color={itemColor}>{hint.Item.ItemName}</color> {APLocale.Get("at", APLocale.APLanguageType.Messages)} <color=#00FF7F>{hint.Item.LocationName}</color>.";
             }
             else // casualties item in other world
             {
-                constructedMessage = $"<color=#EE00EE>Your</color> <color={itemColor}>{hint.Item.ItemName}</color> is at <color=#FAFAD2>{hint.Sender}</color>'s <color=#00FF7F>{hint.Item.LocationName}</color>.";
+                constructedMessage = $"<color=#EE00EE>{APLocale.Get("your", APLocale.APLanguageType.Messages)}</color> <color={itemColor}>{hint.Item.ItemName}</color> {APLocale.Get("at", APLocale.APLanguageType.Messages)} <color=#FAFAD2>{hint.Sender}</color>'s <color=#00FF7F>{hint.Item.LocationName}</color>.";
             }
         }
         else if (hint.IsSenderTheActivePlayer) // other item in casualties world
         {
-            constructedMessage = $"<color=#FAFAD2>{hint.Receiver}</color>'s <color={itemColor}>{hint.Item.ItemName}</color> is at <color=#00FF7F>{hint.Item.LocationName}</color>.";
+            constructedMessage = $"<color=#FAFAD2>{hint.Receiver}</color>'s <color={itemColor}>{hint.Item.ItemName}</color> {APLocale.Get("at", APLocale.APLanguageType.Messages)} <color=#00FF7F>{hint.Item.LocationName}</color>.";
         }
         LogToConsole(constructedMessage);
         APCanvas.EnqueueArchipelagoNotification(constructedMessage,2);
     }
     private void CreateAPCommands()
     {
-        ConsoleScript.Commands.Add(new Command("apdeathlink", "Toggles DeathLink for the current game session.", delegate (string[] args)
+        ConsoleScript.Commands.Add(new Command("apdeathlink", APLocale.Get("dlDesc", APLocale.APLanguageType.Commands), delegate (string[] args)
         {
             if (!APClientClass.IsConnected())
             {
-                throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
+                throw new Exception(APLocale.Get("cmdNotConnected", APLocale.APLanguageType.Errors));
             }
             if (APClientClass.dlService is null)
             {
-                throw new Exception("DeathLinkService is null! This shouldn't happen, yell at me on Discord or Github if it does!");
+                throw new Exception(APLocale.Get("dlsNull", APLocale.APLanguageType.Errors));
             }
             if (APCanvas.DeathlinkEnabled)
             {
@@ -219,26 +220,28 @@ public class CommandPatch : MonoBehaviour
                 else
                 {
                     DeathlinkManager.DeathlinkSeverity = true;
-                    LogToConsole($"<color=#FF0000>CUAP: Severity of '{args[1]}' is invalid. Defaulted to 'kill'</color>");
+                    string msg = APLocale.Get("dlInvalid", APLocale.APLanguageType.Commands);
+                    msg = msg.Replace("<sev>", args[1]);
+                    LogToConsole($"<color=#FF0000>{msg}</color>");
                 }
             }
         }, new Dictionary<int, List<string>> {
         {
             0,
-            new List<string> {"kill","limbdamage"}
+            new List<string> {"kill", "limbdamage"}
         } }, new ValueTuple<string, string>[]
         {
-            new ValueTuple<string, string>("severity", "How punishing DeathLink should be. Choices are 'kill' and 'limbdamage'")
+            new ValueTuple<string, string>(APLocale.Get("dlSeverity", APLocale.APLanguageType.Commands), APLocale.Get("dlSeverityDesc", APLocale.APLanguageType.Commands))
         }));
-        ConsoleScript.Commands.Add(new Command("apchat", "Sends a message to Archipelago chat.", delegate (string[] args)
+        ConsoleScript.Commands.Add(new Command("apchat", APLocale.Get("chatDesc", APLocale.APLanguageType.Commands), delegate (string[] args)
         {
             if (!APClientClass.IsConnected())
             {
-                throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
+                throw new Exception(APLocale.Get("cmdNotConnected", APLocale.APLanguageType.Errors));
             }
             if (args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
             {
-                throw new Exception("No chat message was given.");
+                throw new Exception(APLocale.Get("chatEmpty", APLocale.APLanguageType.Commands));
             }
             string chatMessage = string.Join(" ", args.Skip(1));
             Client.Say(chatMessage);
@@ -248,13 +251,13 @@ public class CommandPatch : MonoBehaviour
             }
         }, null, new ValueTuple<string, string>[]
         {
-            new ValueTuple<string, string>("text", "Chat message to send.")
+            new ValueTuple<string, string>(APLocale.Get("chatText", APLocale.APLanguageType.Commands), APLocale.Get("chatTextDesc", APLocale.APLanguageType.Commands))
         }));
-        ConsoleScript.Commands.Add(new Command("aphint", "Alias for !hint command.", delegate (string[] args)
+        ConsoleScript.Commands.Add(new Command("aphint", APLocale.Get("hintDesc", APLocale.APLanguageType.Commands), delegate (string[] args)
         {
             if (!APClientClass.IsConnected())
             {
-                throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
+                throw new Exception(APLocale.Get("cmdNotConnected", APLocale.APLanguageType.Errors));
             }
             if (args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
             {
@@ -265,57 +268,57 @@ public class CommandPatch : MonoBehaviour
             Client.Say($"!hint {itemName}");
         }, null, new ValueTuple<string, string>[]
         {
-            new ValueTuple<string, string>("item", "Item to hint for. Leave blank to request hint status.")
+            new ValueTuple<string, string>(APLocale.Get("hintItem", APLocale.APLanguageType.Commands), APLocale.Get("hintItemDesc", APLocale.APLanguageType.Commands))
         }));
-        ConsoleScript.Commands.Add(new Command("aphintlocation", "Alias for !hint_location command.", delegate (string[] args)
+        ConsoleScript.Commands.Add(new Command("aphintlocation", APLocale.Get("hintLocDesc", APLocale.APLanguageType.Commands), delegate (string[] args)
         {
             if (!APClientClass.IsConnected())
             {
-                throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
+                throw new Exception(APLocale.Get("cmdNotConnected", APLocale.APLanguageType.Errors));
             }
             if (args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
             {
-                throw new Exception("No location was given to hint.");
+                throw new Exception(APLocale.Get("hintLocEmpty", APLocale.APLanguageType.Commands));
             }
             string locName = string.Join(" ", args.Skip(1));
             Client.Say($"!hint_location {locName}");
         }, null, new ValueTuple<string, string>[]
         {
-            new ValueTuple<string, string>("location", "Location to hint.")
+            new ValueTuple<string, string>(APLocale.Get("hintLocLocation", APLocale.APLanguageType.Commands), APLocale.Get("hintLocLocationDesc", APLocale.APLanguageType.Commands))
         }));
-        ConsoleScript.Commands.Add(new Command("aprelease", "Alias for !release command.", delegate (string[] args)
+        ConsoleScript.Commands.Add(new Command("aprelease", APLocale.Get("releaseDesc", APLocale.APLanguageType.Commands), delegate (string[] args)
         {
             if (!APClientClass.IsConnected())
             {
-                throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
+                throw new Exception(APLocale.Get("cmdNotConnected", APLocale.APLanguageType.Errors));
             }
             Client.Say("!release");
         }, null, Array.Empty<ValueTuple<string, string>>()));
-        ConsoleScript.Commands.Add(new Command("apcollect", "Alias for !collect command.", delegate (string[] args)
+        ConsoleScript.Commands.Add(new Command("apcollect", APLocale.Get("collectDesc", APLocale.APLanguageType.Commands), delegate (string[] args)
         {
             if (!APClientClass.IsConnected())
             {
-                throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
+                throw new Exception(APLocale.Get("cmdNotConnected", APLocale.APLanguageType.Errors));
             }
             Client.Say("!collect");
         }, null, Array.Empty<ValueTuple<string, string>>()));
-        ConsoleScript.Commands.Add(new Command("apalias", "Alias for !alias command.", delegate (string[] args)
+        ConsoleScript.Commands.Add(new Command("apalias", APLocale.Get("aliasDesc", APLocale.APLanguageType.Commands), delegate (string[] args)
         {
             if (!APClientClass.IsConnected())
             {
-                throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
+                throw new Exception(APLocale.Get("cmdNotConnected", APLocale.APLanguageType.Errors));
             }
             if (args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
             {
-                throw new Exception("No name was given.");
+                throw new Exception(APLocale.Get("aliasEmpty", APLocale.APLanguageType.Commands));
             }
             string newName = string.Join(" ", args.Skip(1));
             Client.Say($"!alias {newName}");
         }, null, new ValueTuple<string, string>[]
         {
-            new ValueTuple<string, string>("name", "Alias to change your slot name to.")
+            new ValueTuple<string, string>(APLocale.Get("aliasName", APLocale.APLanguageType.Commands), APLocale.Get("aliasNameDesc", APLocale.APLanguageType.Commands))
         }));
-        ConsoleScript.Commands.Add(new Command("apreportbug", "Opens CUAP's Github to report a bug.", delegate (string[] args)
+        ConsoleScript.Commands.Add(new Command("apreportbug", APLocale.Get("reportBugDesc", APLocale.APLanguageType.Commands), delegate (string[] args)
         {
             CheckArgumentCount.Invoke(Console, [args, 1]);
             if (args[1] == "true")
@@ -329,9 +332,9 @@ public class CommandPatch : MonoBehaviour
             new List<string> {"true","false"}
         } }, new ValueTuple<string, string>[]
         {
-            new ValueTuple<string, string>("screenshot", "Whether to capture a screenshot to the CUAP folder.")
+            new ValueTuple<string, string>(APLocale.Get("reportBugScreenshot", APLocale.APLanguageType.Commands), APLocale.Get("reportBugScreenshotDesc", APLocale.APLanguageType.Commands))
         }));
-        ConsoleScript.Commands.Add(new Command("apresetantispam", "Clears CUAP's copies of sent locations. Use this to resend broken checks.", delegate (string[] args)
+        ConsoleScript.Commands.Add(new Command("apresetantispam", APLocale.Get("resetSpamDesc", APLocale.APLanguageType.Commands), delegate (string[] args)
         {
             if (APCanvas.InGame)
             {
@@ -341,34 +344,43 @@ public class CommandPatch : MonoBehaviour
                 try { CraftingChecks.AlreadySentChecks.Clear(); CraftsanitySender.alreadySentChecks.Clear(); }
                 catch { }
             }
-            LogToConsole("CUAP: Data cleared. Run apreportbug if the issue persists.");
+            LogToConsole(APLocale.Get("resetSpamConfirm", APLocale.APLanguageType.Commands));
         }, null, Array.Empty<ValueTuple<string, string>>()));
-        ConsoleScript.Commands.Add(new Command("apfixquests", "Forces the questboard to refresh sent checks. Use this if a quest didn't send properly.", delegate (string[] args)
+        ConsoleScript.Commands.Add(new Command("apfixquests", APLocale.Get("questsDesc", APLocale.APLanguageType.Commands), delegate (string[] args)
         {
             if (APCanvas.InGame)
             {
                 Moodlesanity.RefreshMaxQuests(false);
             }
-            LogToConsole("CUAP: Quests refreshed. Run apreportbug if the issue persists.");
+            LogToConsole(APLocale.Get("questsConfirm", APLocale.APLanguageType.Commands));
         }, null, Array.Empty<ValueTuple<string, string>>()));
+        ConsoleScript.Commands.Add(new Command("aplang", APLocale.Get("langDesc", APLocale.APLanguageType.Commands), delegate (string[] args)
+        {
+            CheckArgumentCount.Invoke(Console, [args, 1]);
+            APLocale.LoadLang(args[1]);
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name); // reload current scene
+        }, null, new ValueTuple<string, string>[]
+        {
+            new ValueTuple<string, string>(APLocale.Get("langFile", APLocale.APLanguageType.Commands), APLocale.Get("langFileDesc", APLocale.APLanguageType.Commands))
+        }));
         if (raceMode) return; // commands after this can be used to cheat. disable them in race mode
-        ConsoleScript.Commands.Add(new Command("apcheat", "Alias for !getitem command.", delegate (string[] args)
+        ConsoleScript.Commands.Add(new Command("apcheat", APLocale.Get("cheatDesc", APLocale.APLanguageType.Commands), delegate (string[] args)
         {
             if (!APClientClass.IsConnected())
             {
-                throw new Exception("Archipelago isn't connected or session was closed. You must be connected to run this command.");
+                throw new Exception(APLocale.Get("cmdNotConnected", APLocale.APLanguageType.Errors));
             }
             if (args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
             {
-                throw new Exception("No item was given to cheat in.");
+                throw new Exception(APLocale.Get("cheatEmpty", APLocale.APLanguageType.Commands));
             }
             string itemName = string.Join(" ", args.Skip(1));
             Client.Say("!getitem " + itemName);
         }, null, new ValueTuple<string, string>[]
         {
-            new ValueTuple<string, string>("item", "Item to request be cheated in.")
+            new ValueTuple<string, string>(APLocale.Get("cheatItem", APLocale.APLanguageType.Commands), APLocale.Get("cheatItemDesc", APLocale.APLanguageType.Commands))
         }));
-        ConsoleScript.Commands.Add(new Command("apsetskill", "Force set a skill to a certain level. Only works if Skillsanity is enabled.", delegate (string[] args)
+        ConsoleScript.Commands.Add(new Command("apsetskill", APLocale.Get("setSkillDesc", APLocale.APLanguageType.Commands), delegate (string[] args)
         {
             CheckArgumentCount.Invoke(Console, [args, 2]);
             if (args[1] == "STR")
@@ -389,8 +401,8 @@ public class CommandPatch : MonoBehaviour
             new List<string> {"STR","RES","INT"}
         } }, new ValueTuple<string, string>[]
         {
-            new ValueTuple<string, string>("skill", "Which skill to change the level of."),
-            new ValueTuple<string, string>("level", "What level to set the skill to.")
+            new ValueTuple<string, string>(APLocale.Get("setSkillSkill", APLocale.APLanguageType.Commands), APLocale.Get("setSkillSkillDesc", APLocale.APLanguageType.Commands)),
+            new ValueTuple<string, string>(APLocale.Get("setSkillLevel", APLocale.APLanguageType.Commands), APLocale.Get("setSkillLevelDesc", APLocale.APLanguageType.Commands))
         }));
     }
     public static IEnumerator CaptureScreenshot()
@@ -401,7 +413,7 @@ public class CommandPatch : MonoBehaviour
         ScreenCapture.CaptureScreenshot(CUAPFolder + "apreportbug.png"); // Put screenshot in CUAP folder
         yield return 0; // wait ANOTHER frame for the screenshot to actually get taken
         Console.gameObject.GetComponentInChildren<Canvas>().enabled = true; // then finally put the console back
-        LogToConsole($"CUAP: Screenshot saved to {CUAPFolder}");
+        LogToConsole(APLocale.Get("screenshotNotif", APLocale.APLanguageType.Commands) + CUAPFolder);
     }
 
     public static void LogToConsole(string text) // copying the basegame LogToConsole because V5 made it a private method that sometimes breaks when called
