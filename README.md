@@ -51,13 +51,15 @@ The in-game debug console now has various new Archipelago-related commands. You 
 - apcollect: Alias for `apchat !collect`
 - apcheat: Alias for `apchat !getitem`
 - apalias [name]: Alias for `apchat !alias`
+- aplang [file]: Change the mod's langauge to a different one. See the next section for more information.
 ### **Debug Commands**
 - apreportbug: Opens a bug report in this GitHub repository. Optionally takes a screenshot as well
 - apresetantispam: Clears local records of sent checks, allowing them to be sent again. Use this if a certain location isn't sending
 - apsetskill: Forces Skillsanity's received skills to be a certain value. Use this if your skills desync from what you've actually received
 - apfixquests: Forces Moodlesanity's questboard to refresh which checks have been sent. Use this if a quest didn't send properly
 
-# **Support for Other Mods**
-This mod doesn't have native support for any other mods, however, a few mods are on my radar.
-- [Casualties Together](https://github.com/Krokosha666/cas-unk-krokosha-multiplayer-coop): Shared BepInEx version. The two do not work together, especially since they don't support the same game version.
-- [QoL Unknown](https://itch.io/post/15369846): A small change was pushed in v0.6.0-pre4 to fix compatability with this mod. The two will run together, but a bugfree experience is not guarenteed.
+# **Custom Translations**
+This mod supports custom translations! Inside the latest client mod, there is an included EN.json file that anyone can edit to support any lanuage they want. Simply made a copy, change the text, and run `aplang` ingame! A few things to note:
+- Text inside \<angled brackets\> is to be left alone. Changing the text inside the brackets can cause the mod to break or behave oddly.
+- Some text on UIs is hardcoded. I plan to expand custom translations in the future, but for now, they will remain in English.
+- Some text will be sent to the Archipelago server, such as when a Deathlink is sent.
