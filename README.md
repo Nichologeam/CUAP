@@ -59,7 +59,7 @@ The in-game debug console now has various new Archipelago-related commands. You 
 - apfixquests: Forces Moodlesanity's questboard to refresh which checks have been sent. Use this if a quest didn't send properly
 
 # **Custom Translations**
-This mod supports custom translations! Inside the latest client mod, there is an included EN.json file that anyone can edit to support any lanuage they want. Simply made a copy, change the text, and run `aplang` ingame! A few things to note:
+This mod supports custom translations! Inside the lang folder of both this repo and the client mod, there is an included EN.json file that anyone can edit to support any lanuage they want. Simply made a copy, change the text, and run `aplang` ingame! A few things to note:
 - Text inside \<angled brackets\> is to be left alone. Changing the text inside the brackets can cause the mod to break or behave oddly.
 - Some text on UIs is hardcoded. I plan to expand custom translations in the future, but for now, they will remain in English.
 - Some text will be sent to the Archipelago server, such as when a Deathlink is sent.
