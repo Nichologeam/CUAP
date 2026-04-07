@@ -79,6 +79,7 @@ public class APClientClass
         session?.Socket.DisconnectAsync();
         session = null;
         APCanvas.versionTag.text = APLocale.Get("versionTag", APLocale.APLanguageType.UI) + Startup.CUAPVersion;
+        Time.timeScale = 1;
     }
 
     public static void HasConnected()
