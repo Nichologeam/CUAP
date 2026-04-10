@@ -570,7 +570,7 @@ public class CraftingChecks : MonoBehaviour
                 },
                 value = 0, // i think setting this to 0 makes it unsellable? makes it useless to regardless
                 fullName = $"{APCanvas.coloredAPText} Item",
-                description = APLocale.Get("apItemDesc", APLocale.APLanguageType.UI),
+                description = APLocale.Get("apItemTrader", APLocale.APLanguageType.UI),
                 rec = new Recognition(0)
             };
             Item.GlobalItems.Add(itemname, patchAPinfo);
