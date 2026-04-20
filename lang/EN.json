@@ -1,8 +1,7 @@
 {
     "langName": "English",
     "UI": {
-        "mainMenuMessage1": "Bug reports on the Discord servers would be appreciated.",
-		"mainMenuMessage2": "You can also report bugs by using `apreportbug` in the debug console.",
+        "mainMenuMessage": "Bug reports for the Archipelago mod would be appreciated. You can report bugs by using `apreportbug` in the console.",
 		"reachDepth1": "Goal: Reach <gd>",
 		"reachDepth2": "Depth Extenders: <de>",
 		"reachDepth3": "Max Depth: <md>",
@@ -37,7 +36,7 @@
 		"locked": "locked by",
 		"trap": "Trap: ",
 		"revTrap": " Trap: Reversed Controls",
-		"revTrapDesc": " reversed your controls! Lasts 10 seconds.",
+		"revTrapDesc": " flipped the map! Lasts 10 seconds.",
 		"unchipTrap": " Trap: Unchipped",
 		"unchipTrapDesc": " disabled your brainchip! Lasts 50 seconds.",
 		"disfigTrap": " Trap: Disfigured",
@@ -47,7 +46,7 @@
 		"depression": " said something demoralizing. Mood decreased.",
 		"hearing": "Trap: <b>WHAT!? I CAN'T HEAR YOU <sender>!</b> Hearing loss increased.",
 		"quake": " hit a fault line.",
-		"rev": " made you feel tipsy. Controls reversed.",
+		"rev": " made you feel tipsy. World flipped.",
 		"sleep": " thinks it's naptime. Good night!",
 		"chipped": " is hacking into your brainchip!",
 		"elder": " sent something big your way. Something <i>really</i> big.",
