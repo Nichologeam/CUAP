@@ -168,8 +168,11 @@ public class APClientClass
                 RecipeUnlockDictionary.Add(item.ItemName);
                 if (APCanvas.InGame && CraftingChecks.freesamples)
                 {
-                    UnityEngine.Object.Instantiate(Resources.Load<GameObject>(CraftingChecks.CheckNameToItem.Get(item.ItemName)),
-                    GameObject.Find("Experiment/Body").transform.position, Quaternion.identity);
+                    var spawnID = CraftingChecks.CheckNameToItem.Get(item.ItemName);
+                    if (spawnID != null)
+                    {
+                        UnityEngine.Object.Instantiate(Resources.Load<GameObject>(spawnID), GameObject.Find("Experiment/Body").transform.position, Quaternion.identity);
+                    }
                 }
                 processed = true;
             }
