@@ -18,6 +18,7 @@ public class TrapHandler : MonoBehaviour
     private bool revControlActive;
     private bool unchippedActive;
     private bool disfigActive;
+    private int thornbackTrapLevel;
     public static bool mindwipeActive;
     string trapSender;
     private List<Item> heldItems = new List<Item>();
@@ -62,6 +63,14 @@ public class TrapHandler : MonoBehaviour
             }
         }
         prevUpdateTime = moodleUpdateTime(moodles);
+        if (thornbackTrapLevel == 1)
+        {
+            Vitals.horrifiedLevel = 75;
+        }
+        else if (thornbackTrapLevel == 2)
+        {
+            Vitals.horrifiedLevel = 200;
+        }
     }
     public void ProcessTraps(string TrapName, string ItemSender)
     {
@@ -247,10 +256,10 @@ public class TrapHandler : MonoBehaviour
     {
         plrcam.currentThreatTheme = 15; // play the Elder Thornback first phase theme
         plrcam.threatMusicTime = 90; // for 90 seconds
-        Vitals.horrifiedLevel = 50;
+        thornbackTrapLevel = 1;
         yield return new WaitForSecondsRealtime(11); // timed to be on the beat drop for maximum effect (because i'm just cool like that)
-        Vitals.horrifiedLevel = 200;
+        thornbackTrapLevel = 2;
         yield return new WaitForSecondsRealtime(79);
-        Vitals.horrifiedLevel = 0;
+        thornbackTrapLevel = 0;
     }
 }
