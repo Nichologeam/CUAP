@@ -247,10 +247,10 @@ public class TrapHandler : MonoBehaviour
     {
         plrcam.currentThreatTheme = 15; // play the Elder Thornback first phase theme
         plrcam.threatMusicTime = 90; // for 90 seconds
-        moodles.horrifiedLevel = 1;
+        Vitals.horrifiedLevel = 50;
         yield return new WaitForSecondsRealtime(11); // timed to be on the beat drop for maximum effect (because i'm just cool like that)
-        moodles.horrifiedLevel = 3;
+        Vitals.horrifiedLevel = 200;
         yield return new WaitForSecondsRealtime(79);
-        moodles.horrifiedLevel = 0;
+        Vitals.horrifiedLevel = 0;
     }
 }

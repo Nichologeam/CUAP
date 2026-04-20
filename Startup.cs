@@ -7,7 +7,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using HarmonyLib;
 using System.Threading.Tasks;
-using UnityEngine.UI;
 
 namespace CUAP;
 
@@ -46,6 +45,8 @@ public class Startup : BaseUnityPlugin
         MainMenuPatches();
         Console = GameObject.Find("Console(Clone)");
         Console.AddComponent<CommandPatch>();
+        var betaNotif = GameObject.Find("GlobalDark(Clone)/betabuild").GetComponent<TextMeshProUGUI>();
+        betaNotif.text = $"{betaNotif.text}\n{APLocale.Get("mainMenuMessage", APLocale.APLanguageType.UI)}";
     }
     public void Update()
     {
@@ -123,8 +124,6 @@ public class Startup : BaseUnityPlugin
     // that's why this random function with two lines is here.
     private void MainMenuPatches()
     {
-        GameObject.Find("Canvas/VersionWarning/Text (TMP) (1)").GetComponent<TextMeshProUGUI>().text =
-        $"{APLocale.Get("mainMenuMessage1", APLocale.APLanguageType.UI)}<br><size=16><alpha=#33>{APLocale.Get("mainMenuMessage2", APLocale.APLanguageType.UI)}";
-        GameObject.Find("Canvas/Logo").GetComponent<Image>().sprite = apassets.LoadAsset<Sprite>("logotext");
+        // GameObject.Find("Canvas/Logo").GetComponent<Image>().sprite = apassets.LoadAsset<Sprite>("logotext"); <<< Uses outdated logo. Needs to be remade
     }
 }
