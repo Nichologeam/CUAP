@@ -68,6 +68,7 @@ public class CraftingChecks : MonoBehaviour
         {"Titanium rod Recipe","titaniumrod"},
         {"Alien blood Recipe","alienblood"},
         {"Saline Recipe","saline"},
+        {"Antivenom Recipe","antivenom"},
         {"Blood Recipe","blood"},
         {"Makeshift wrench Recipe","makeshiftwrench"},
         {"Wrench Recipe","wrench"},
@@ -119,7 +120,6 @@ public class CraftingChecks : MonoBehaviour
         {"Naltrexone Recipe","naltrexone"},
         {"Antidepressants Recipe","antidepressants"},
         {"Auto-injector Recipe","autoinjector"},
-        {"Auto-auto-pump Recipe","autoautopump"},
         {"Antiseptic mush Recipe","antisepticmush"},
         {"Plastic dressing Recipe","plasticbandage"},
         {"Tourniquet Recipe","tourniquet"},
@@ -197,6 +197,7 @@ public class CraftingChecks : MonoBehaviour
         {"Titanium rod Recipe",15},
         {"Alien blood Recipe",2},
         {"Saline Recipe",9},
+        {"Antivenom Recipe",10},
         {"Blood Recipe",8},
         {"Makeshift wrench Recipe",9},
         {"Wrench Recipe",12},
@@ -248,7 +249,6 @@ public class CraftingChecks : MonoBehaviour
         {"Naltrexone Recipe",10},
         {"Antidepressants Recipe",10},
         {"Auto-injector Recipe",12},
-        {"Auto-auto-pump Recipe",12},
         {"Antiseptic mush Recipe",8},
         {"Plastic dressing Recipe",14},
         {"Tourniquet Recipe",9},
@@ -325,6 +325,7 @@ public class CraftingChecks : MonoBehaviour
         "Titanium rod Recipe",
         "Alien blood Recipe",
         "Saline Recipe",
+        "Antivenom Recipe",
         "Blood Recipe",
         "Makeshift wrench Recipe",
         "Wrench Recipe",
@@ -376,7 +377,6 @@ public class CraftingChecks : MonoBehaviour
         "Naltrexone Recipe",
         "Antidepressants Recipe",
         "Auto-injector Recipe",
-        "Auto-auto-pump Recipe",
         "Antiseptic mush Recipe",
         "Plastic dressing Recipe",
         "Tourniquet Recipe",
@@ -570,7 +570,7 @@ public class CraftingChecks : MonoBehaviour
                 },
                 value = 0, // i think setting this to 0 makes it unsellable? makes it useless to regardless
                 fullName = $"{APCanvas.coloredAPText} Item",
-                description = APLocale.Get("apItemTrader", APLocale.APLanguageType.UI),
+                description = APLocale.Get("apItemTrader", APLocale.APLanguageType.UI), 
                 rec = new Recognition(0)
             };
             Item.GlobalItems.Add(itemname, patchAPinfo);
