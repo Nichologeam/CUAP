@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-using System.Collections;
+﻿using Archipelago.MultiClient.Net;
 using HarmonyLib;
-using Archipelago.MultiClient.Net;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace CUAP;
 
@@ -16,10 +17,14 @@ public class TrapHandler : MonoBehaviour
     private readonly AccessTools.FieldRef<MoodleManager, float> moodleUpdateTime = AccessTools.FieldRefAccess<MoodleManager, float>("updateTime"); // this variable is private normally
     private float prevUpdateTime = 0.5f;
     private bool revControlActive;
+    private float revControlEndTime;
     private bool unchippedActive;
+    private float unchippedEndTime;
     private bool disfigActive;
+    private float disfigEndTime;
     private int thornbackTrapLevel;
     public static bool mindwipeActive;
+    private float mindwipeEndTime;
     string trapSender;
     private List<Item> heldItems = new List<Item>();
 
@@ -47,19 +52,39 @@ public class TrapHandler : MonoBehaviour
         {
             if (revControlActive)
             {
-                moodles.AddMoodle(5, "death", $"{APCanvas.coloredAPText}{APLocale.Get("revTrap", APLocale.APLanguageType.UI)}", $"{trapSender}{APLocale.Get("revTrapDesc", APLocale.APLanguageType.UI)}", false, false);
+                float remaining = Mathf.Max(0, revControlEndTime - Time.realtimeSinceStartup);
+                TimeSpan ts = TimeSpan.FromSeconds(remaining);
+                string formatted = $"{ts.Minutes:D2}:{ts.Seconds:D2}";
+                string desc = APLocale.Get("revTrapDesc", APLocale.APLanguageType.UI);
+                desc = desc.Replace("<time>", formatted);
+                moodles.AddMoodle(5, "death", $"{APCanvas.coloredAPText}{APLocale.Get("revTrap", APLocale.APLanguageType.UI)}", desc, false, false);
             }
             if (unchippedActive)
             {
-                moodles.AddMoodle(5, "death", $"{APCanvas.coloredAPText}{APLocale.Get("unchipTrap", APLocale.APLanguageType.UI)}", $"{trapSender}{APLocale.Get("unchipTrapDesc", APLocale.APLanguageType.UI)}", false, false);
+                float remaining = Mathf.Max(0, unchippedEndTime - Time.realtimeSinceStartup);
+                TimeSpan ts = TimeSpan.FromSeconds(remaining);
+                string formatted = $"{ts.Minutes:D2}:{ts.Seconds:D2}";
+                string desc = APLocale.Get("unchipTrapDesc", APLocale.APLanguageType.UI);
+                desc = desc.Replace("<time>", formatted);
+                moodles.AddMoodle(5, "death", $"{APCanvas.coloredAPText}{APLocale.Get("unchipTrap", APLocale.APLanguageType.UI)}", desc, false, false);
             }
             if (disfigActive)
             {
-                moodles.AddMoodle(5, "death", $"{APCanvas.coloredAPText}{APLocale.Get("disfigTrap", APLocale.APLanguageType.UI)}", $"{trapSender}{APLocale.Get("disfigTrapDesc", APLocale.APLanguageType.UI)}", false, false);
+                float remaining = Mathf.Max(0, disfigEndTime - Time.realtimeSinceStartup);
+                TimeSpan ts = TimeSpan.FromSeconds(remaining);
+                string formatted = $"{ts.Minutes:D2}:{ts.Seconds:D2}";
+                string desc = APLocale.Get("disfigTrapDesc", APLocale.APLanguageType.UI);
+                desc = desc.Replace("<time>", formatted);
+                moodles.AddMoodle(5, "death", $"{APCanvas.coloredAPText}{APLocale.Get("disfigTrap", APLocale.APLanguageType.UI)}", desc, false, false);
             }
             if (mindwipeActive)
             {
-                moodles.AddMoodle(5, "death", $"{APCanvas.coloredAPText}{APLocale.Get("wipeTrap", APLocale.APLanguageType.UI)}", $"{trapSender}{APLocale.Get("wipeTrapDesc", APLocale.APLanguageType.UI)}", false, false);
+                float remaining = Mathf.Max(0, mindwipeEndTime - Time.realtimeSinceStartup);
+                TimeSpan ts = TimeSpan.FromSeconds(remaining);
+                string formatted = $"{ts.Minutes:D2}:{ts.Seconds:D2}";
+                string desc = APLocale.Get("wipeTrapDesc", APLocale.APLanguageType.UI);
+                desc = desc.Replace("<time>", formatted);
+                moodles.AddMoodle(5, "death", $"{APCanvas.coloredAPText}{APLocale.Get("wipeTrap", APLocale.APLanguageType.UI)}", desc, false, false);
             }
         }
         prevUpdateTime = moodleUpdateTime(moodles);
@@ -196,6 +221,7 @@ public class TrapHandler : MonoBehaviour
     IEnumerator ReverseControls()
     {
         revControlActive = true;
+        revControlEndTime = Time.realtimeSinceStartup + 10;
         Vitals.reversedControls = true;
         yield return new WaitForSecondsRealtime(10);
         Vitals.reversedControls = false;
@@ -208,6 +234,7 @@ public class TrapHandler : MonoBehaviour
             yield break; // the layer is solarstuck or the run is already unchipped.
         }
         unchippedActive = true;
+        unchippedEndTime = Time.realtimeSinceStartup + 50;
         worldgen.unchippedMode = true;
         yield return new WaitForSecondsRealtime(50);
         worldgen.unchippedMode = false;
@@ -217,6 +244,7 @@ public class TrapHandler : MonoBehaviour
     IEnumerator Disfigurement()
     {
         disfigActive = true;
+        disfigEndTime = Time.realtimeSinceStartup + 180;
         var prevHeadHealth = Vitals.limbs[0].muscleHealth; // disfiguring removes 25 muscle health...
         var prevHeadSkin = Vitals.limbs[0].skinHealth; // removes 50 skin health...
         var prevHeadBleed = Vitals.limbs[0].bleedAmount; // causes bleeding...
@@ -233,6 +261,7 @@ public class TrapHandler : MonoBehaviour
     IEnumerator Mindwipe()
     {
         mindwipeActive = true;
+        mindwipeEndTime = Time.realtimeSinceStartup + 70;
         var preWipehl = Vitals.hearingLoss; // Mindwipe causes a lot of hearing loss, so we restore it after
         var preWipebh = Vitals.brainHealth; // Again, Mindwipe changes brain health, so we restore it
         Skills skills = Vitals.skills;
