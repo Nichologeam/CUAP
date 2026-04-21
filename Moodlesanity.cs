@@ -71,7 +71,7 @@ public class Moodlesanity : MonoBehaviour
         "bleeding1",
         "heavybleeding2",
         "maxbleeding3",
-        "internalBleed1", // fun fact, this is the only moodle with a captial in its internal name
+        "internalBleed", // fun fact, this is the only moodle with a captial in its internal name
         "highbloodvolume0",
         "highbloodvolume1",
         "highbloodvolume2",
@@ -240,7 +240,7 @@ public class Moodlesanity : MonoBehaviour
         {"bleeding1","Moodlesanity - Bleeding"},
         {"heavybleeding2","Moodlesanity - Heavy bleeding"},
         {"maxbleeding3","Moodlesanity - Catastrophic bleeding"},
-        {"internalBleed1","Moodlesanity - Internal bleeding"},
+        {"internalBleed","Moodlesanity - Internal bleeding"},
         {"highbloodvolume0","Moodlesanity - Bloated"},
         {"highbloodvolume1","Moodlesanity - Hypervolemic"},
         {"highbloodvolume2","Moodlesanity - Critically hypervolemic"},
