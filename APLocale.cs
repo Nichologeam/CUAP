@@ -45,13 +45,14 @@ public static class APLocale
             if (successful)
             {
                 Startup.Logger.LogError($"Locale {filename} was loaded, but is missing sections!"); // error in english
-                APCanvas.EnqueueArchipelagoNotification($"Locale {filename} was loaded, but is missing sections!", 3);
+                APCanvas.EnqueueArchipelagoNotification($"Locale {filename} was loaded, but is missing sections!",3);
                 return;
             }
             Startup.Logger.LogError($"Failed to load locale from {filename} at {path}! Make sure the mod is installed in the correct folder!\n{ex}"); // error in english
-            APCanvas.EnqueueArchipelagoNotification($"Failed to load locale from {filename} at {path}! Make sure the mod is installed in the correct folder!<br>{ex}",3);
+            APCanvas.EnqueueArchipelagoNotification($"Failed to load locale from {filename} at {path}! Make sure the mod is installed in the correct folder!",3);
             return; // the code below this will always error if this catch is triggered. return early to avoid that
         }
+        APCanvas.ChangeLanguage();
     }
 
     public static string Get(string key, APLanguageType type)

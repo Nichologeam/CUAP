@@ -166,6 +166,14 @@ public class APCanvas : MonoBehaviour
         UpdateSkillsanityValues(2, 60);
         versionTag.text = APLocale.Get("versionTag", APLocale.APLanguageType.UI) + Startup.CUAPVersion;
         StartCoroutine(CycleAPColors());
+        ConnectionBackground.transform.Find("Title").gameObject.GetComponent<TMP_Text>().text = APLocale.Get("disconnected", APLocale.APLanguageType.UI);
+        ConnectedBackground.transform.Find("Title").gameObject.GetComponent<TMP_Text>().text = APLocale.Get("connected", APLocale.APLanguageType.UI);
+        ItemNotif.transform.Find("greentext").gameObject.GetComponent<TMP_Text>().text = APLocale.Get("received", APLocale.APLanguageType.UI);
+        HintNotif.transform.Find("yellowtext").gameObject.GetComponent<TMP_Text>().text = APLocale.Get("hint", APLocale.APLanguageType.UI);
+        ErrorNotif.transform.Find("redtext").gameObject.GetComponent<TMP_Text>().text = APLocale.Get("error", APLocale.APLanguageType.UI);
+        SkillsanityTracker.transform.Find("Title").gameObject.GetComponent<TMP_Text>().text = APLocale.Get("skilltracker", APLocale.APLanguageType.UI);
+        MoodlesanityQuestboard.transform.Find("Title").gameObject.GetComponent<TMP_Text>().text = APLocale.Get("moodquestboard", APLocale.APLanguageType.UI);
+        layerSelector.transform.Find("Title").gameObject.GetComponent<TMP_Text>().text = APLocale.Get("layerselector", APLocale.APLanguageType.UI);
         if (!File.Exists("ApConnection.txt")) return; // Read saved slot information from file
         var fileText = File.ReadAllText("ApConnection.txt").Replace("\r", "").Split('\n');
         Ipporttext.text = fileText[0];
@@ -517,5 +525,21 @@ public class APCanvas : MonoBehaviour
             yield return 0; // one frame of downtime to make it clearer that the next error is a new one
         }
         ErrorProcessing = false;
+    }
+
+    public static void ChangeLanguage()
+    {
+        if (instance == null)
+        {
+            return;
+        }
+        instance.ConnectionBackground.transform.Find("Title").gameObject.GetComponent<TMP_Text>().text = APLocale.Get("disconnected", APLocale.APLanguageType.UI);
+        instance.ConnectedBackground.transform.Find("Title").gameObject.GetComponent<TMP_Text>().text = APLocale.Get("connected", APLocale.APLanguageType.UI);
+        ItemNotif.transform.Find("greentext").gameObject.GetComponent<TMP_Text>().text = APLocale.Get("received", APLocale.APLanguageType.UI);
+        HintNotif.transform.Find("yellowtext").gameObject.GetComponent<TMP_Text>().text = APLocale.Get("hint", APLocale.APLanguageType.UI);
+        ErrorNotif.transform.Find("redtext").gameObject.GetComponent<TMP_Text>().text = APLocale.Get("error", APLocale.APLanguageType.UI);
+        instance.SkillsanityTracker.transform.Find("Title").gameObject.GetComponent<TMP_Text>().text = APLocale.Get("skilltracker", APLocale.APLanguageType.UI);
+        instance.MoodlesanityQuestboard.transform.Find("Title").gameObject.GetComponent<TMP_Text>().text = APLocale.Get("moodquestboard", APLocale.APLanguageType.UI);
+        layerSelector.transform.Find("Title").gameObject.GetComponent<TMP_Text>().text = APLocale.Get("layerselector", APLocale.APLanguageType.UI);
     }
 }

@@ -66,7 +66,15 @@
 		"apItemTrader": "A mysterious item from another world. Buy it to see what it is.",
 		"intBundle": "INT Experience Bundle (35)",
 		"intBundleDesc": "Archipelago has removed the recipe from this blueprint, but you will still get the INT Experience from it.",
-		"intBundleUse": "Claimed 35 INT Experience!"
+		"intBundleUse": "Claimed 35 INT Experience!",
+		"disconnected": "Disconnected",
+		"connected": "Connected!",
+		"received": "Received!",
+		"hint": "Hint!",
+		"error": "Error!",
+		"skilltracker": "Skillsanity Tracker",
+		"moodquestboard": "Moodlesanity Questboard",
+		"layerselector": "Select the Next Layer"
     },
     "Commands": {
         "dlDesc": "Toggles DeathLink for the current game session.",
