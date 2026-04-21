@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using HarmonyLib;
 using System.Threading.Tasks;
+using UnityEngine.UI;
 
 namespace CUAP;
 
@@ -124,6 +125,6 @@ public class Startup : BaseUnityPlugin
     // that's why this random function with two lines is here.
     private void MainMenuPatches()
     {
-        // GameObject.Find("Canvas/Logo").GetComponent<Image>().sprite = apassets.LoadAsset<Sprite>("logotext"); <<< Uses outdated logo. Needs to be remade
+        GameObject.Find("Canvas/Logo").GetComponent<Image>().sprite = apassets.LoadAsset<Sprite>("logotext");
     }
 }
