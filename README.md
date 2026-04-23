@@ -1,6 +1,6 @@
 ### Casualties: Unknown Archipelago
 
-This mod is made for the V6 version of Casualties: Unknown, which can be downloaded from the game's [Steam page](https://store.steampowered.com/app/4576490/Casualties_Unknown/).
+This mod is made for the V6.1 version of Casualties: Unknown, which can be downloaded from the game's [Steam page](https://store.steampowered.com/app/4576490/Casualties_Unknown/).
 To use this mod on the Itch.io version, use mod version v0.8.0 on the Itch.io branch. Keep in mind that the Itch.io version of Casualties: Unknown is no longer receiving mod updates.
 
 # **Installing The Mod**
