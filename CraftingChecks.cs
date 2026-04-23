@@ -166,7 +166,7 @@ public class CraftingChecks : MonoBehaviour
     private static Dictionary<string, int> RecipeToINTRequirement = new Dictionary<string, int>()
     {
         {"Foliage rope Recipe",1},
-        {"Foliage Recipe",4},
+        {"Foliage Recipe",12},
         {"String Recipe",5},
         {"Canvas Recipe",2},
         {"Wood scraps Recipe",3},
@@ -272,7 +272,7 @@ public class CraftingChecks : MonoBehaviour
         {"Syringe Recipe",8},
         {"Firestarter Recipe",8},
         {"Campfire Recipe",4},
-        {"Water Recipe",4},
+        {"Water Recipe",1},
         {"Charcoal Recipe",7},
         {"Bread Recipe",7},
         {"Pancake Recipe",5},
@@ -289,7 +289,7 @@ public class CraftingChecks : MonoBehaviour
         {"Titanium pickaxe Recipe",16},
         {"Titanium machete Recipe",16},
         {"Titanum multitool Recipe",16},
-        {"Climbing rope Recipe",8},
+        {"Climbing rope Recipe",7},
     };
     private static List<string> CheckNameToRecipeID = new List<string>()
     {   // Same order as items.py, and the interal recipe order in-game
