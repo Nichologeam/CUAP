@@ -49,7 +49,7 @@ class MinigameLocker
                     {
                         return true; // player has the respective item
                     }
-                    plrcam.DoAlert($"{data.message}{ APLocale.Get("locked", APLocale.APLanguageType.UI)} {APCanvas.coloredAPText}");
+                    plrcam.DoAlert($"{data.message} { APLocale.Get("locked", APLocale.APLanguageType.UI)} {APCanvas.coloredAPText}");
                     return false; // player does not
                 }
                 return true; // unknown minigame (should only be Suicide and Self Harm)
