@@ -510,8 +510,9 @@ public class CraftingChecks : MonoBehaviour
                         {
                             Debug.LogWarning("All Archipelago Items have been collected! Disabling apItems flag.");
                             apItems = false;
+                            SetupAPBlueprint(false);
                             Destroy(bp);
-                            break;
+                            return;
                         }
                         var helper = ThreadingHelper.Instance;
                         _ = AssignCustomSprite(renderer, bp.GetComponent<Item>(), currentAPItemNum, helper);
