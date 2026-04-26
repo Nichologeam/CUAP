@@ -506,7 +506,7 @@ public class CraftingChecks : MonoBehaviour
                         renderer.sprite = aplogo;
                         var blueprint = bp.GetComponent<BlueprintScript>();
                         blueprint.recipeIndex = currentAPItemNum;
-                        if (currentAPItemNum > apItemAmount)
+                        if (currentAPItemNum >= apItemAmount)
                         {
                             Debug.LogWarning("All Archipelago Items have been collected! Disabling apItems flag.");
                             apItems = false;
