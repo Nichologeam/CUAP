@@ -35,6 +35,7 @@ public class APClientClass
     public static int selectedGoal;
     public static int minigameRandom;
     private static float reconnectCountdown;
+    public static bool outOfItems = false;
     public static ArchipelagoSession? session;
     public static DeathLinkService? dlService;
 
@@ -77,6 +78,7 @@ public class APClientClass
     {
         session?.Socket.DisconnectAsync();
         session = null;
+        outOfItems = false;
         APCanvas.versionTag.text = APLocale.Get("versionTag", APLocale.APLanguageType.UI) + Startup.CUAPVersion;
         Time.timeScale = 1;
     }

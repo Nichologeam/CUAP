@@ -443,7 +443,7 @@ public class CraftingChecks : MonoBehaviour
                 initialSync = true;
             }
         }
-        if (options.TryGetValue("APItemAmount", out var items) && Convert.ToInt16(items) > 0)
+        if ((options.TryGetValue("APItemAmount", out var items) && Convert.ToInt16(items) > 0) && !APClientClass.outOfItems)
         {
             apItems = true;
             apItemAmount = Convert.ToInt16(items);
@@ -510,6 +510,7 @@ public class CraftingChecks : MonoBehaviour
                         {
                             Debug.LogWarning("All Archipelago Items have been collected! Disabling apItems flag.");
                             apItems = false;
+                            APClientClass.outOfItems = true;
                             SetupAPBlueprint(false);
                             Destroy(bp);
                             return;
