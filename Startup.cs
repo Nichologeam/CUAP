@@ -11,12 +11,12 @@ using UnityEngine.UI;
 
 namespace CUAP;
 
-[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.9.2.0")]
+[BepInPlugin("nichologeam.cuap", "Casualties: Unknown Archipelago", "0.9.3.0")]
 public class Startup : BaseUnityPlugin
 {
     public static new ManualLogSource Logger;
     public static ArchipelagoSession Client;
-    public static string CUAPVersion = "v0.9.2";
+    public static string CUAPVersion = "v0.9.3";
     public static AssetBundle apassets;
     private static Harmony apHarmony;
     public static Startup instance;
