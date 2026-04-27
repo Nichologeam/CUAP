@@ -9,7 +9,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.UIElements.Collections;
 
 namespace CUAP;
 
@@ -26,6 +25,7 @@ public class CraftingChecks : MonoBehaviour
     private bool randomRecipes = false;
     private bool initialSync = false;
     private static bool updateAllBPs = false;
+    private float itemCheckTime;
     private int lastFrameRecipeCount = 0;
     public static bool freesamples = false;
     public static bool craftsanity = false;
@@ -493,55 +493,51 @@ public class CraftingChecks : MonoBehaviour
         }
         if (apItems)
         {
-            try
+            itemCheckTime -= Time.deltaTime;
+            if (itemCheckTime < 0)
             {
-                var blueprints = FindObjectsOfType<GameObject>()
-                    .Where(o => o.name == "blueprint(Clone)")
-                    .ToList();
-                foreach (GameObject bp in blueprints)
+                try
                 {
-                    var renderer = bp.GetComponent<SpriteRenderer>();
-                    if (renderer.sprite.name == bgBlueprint.name || updateAllBPs) // do all of this ONLY if it's a new blueprint OR blueprints should be updated
+                    var blueprints = FindObjectsOfType<GameObject>()
+                        .Where(o => o.name == "blueprint(Clone)")
+                        .ToList();
+                    foreach (GameObject bp in blueprints)
                     {
-                        renderer.sprite = aplogo;
-                        var blueprint = bp.GetComponent<BlueprintScript>();
-                        blueprint.recipeIndex = currentAPItemNum;
-                        if (currentAPItemNum >= apItemAmount)
+                        var renderer = bp.GetComponent<SpriteRenderer>();
+                        if (renderer.sprite.name == bgBlueprint.name || updateAllBPs) // do all of this ONLY if it's a new blueprint OR blueprints should be updated
                         {
-                            Debug.LogWarning("All Archipelago Items have been collected! Disabling apItems flag.");
-                            apItems = false;
-                            APClientClass.outOfItems = true;
-                            SetupAPBlueprint(false);
-                            Destroy(bp);
-                            return;
+                            renderer.sprite = aplogo;
+                            var blueprint = bp.GetComponent<BlueprintScript>();
+                            blueprint.recipeIndex = currentAPItemNum;
+                            if (currentAPItemNum >= apItemAmount)
+                            {
+                                Debug.LogWarning("All Archipelago Items have been collected! Disabling apItems flag.");
+                                apItems = false;
+                                APClientClass.outOfItems = true;
+                                SetupAPBlueprint(false);
+                                Destroy(bp);
+                                return;
+                            }
+                            var helper = ThreadingHelper.Instance;
+                            _ = AssignCustomSprite(renderer, bp.GetComponent<Item>(), currentAPItemNum, helper);
                         }
-                        var helper = ThreadingHelper.Instance;
-                        _ = AssignCustomSprite(renderer, bp.GetComponent<Item>(), currentAPItemNum, helper);
+                        else
+                        {
+                            var item = bp.GetComponent<Item>();
+                            item.Stats.fullName = $"{APCanvas.coloredAPText} Item";
+                            item.favourited = true;
+                        }
                     }
-                    else
-                    {
-                        continue; // we've already handled this blueprint
-                    }
+                    updateAllBPs = false;
+                    itemCheckTime = 0.3f;
                 }
-                updateAllBPs = false;
-                if (GameObject.Find("blueprint(Clone)")) // does at least one blueprint still exist?
+                catch (Exception ex)
                 {
-                    var closest = blueprints.OrderBy(o => (o.transform.position - GameObject.Find("Experiment/Body").transform.position).sqrMagnitude)
-                               .FirstOrDefault(); // find the closest one
-                    var item = closest.gameObject.GetComponent<Item>();
-                    var recipeId = closest.gameObject.GetComponent<BlueprintScript>().recipeIndex;
-                    item.Stats.fullName = $"{APCanvas.coloredAPText} Item";
-                    item.Stats.description = APLocale.Get("apItemDesc", APLocale.APLanguageType.UI);
-                    item.Stats.description = item.Stats.description.Replace("<plr>", BlueprintToPlayerName.Get(recipeId));
-                    item.Stats.description = item.Stats.description.Replace("<item>", BlueprintToItemName.Get(recipeId));
-                    item.favourited = true;
+                    Startup.Logger.LogError($"Archipelago Blueprint Error: {ex}");
+                    APCanvas.EnqueueArchipelagoNotification($"{APLocale.Get("itemError", APLocale.APLanguageType.Errors)}{ex}", 3);
+                    itemCheckTime = 0.3f;
+                    return;
                 }
-            }
-            catch (Exception ex)
-            {
-                Startup.Logger.LogError($"Archipelago Blueprint Error: {ex}");
-                APCanvas.EnqueueArchipelagoNotification($"{APLocale.Get("itemError", APLocale.APLanguageType.Errors)}{ex}",3);
-                return;
             }
         }
     }
@@ -631,6 +627,10 @@ public class CraftingChecks : MonoBehaviour
                 spriteSemaphore.Release();
                 return; // object has been destroyed, don't continue (doing this again because it's after an await call)
             }
+            item.Stats.description = APLocale.Get("apItemDesc", APLocale.APLanguageType.UI);
+            item.Stats.description = item.Stats.description.Replace("<plr>", rawScoutData[locationID].Player.Alias);
+            item.Stats.description = item.Stats.description.Replace("<item>", rawScoutData[locationID].ItemName);
+            item.Stats.description = item.Stats.description.Replace("<color>", CommandPatch.ItemDataToPriorityColor(rawScoutData[locationID].Flags));
             foreach (var info in rawScoutData)
             {
                 var itemInfo = info.Value; // get just the ScoutedItemInfo
