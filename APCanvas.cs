@@ -405,6 +405,10 @@ public class APCanvas : MonoBehaviour
     }
     private IEnumerator RerollCooldown()
     {
+        if (rerollCooldownMax == 0)
+        {
+            yield return null; // there is no set cooldown. just return instantly
+        }
         rerollCooldown = rerollCooldownMax;
         RerollText.text = $"({rerollCooldownMax})";
         while (rerollCooldown > 0)
