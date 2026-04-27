@@ -33,8 +33,6 @@ public class CraftingChecks : MonoBehaviour
     private SemaphoreSlim spriteSemaphore = new(1, 1);
     private static readonly long startingRecipeID = 22318500;
     private static HashSet<string> AppliedRecipes = new();
-    public static Dictionary<long, string> BlueprintToPlayerName = new Dictionary<long, string>();
-    public static Dictionary<long, string> BlueprintToItemName = new Dictionary<long, string>();
     public static Dictionary<string, string> CheckNameToItem = new Dictionary<string, string>()
     {
         {"Foliage rope Recipe","rope"},
@@ -292,7 +290,7 @@ public class CraftingChecks : MonoBehaviour
         {"Climbing rope Recipe",7},
     };
     private static List<string> CheckNameToRecipeID = new List<string>()
-    {   // Same order as items.py, and the interal recipe order in-game
+    {   // Same order as items.py, and the internal recipe order in-game
         "Foliage rope Recipe",
         "Foliage Recipe",
         "String Recipe",

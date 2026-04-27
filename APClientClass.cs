@@ -3,8 +3,6 @@ using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
-using Archipelago.MultiClient.Net.Models;
-using Archipelago.MultiClient.Net.Packets;
 using BepInEx;
 using System;
 using System.Collections;
@@ -316,29 +314,10 @@ public class APClientClass
         APCanvas.UpdateGUIDescriptions();
         if (session is null) return;
         if (session?.Socket is null || !session.Socket.Connected) return;
-        session.Socket.PacketReceived += Socket_PacketReceived;
         NextSend -= Time.deltaTime;
         if (ChecksToSend.Any() && NextSend <= 0)
         {
             SendChecks();
-        }
-    }
-
-    private static void Socket_PacketReceived(ArchipelagoPacketBase packet)
-    {
-        if (packet is LocationInfoPacket)
-        {
-            var items = packet.ToJObject()["locations"]?.ToObject<List<NetworkItem>>();
-            if (items != null && session != null)
-            {
-                foreach (var item in items)
-                {
-                    var itemname = session.Items.GetItemName(item.Item, session.Players?.GetPlayerInfo(item.Player).Game);
-                    CraftingChecks.BlueprintToItemName.Add(item.Location - 22318500, itemname);
-                    CraftingChecks.BlueprintToPlayerName.Add(item.Location - 22318500, 
-                        session.Players != null && item.Player >= 0 ? session.Players.GetPlayerName(item.Player) : $"Unknown Player (id:{item.Player})");
-                }
-            }
         }
     }
 
