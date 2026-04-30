@@ -98,7 +98,7 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
             limb.bleedAmount += 40f;
             limb.pain += 30f;
             Sound.Play("harmSting", Vector2.zero, true, false, null, 0.7f, 1f, false, false);
-            DeathLinkText.text = $"{DeathLinkText.text} {APLocale.Get("damage   ", APLocale.APLanguageType.Messages)} {limb.fullName}.";
+            DeathLinkText.text = $"{DeathLinkText.text} {APLocale.Get("damage", APLocale.APLanguageType.Messages)} {limb.fullName}.";
         }
     }
 
