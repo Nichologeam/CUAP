@@ -87,7 +87,7 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
         if (DeathlinkSeverity)
         {
             DeathLinkText.text = $"{DeathLinkText.text}{APLocale.Get("runEnd", APLocale.APLanguageType.Messages)}";
-            Vitals.brainHealth = 0; // Instantly kill Experiment
+            PlayerCamera.main.StartSelfDestruct(); // Start the brainchip's self destruct sequence
             Destroy(this); // Destroy script so we don't send a deathlink next frame. No damage will be done, because the player is forced back to main menu.
         }
         else // Nearly exact replica of the V4 version of SelfHarmer.SelfHarm because we can't actually call it
