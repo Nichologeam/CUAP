@@ -291,7 +291,7 @@ public class APClientClass
                 APCanvas.ShowMainGUI = false;
                 APCanvas.ShowSkillTracker = true;
             }
-            else if (GameObject.Find("Main Camera/Canvas").transform.Find("GammaPanel").gameObject.activeSelf) // gamma panel is open
+            else if (GameObject.Find("Main Camera/Canvas").transform.Find("PauseMenu").gameObject.activeSelf) // pause menu is open
             {
                 APCanvas.ShowMainGUI = true;
                 APCanvas.ShowSkillTracker = false;
