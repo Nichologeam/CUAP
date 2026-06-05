@@ -74,7 +74,14 @@
 		"error": "Error!",
 		"skilltracker": "Skillsanity Tracker",
 		"moodquestboard": "Moodlesanity Questboard",
-		"layerselector": "Select the Next Layer"
+		"layerselector": "Select the Next Layer",
+		"tradeDisabled": "Disabled by YAML",
+		"ringTrading": "Use RingLink",
+		"energyTrading": "Use EnergyLink",
+		"noTradeType": "Select a currency above",
+		"tradeTransfer": "Deposit",
+		"tradeTransfering": "Transfering...",
+		"tradeTransferFail": "Must be a number"
     },
     "Commands": {
         "dlDesc": "Toggles DeathLink for the current game session.",
@@ -171,6 +178,8 @@
 		"trapUnhandled": " is unhandled!",
 		"dlNoSender": "Received a DeathLink packet with no sender. Ignoring.",
 		"itemError": "Archipelago Blueprint Error: ",
-		"customSprite": "AssignCustomSprite Failed!"
+		"customSprite": "AssignCustomSprite Failed!",
+		"traderLink": "Traderlink error! ",
+		"ringLinkSelf": "Got a RingLink packet from ourselves. Ignoring."
 	}
 }

@@ -91,6 +91,11 @@ public class APCanvas : MonoBehaviour
     private static Queue<string> ItemQueue = new Queue<string>();
     private static Queue<string> HintQueue = new Queue<string>();
     private static Queue<string> ErrorQueue = new Queue<string>();
+    public static GameObject TraderLink;
+    public static Button TraderLinkRing;
+    public static Button TraderLinkEnergy;
+    public static TMP_InputField TraderLinkAmount;
+    public static Button TraderLinkDeposit;
     public static bool DeathlinkEnabled = false;
     public static TMP_Text Status;
     public static bool InGame
@@ -161,6 +166,12 @@ public class APCanvas : MonoBehaviour
         odButton = layerSelector.transform.Find("Overgrown Depths Button").gameObject.GetComponent<Button>();
         apItemsTracker = GameObject.Find("APCanvas(Clone)/APCanvas/AP Items Tracker");
         apItemsCounter = apItemsTracker.transform.Find("Counter").gameObject.GetComponent<TMP_Text>();
+        TraderLink = GameObject.Find("APCanvas(Clone)/APCanvas/TraderLink"); // containing object for the TraderLink system
+        TraderLinkRing = TraderLink.transform.Find("RingLink Button").gameObject.GetComponent<Button>();
+        TraderLinkEnergy = TraderLink.transform.Find("EnergyLink Button").gameObject.GetComponent<Button>();
+        TraderLinkAmount = TraderLink.transform.Find("Amount").gameObject.GetComponent<TMP_InputField>();
+        TraderLinkDeposit = TraderLink.transform.Find("Transfer Button").gameObject.GetComponent<Button>();
+        gameObject.AddComponent<TraderLink>();
         UpdateSkillsanityValues(0, 60);
         UpdateSkillsanityValues(1, 60);
         UpdateSkillsanityValues(2, 60);

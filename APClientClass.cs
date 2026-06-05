@@ -114,6 +114,16 @@ public class APClientClass
             {
                 minigameRandom = Convert.ToInt32(minigames);
             }
+            if (slotdata.TryGetValue("RingLink", out var ringTrading))
+            {
+                TraderLink.ringTrading = Convert.ToBoolean(ringTrading);
+                session.ConnectionInfo.UpdateConnectionOptions(session.ConnectionInfo.Tags.Append("RingLink").ToArray());
+            }
+            if (slotdata.TryGetValue("EnergyLink", out var energyTrading))
+            {
+                TraderLink.energyTrading = Convert.ToBoolean(energyTrading);
+            }
+            TraderLink.instance.OnConnect();
         }
         APCanvas.instance.StartCoroutine(NewConnectionCountdown()); // i need StartCoroutine, so i'll use APCanvas just because it is guarenteed to exist
     }
