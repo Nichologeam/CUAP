@@ -117,7 +117,10 @@ public class APClientClass
             if (slotdata.TryGetValue("RingLink", out var ringTrading))
             {
                 TraderLink.ringTrading = Convert.ToBoolean(ringTrading);
-                session.ConnectionInfo.UpdateConnectionOptions(session.ConnectionInfo.Tags.Append("RingLink").ToArray());
+                if (Convert.ToBoolean(ringTrading))
+                {
+                    session.ConnectionInfo.UpdateConnectionOptions(session.ConnectionInfo.Tags.Append("RingLink").ToArray());
+                }
             }
             if (slotdata.TryGetValue("EnergyLink", out var energyTrading))
             {
