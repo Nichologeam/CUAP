@@ -32,6 +32,8 @@
 		"lockpicking": "Lockpicking is",
 		"shrapnel": "Removing shrapnel is",
 		"injection": "Injection is",
+		"defibManual": "Manual defibrilation is",
+		"AED": "Using an AED is",
 		"minigames": "Minigames are locked by ",
 		"locked": "locked by",
 		"trap": "Trap: ",

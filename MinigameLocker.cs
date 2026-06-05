@@ -21,6 +21,8 @@ class MinigameLocker
         { typeof(LockpingMinigame), ("Lockpicking Minigame", APLocale.Get("lockpicking", APLocale.APLanguageType.UI)) },
         { typeof(ShrapnelMinigame), ("Shrapnel Minigame", APLocale.Get("shrapnel", APLocale.APLanguageType.UI)) },
         { typeof(SyringeMinigame), ("Syringe Minigame", APLocale.Get("injection", APLocale.APLanguageType.UI)) },
+        { typeof(ManualDefibMinigame), ("Manual Defibrilation Minigame", APLocale.Get("defibManual", APLocale.APLanguageType.UI)) },
+        { typeof(AEDMinigame), ("AED Minigame", APLocale.Get("AED", APLocale.APLanguageType.UI)) }
     };
     static bool Prefix(MinigameBase __instance, Minigame minigame, Item item)
     {
