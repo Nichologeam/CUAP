@@ -83,7 +83,8 @@
 		"noTradeType": "Select a currency above",
 		"tradeTransfer": "Deposit",
 		"tradeTransfering": "Transfering...",
-		"tradeTransferFail": "Must be a number"
+		"tradeTransferFail": "Must be a number",
+		"sleepReceived": "SleepLink received. Goodnight!"
     },
     "Commands": {
         "dlDesc": "Toggles DeathLink for the current game session.",
@@ -182,6 +183,7 @@
 		"itemError": "Archipelago Blueprint Error: ",
 		"customSprite": "AssignCustomSprite Failed!",
 		"traderLink": "Traderlink error! ",
-		"ringLinkSelf": "Got a RingLink packet from ourselves. Ignoring."
+		"ringLinkSelf": "Got a RingLink packet from ourselves. Ignoring.",
+		"sleepLinkSelf": "Got a SleepLink packet from ourselves. Ignoring."
 	}
 }

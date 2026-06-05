@@ -127,6 +127,14 @@ public class APClientClass
                 TraderLink.energyTrading = Convert.ToBoolean(energyTrading);
             }
             TraderLink.instance.OnConnect();
+            if (slotdata.TryGetValue("SleepLink", out var sleep))
+            {
+                if (Convert.ToBoolean(ringTrading))
+                {
+                    session.ConnectionInfo.UpdateConnectionOptions(session.ConnectionInfo.Tags.Append("SleepLink").ToArray());
+                    SleepLink.instance.OnConnect();
+                }
+            }
         }
         APCanvas.instance.StartCoroutine(NewConnectionCountdown()); // i need StartCoroutine, so i'll use APCanvas just because it is guarenteed to exist
     }
