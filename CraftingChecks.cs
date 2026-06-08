@@ -484,6 +484,7 @@ public class CraftingChecks : MonoBehaviour
                 if (!AppliedRecipes.Add(gotrecipe)) continue; // already in the list
                 var recipeToLearn = CheckNameToRecipeID.IndexOf(gotrecipe); // get the recipe we're learning
                 RecipeToINTRequirement.TryGetValue(gotrecipe, out int recipeRequiredINT); // get its int requried to craft
+                Startup.Logger.LogMessage($"Received recipe {gotrecipe}, which is ID {recipeToLearn}."); // adding some debug here because sometimes this fails for no reason?
                 Recipes.recipes[recipeToLearn].INT = recipeRequiredINT; // set the int to the vanilla value
                 Recipes.recipes[recipeToLearn].specialKnown = true; // force it visible
             }
