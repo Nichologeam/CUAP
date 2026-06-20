@@ -129,7 +129,7 @@ public class APClientClass
             TraderLink.instance.OnConnect();
             if (slotdata.TryGetValue("SleepLink", out var sleep))
             {
-                if (Convert.ToBoolean(ringTrading))
+                if (Convert.ToBoolean(sleep))
                 {
                     session.ConnectionInfo.UpdateConnectionOptions(session.ConnectionInfo.Tags.Append("SleepLink").ToArray());
                     SleepLink.instance.OnConnect();
