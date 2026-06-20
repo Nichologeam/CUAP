@@ -401,7 +401,7 @@ public class CraftingChecks : MonoBehaviour
         "Bone welding tool Recipe",
         "Tweezers Recipe",
         "Blood bag Recipe",
-        "Saline Bottle Recipe",
+        "Saline bottle Recipe",
         "Antiseptic Recipe",
         "Relief cream Recipe",
         "Splint Recipe",
