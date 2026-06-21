@@ -129,7 +129,7 @@ public class APClientClass
             TraderLink.instance.OnConnect();
             if (slotdata.TryGetValue("SleepLink", out var sleep))
             {
-                if (Convert.ToBoolean(ringTrading))
+                if (Convert.ToBoolean(sleep))
                 {
                     session.ConnectionInfo.UpdateConnectionOptions(session.ConnectionInfo.Tags.Append("SleepLink").ToArray());
                     SleepLink.instance.OnConnect();
@@ -216,22 +216,6 @@ public class APClientClass
             {
                 switch (item.ItemName) // then put everything else in a switch statement to make it cleaner
                 {
-                    case "Hope":
-                        if (APCanvas.InGame)
-                        {
-                            var plr = GameObject.Find("Experiment/Body");
-                            plr.GetComponent<Body>().happiness += 3;
-                            Sound.Play("moodup", plr.transform.position, true);
-                        }
-                        break;
-                    case "Despair":
-                        if (APCanvas.InGame)
-                        {
-                            var plr = GameObject.Find("Experiment/Body");
-                            plr.GetComponent<Body>().happiness -= 1;
-                            Sound.Play("mooddown", plr.transform.position, true);
-                        }
-                        break;
                     case "Gravel Lands Unlock":
                         LayerUnlockDictionary.Add(item.ItemName);
                         break;

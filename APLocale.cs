@@ -3,6 +3,16 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using UnityEngine;
+using Archipelago.MultiClient.Net.Enums;
+
+public class APNotes
+{
+    public string[] Progression = [];
+    public string[] Useful = [];
+    public string[] Filler = [];
+    public string[] Trap = [];
+}
 
 public static class APLocale
 {
@@ -15,6 +25,7 @@ public static class APLocale
         public Dictionary<string, string> Commands = new Dictionary<string, string>(); // strings used in custom commands, like `apchat`
         public Dictionary<string, string> Messages = new Dictionary<string, string>(); // strings used in onscreen messages, like server countdowns or deathlinks
         public Dictionary<string, string> Errors = new Dictionary<string, string>(); // strings used when things go wrong, like error messages or debug outputs
+        public APNotes Notes = new APNotes(); // strings to be displayed on survivor notes for Archipelago hints
     }
 
     public enum APLanguageType
@@ -22,7 +33,8 @@ public static class APLocale
         UI,
         Commands,
         Messages,
-        Errors
+        Errors,
+        Notes
     }
 
     public static void LoadLang(string filename) // when given a filename, return the contents of the JSON file as a dict
@@ -62,6 +74,11 @@ public static class APLocale
             Startup.Logger.LogError("Language file not loaded!"); // error in english
             return $"[LANG NOT LOADED]";
         }
+        if (type == APLanguageType.Notes)
+        {
+            Startup.Logger.LogError($"you used Get when you should've used GetRandomNote, dumbo");
+            return $"[LANG INCORRECT {key}]";
+        }
         var dict = GetDictionary(type); // get the right dict for the type specified
         if (dict != null && dict.TryGetValue(key, out var value))
         {
@@ -69,6 +86,28 @@ public static class APLocale
         }
         Startup.Logger.LogError($"{key} is not in the language dictionary! Type: {type}");
         return $"[LANG MISSING {type.ToString().ToUpper()}:{key}]"; // if it doesn't exist, return error
+    }
+
+    public static string GetRandomNote(ItemFlags flags) // find the correct text by classification, then return a random one of those
+    {
+        string[] notes;
+        if (flags.HasFlag(ItemFlags.Trap)) // check HasFlag instead of a direct == to support Progression + Useful items (and Pokemon Mystery Dungeon: Explorer's of Sky's singular Useful + Trap item)
+        {
+            notes = lang.Notes.Trap;
+        }
+        else if (flags.HasFlag(ItemFlags.Advancement))
+        {
+            notes = lang.Notes.Progression;
+        }
+        else if (flags.HasFlag(ItemFlags.NeverExclude))
+        {
+            notes = lang.Notes.Useful;
+        }
+        else
+        {
+            notes = lang.Notes.Filler;
+        }
+        return notes[UnityEngine.Random.Range(0, notes.Length)];
     }
 
     private static Dictionary<string, string> GetDictionary(APLanguageType type)
