@@ -46,6 +46,22 @@ public class DepthChecks : MonoBehaviour
             }
         }
     }
+    [HarmonyPatch(typeof(SaveSystem), "TryLoadGame")]
+    class OverrideSaveDepth
+    {
+        static void Postfix(SaveSystem __instance)
+        {
+            int saveDepth;
+            saveDepth = (int)__instance.jObject["totalTraveled"];
+            while (saveDepth >= (DepthExtendersRecieved+1)*300){
+                worldgen.biomeDepth -= 1;
+                worldgen.totalTraveled -= (int)(worldgen.height * 0.3f);
+                if (saveDepth > 1200 && worldgen.biomeDepth == 0) // don't wanna go back to gravel lands if already deeper than that
+                    worldgen.biomeDepth = 4;
+            }
+        }
+    }
+
     private void Update()
     {
         RoundedMeters = Mathf.RoundToInt(worldgen.PlayerTotalDepthMeters());
