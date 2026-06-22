@@ -3,9 +3,12 @@ using UnityEngine;
 using TMPro;
 using System.Collections;
 using Archipelago.MultiClient.Net;
+using HarmonyLib;
+using Newtonsoft.Json.Linq;
 
 namespace CUAP;
 
+[HarmonyPatch(typeof(SaveSystem), "TryLoadGame")]
 public class DepthChecks : MonoBehaviour
 {
     public static ArchipelagoSession Client;
@@ -43,21 +46,6 @@ public class DepthChecks : MonoBehaviour
             {
                 Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: Defeat Elder Thornback");
                 GoalDepth = long.MaxValue; // not needed for this goal
-            }
-        }
-    }
-    [HarmonyPatch(typeof(SaveSystem), "TryLoadGame")]
-    class OverrideSaveDepth
-    {
-        static void Postfix(SaveSystem __instance)
-        {
-            int saveDepth;
-            saveDepth = (int)__instance.jObject["totalTraveled"];
-            while (saveDepth >= (DepthExtendersRecieved+1)*300){
-                worldgen.biomeDepth -= 1;
-                worldgen.totalTraveled -= (int)(worldgen.height * 0.3f);
-                if (saveDepth > 1200 && worldgen.biomeDepth == 0) // don't wanna go back to gravel lands if already deeper than that
-                    worldgen.biomeDepth = 4;
             }
         }
     }
@@ -114,5 +102,16 @@ public class DepthChecks : MonoBehaviour
             }
         }
         yield return new WaitUntil(() => !worldgen.loadingObject.activeSelf); // wait until loading is done to not trigger this every frame
+    }
+    void Postfix(SaveSystem __instance, ref JObject ___jObject)
+    {
+         int saveDepth;
+         saveDepth = (int)___jObject["totalTraveled"];
+         while (saveDepth >= (APClientClass.DepthExtendersRecieved+1)*300){
+             worldgen.biomeDepth -= 1;
+             worldgen.totalTraveled -= (int)(worldgen.height * 0.3f);
+             if (saveDepth > 1200 && worldgen.biomeDepth == 0) // don't wanna go back to gravel lands if already deeper than that
+                worldgen.biomeDepth = 4;
+         }
     }
 }
