@@ -20,6 +20,7 @@ public class DepthChecks : MonoBehaviour
     private long GoalCheckID;
     public TextMeshProUGUI DisplayText;
     public List<long> AlreadySentChecks = [];
+    public bool SaveBypass;
 
     private void OnEnable()
     {
@@ -52,29 +53,31 @@ public class DepthChecks : MonoBehaviour
 
     private void Update()
     {
-        RoundedMeters = Mathf.RoundToInt(worldgen.PlayerTotalDepthMeters());
-        if (worldgen.loadingObject.activeSelf)
-        {
-            StartCoroutine(CheckForDepthExtenders());
-        }
-        // next is handling sending the checks
-        if (RoundedMeters > GoalDepth && !worldgen.loadingObject.activeSelf) // fixes a bug with the order the game loads new layers internally
-        {
-            APClientClass.ChecksToSend.Add(GoalCheckID); // goal location
-            DisplayText.text = APLocale.Get("goal", APLocale.APLanguageType.UI);
-            Client.SetGoalAchieved();
-            Destroy(this); // no need for this script after the player goals, it would just spam goal every frame.
-        }
-        if (RoundedMeters % 100 == 0)
-        {
-            CheckID = RoundedMeters / 100;
-            CheckID = 22318000 + CheckID - 1;
-            if (AlreadySentChecks.Contains(CheckID))
+        if (!SaveBypass){
+            RoundedMeters = Mathf.RoundToInt(worldgen.PlayerTotalDepthMeters());
+            if (worldgen.loadingObject.activeSelf)
             {
-                return; // Avoid spamming the server by not even attempting to send a check we already have sent.
+                StartCoroutine(CheckForDepthExtenders());
             }
-            APClientClass.ChecksToSend.Add(CheckID);
-            AlreadySentChecks.Add(CheckID);
+            // next is handling sending the checks
+            if (RoundedMeters > GoalDepth && !worldgen.loadingObject.activeSelf) // fixes a bug with the order the game loads new layers internally
+            {
+                APClientClass.ChecksToSend.Add(GoalCheckID); // goal location
+                DisplayText.text = APLocale.Get("goal", APLocale.APLanguageType.UI);
+                Client.SetGoalAchieved();
+                Destroy(this); // no need for this script after the player goals, it would just spam goal every frame.
+            }
+            if (RoundedMeters % 100 == 0)
+            {
+                CheckID = RoundedMeters / 100;
+                CheckID = 22318000 + CheckID - 1;
+                if (AlreadySentChecks.Contains(CheckID))
+                {
+                    return; // Avoid spamming the server by not even attempting to send a check we already have sent.
+                }
+                APClientClass.ChecksToSend.Add(CheckID);
+                AlreadySentChecks.Add(CheckID);
+            }
         }
     }
     IEnumerator CheckForDepthExtenders()
@@ -103,6 +106,11 @@ public class DepthChecks : MonoBehaviour
         }
         yield return new WaitUntil(() => !worldgen.loadingObject.activeSelf); // wait until loading is done to not trigger this every frame
     }
+    void Prefix(SaveSystem __instance) // if the game somehow attempts to send depth checks before the postfix kicks in, this will hopefully prevent that
+    {
+        SaveBypass = true;
+    }
+
     void Postfix(SaveSystem __instance, ref JObject ___jObject)
     {
          int saveDepth;
@@ -113,5 +121,6 @@ public class DepthChecks : MonoBehaviour
              if (saveDepth > 1200 && worldgen.biomeDepth == 0) // don't wanna go back to gravel lands if already deeper than that
                 worldgen.biomeDepth = 4;
          }
+         SaveBypass = false;
     }
 }
