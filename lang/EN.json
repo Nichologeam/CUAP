@@ -184,6 +184,28 @@
 		"customSprite": "AssignCustomSprite Failed!",
 		"traderLink": "Traderlink error! ",
 		"ringLinkSelf": "Got a RingLink packet from ourselves. Ignoring.",
-		"sleepLinkSelf": "Got a SleepLink packet from ourselves. Ignoring."
+		"sleepLinkSelf": "Got a SleepLink packet from ourselves. Ignoring.",
+		"noteScoutError": "Scouting error! Whatever hint was supposed to be here didn't get scouted properly, please report this with the apreportbug command."
+	},
+	"Notes": {
+		"noteForTranslators": "Feel free to add or remove new lines in each of these categories. The mod will pick a random one out of all of the ones in the file. Just be sure to include the <plr>, <item>, and <loc> tags.",
+		"progression": [
+			"I overheard some of our captors talking about a <item> belonging to someone named <plr>. They're apparently keeping it secure at <loc>, wherever that is.",
+			"The humans were working on something. They called it \"Project <item>\", supposedly a sponsorship with <plr>. I've heard rumors that they accidentally sent it down here into these caves with us in a place only known as <loc>."
+		],
+		"useful": [
+			"I found this <item> in one of those locked crates around the place. If you see <plr>, tell them they can pick it up at <loc>.",
+			"I've been searching everywhere for this <item> that <plr> told me to find, but I have no idea how saying \"It's at <loc>\" is supposed to guide me there!",
+			"This shit they put in my head keeps telling me about some <item> meant for <plr>. I have no idea what it means by <loc>, and it's starting to drive me insane."
+		],
+		"filler": [
+			"I've heard rumors of <plr>'s <item> at some place called <loc>.",
+			"There's a <item> for <plr> at <loc>. Don't ask me how I know."
+		],
+		"trap": [
+			"Something feels wrong about <plr>'s <item>. I'm leaving it at <loc>, be sure to stear clear of it.",
+			"Just lost one of my friends to <loc>. The <item> they found there is bad news, for both us and <plr>.",
+			"Whatever you do, don't go to <loc>. This chip thing they put in my head is telling me to stay away, warning of some <item> that only <plr> understands the full dangers of.<br><br>...who is <plr>, anyway?"
+		]
 	}
 }
