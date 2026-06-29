@@ -3,6 +3,8 @@ using UnityEngine;
 using TMPro;
 using System.Collections;
 using Archipelago.MultiClient.Net;
+using HarmonyLib;
+using Newtonsoft.Json.Linq;
 
 namespace CUAP;
 
@@ -46,6 +48,7 @@ public class DepthChecks : MonoBehaviour
             }
         }
     }
+
     private void Update()
     {
         RoundedMeters = Mathf.RoundToInt(worldgen.PlayerTotalDepthMeters());
@@ -70,8 +73,8 @@ public class DepthChecks : MonoBehaviour
                 return; // Avoid spamming the server by not even attempting to send a check we already have sent.
             }
             APClientClass.ChecksToSend.Add(CheckID);
-            AlreadySentChecks.Add(CheckID);
-        }
+        AlreadySentChecks.Add(CheckID);
+         }
     }
     IEnumerator CheckForDepthExtenders()
     {
@@ -98,5 +101,32 @@ public class DepthChecks : MonoBehaviour
             }
         }
         yield return new WaitUntil(() => !worldgen.loadingObject.activeSelf); // wait until loading is done to not trigger this every frame
+    }
+
+   
+}
+
+
+[HarmonyPatch(typeof(SaveSystem), "TryLoadGame")]
+class SaveSystemDepthOverride
+{
+    public bool SaveBypass;
+    private WorldGeneration worldgen;
+    void Prefix(SaveSystem __instance) // if the game somehow attempts to send depth checks before the postfix kicks in, this will hopefully prevent that
+    {
+        SaveBypass = true;
+    }
+
+    void Postfix(SaveSystem __instance, ref JObject ___jObject)
+    {
+         int saveDepth;
+         saveDepth = (int)___jObject["totalTraveled"];
+         while (saveDepth >= (APClientClass.DepthExtendersRecieved+1)*300){
+             worldgen.biomeDepth -= 1;
+             worldgen.totalTraveled -= (int)(worldgen.height * 0.3f);
+             if (saveDepth > 1200 && worldgen.biomeDepth == 0 && APClientClass.selectedGoal == 2) // don't wanna go back to gravel lands if already deeper than that
+                worldgen.biomeDepth = 4;
+         }
+         SaveBypass = false;
     }
 }
