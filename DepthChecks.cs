@@ -8,7 +8,6 @@ using Newtonsoft.Json.Linq;
 
 namespace CUAP;
 
-[HarmonyPatch(typeof(SaveSystem), "TryLoadGame")]
 public class DepthChecks : MonoBehaviour
 {
     public static ArchipelagoSession Client;
@@ -20,7 +19,6 @@ public class DepthChecks : MonoBehaviour
     private long GoalCheckID;
     public TextMeshProUGUI DisplayText;
     public List<long> AlreadySentChecks = [];
-    public bool SaveBypass;
 
     private void OnEnable()
     {
@@ -53,32 +51,30 @@ public class DepthChecks : MonoBehaviour
 
     private void Update()
     {
-        if (!SaveBypass){
-            RoundedMeters = Mathf.RoundToInt(worldgen.PlayerTotalDepthMeters());
-            if (worldgen.loadingObject.activeSelf)
-            {
-                StartCoroutine(CheckForDepthExtenders());
-            }
-            // next is handling sending the checks
-            if (RoundedMeters > GoalDepth && !worldgen.loadingObject.activeSelf) // fixes a bug with the order the game loads new layers internally
-            {
-                APClientClass.ChecksToSend.Add(GoalCheckID); // goal location
-                DisplayText.text = APLocale.Get("goal", APLocale.APLanguageType.UI);
-                Client.SetGoalAchieved();
-                Destroy(this); // no need for this script after the player goals, it would just spam goal every frame.
-            }
-            if (RoundedMeters % 100 == 0)
-            {
-                CheckID = RoundedMeters / 100;
-                CheckID = 22318000 + CheckID - 1;
-                if (AlreadySentChecks.Contains(CheckID))
-                {
-                    return; // Avoid spamming the server by not even attempting to send a check we already have sent.
-                }
-                APClientClass.ChecksToSend.Add(CheckID);
-                AlreadySentChecks.Add(CheckID);
-            }
+        RoundedMeters = Mathf.RoundToInt(worldgen.PlayerTotalDepthMeters());
+        if (worldgen.loadingObject.activeSelf)
+        {
+            StartCoroutine(CheckForDepthExtenders());
         }
+        // next is handling sending the checks
+        if (RoundedMeters > GoalDepth && !worldgen.loadingObject.activeSelf) // fixes a bug with the order the game loads new layers internally
+        {
+            APClientClass.ChecksToSend.Add(GoalCheckID); // goal location
+            DisplayText.text = APLocale.Get("goal", APLocale.APLanguageType.UI);
+            Client.SetGoalAchieved();
+            Destroy(this); // no need for this script after the player goals, it would just spam goal every frame.
+        }
+        if (RoundedMeters % 100 == 0)
+        {
+            CheckID = RoundedMeters / 100;
+            CheckID = 22318000 + CheckID - 1;
+            if (AlreadySentChecks.Contains(CheckID))
+            {
+                return; // Avoid spamming the server by not even attempting to send a check we already have sent.
+            }
+            APClientClass.ChecksToSend.Add(CheckID);
+        AlreadySentChecks.Add(CheckID);
+         }
     }
     IEnumerator CheckForDepthExtenders()
     {
@@ -106,6 +102,16 @@ public class DepthChecks : MonoBehaviour
         }
         yield return new WaitUntil(() => !worldgen.loadingObject.activeSelf); // wait until loading is done to not trigger this every frame
     }
+
+   
+}
+
+
+[HarmonyPatch(typeof(SaveSystem), "TryLoadGame")]
+class SaveSystemDepthOverride
+{
+    public bool SaveBypass;
+    private WorldGeneration worldgen;
     void Prefix(SaveSystem __instance) // if the game somehow attempts to send depth checks before the postfix kicks in, this will hopefully prevent that
     {
         SaveBypass = true;
@@ -118,7 +124,7 @@ public class DepthChecks : MonoBehaviour
          while (saveDepth >= (APClientClass.DepthExtendersRecieved+1)*300){
              worldgen.biomeDepth -= 1;
              worldgen.totalTraveled -= (int)(worldgen.height * 0.3f);
-             if (saveDepth > 1200 && worldgen.biomeDepth == 0) // don't wanna go back to gravel lands if already deeper than that
+             if (saveDepth > 1200 && worldgen.biomeDepth == 0 && APClientClass.selectedGoal == 2) // don't wanna go back to gravel lands if already deeper than that
                 worldgen.biomeDepth = 4;
          }
          SaveBypass = false;
