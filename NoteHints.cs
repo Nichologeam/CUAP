@@ -14,7 +14,6 @@ class NoteHints
     private static FieldInfo image = AccessTools.Field(typeof(SurvivorNote), "loreSprite");
     static async void Postfix(WorldGeneration __instance)
     {
-        Startup.Logger.LogWarning("Postfix Entered");
         var missing = APClientClass.session.Locations.AllMissingLocations.ToList(); // get all missing locations
         if (missing == null || missing.Count == 0)
         {
@@ -22,7 +21,7 @@ class NoteHints
         }
         foreach (var note in UnityEngine.Object.FindObjectsOfType<SurvivorNote>(true))
         {
-            Startup.Logger.LogWarning($"processing note at {note.gameObject.transform.position}");
+            Startup.Logger.LogInfo($"processing note at {note.gameObject.transform.position}");
             int chosenLoc = UnityEngine.Random.Range(0, missing.Count);
             long locID = missing[chosenLoc]; // pick a random location
             try
