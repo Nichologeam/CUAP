@@ -635,7 +635,6 @@ public class CraftingChecks : MonoBehaviour
         await spriteSemaphore.WaitAsync();
         if (renderer == null)
         {
-            spriteSemaphore.Release();
             return; // object has been destroyed, don't continue
         }
         try
@@ -644,8 +643,11 @@ public class CraftingChecks : MonoBehaviour
             var rawScoutData = await Client.Locations.ScoutLocationsAsync(locationID);
             if (renderer == null)
             {
-                spriteSemaphore.Release();
                 return; // object has been destroyed, don't continue (doing this again because it's after an await call)
+            }
+            if (!rawScoutData.TryGetValue(locationID, out var scout)) // scout failed, was overwritten, or this location doesn't exist
+            {
+                return; // just leave the default sprite, since we don't have the scout data to change it
             }
             item.Stats.description = APLocale.Get("apItemDesc", APLocale.APLanguageType.UI);
             item.Stats.description = item.Stats.description.Replace("<plr>", rawScoutData[locationID].Player.Alias);
@@ -662,7 +664,6 @@ public class CraftingChecks : MonoBehaviour
                 var success = SpriteConverter.itemSprites.TryGetCustomAsset(formattedInfo, "Casualties: Unknown", true, true, out ItemSprite sprite);
                 if (renderer == null)
                 {
-                    spriteSemaphore.Release();
                     return; // object has been destroyed, don't continue (doing this again because it's after an async asset check)
                 }
                 if (success)
