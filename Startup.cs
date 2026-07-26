@@ -92,6 +92,11 @@ public class Startup : BaseUnityPlugin
     {
         if (scene.name == "SampleScene") // Loading into the game, let's apply Archipelago patches.
         {
+            if (Gifting.shouldGiftBoxExist)
+            {
+                Gifting.giftService.OpenGiftBox(true, []); // all gifts accepted, no traits desired
+                Logger.LogMessage("Giftbox open");
+            }
             Body = GameObject.Find("Experiment/Body");
             if (Body.GetComponent<TrapHandler>())
             {
@@ -113,6 +118,11 @@ public class Startup : BaseUnityPlugin
         }
         else if (scene.name == "PreGen") // Scene loaded was PreGen, let's clear these objects to avoid errors.
         {
+            if (Gifting.shouldGiftBoxExist)
+            {
+                Gifting.giftService.CloseGiftBox(); // close the gift box if it's open
+                Logger.LogMessage("Giftbox closed");
+            }
             Body = null;
             WorldGen = null;
             Moodles = null;
@@ -122,7 +132,7 @@ public class Startup : BaseUnityPlugin
     // due to a change in Cas: Unk version 5.0.2, the mod stopped loading properly without some odd workarounds (hence the `await Task.Delay` in Awake)
     // because of this nonsense, I can't actually hook SceneManager.sceneLoaded quick enough to catch the main menu loading on game start
     // so I have to put this both in Awake, and in OnSceneLoaded. why duplicate code when I can just make it a function instead?
-    // that's why this random function with two lines is here.
+    // that's why this random function with one line is here.
     private void MainMenuPatches()
     {
         GameObject.Find("Canvas/Logo").GetComponent<Image>().sprite = apassets.LoadAsset<Sprite>("logotext");
