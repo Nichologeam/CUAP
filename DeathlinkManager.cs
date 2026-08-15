@@ -15,11 +15,12 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
     private Body Vitals;
     private float DeathlinkCooldown;
     public static bool DeathlinkSeverity = true;
-
+    private WorldGeneration worldgen;
 
     private void OnEnable()
     {
         Vitals = this.gameObject.GetComponent<Body>();
+        worldgen = GameObject.Find("World").GetComponent<WorldGeneration>();
         DeathLinkText = GameObject.Find("Main Camera/Canvas/TimeScaleShow/Text (TMP)").GetComponent<TextMeshProUGUI>();
         GameObject.Find("Main Camera/Canvas/TimeScaleShow/Image").SetActive(false);
         GameObject.Find("Main Camera/Canvas/TimeScaleShow").SetActive(true);
@@ -40,6 +41,10 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
     }
     private void Update()
     {
+        if (worldgen.loadingObject.activeSelf)
+        {
+            return; // don't send deathlinks inside of loading screens
+        }
         if (!Vitals.alive && Vitals.brainHealth == 0) // Experiment is dead! Send Deathlink!
         {
             SelectDeathLinkCause();
@@ -52,11 +57,15 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
             DeathLinkText.text = "";
             DeathlinkCooldown = -2; // This makes it only empty the text once. There's probably a much better way to do this, but I don't really care.
         }
-        dlService.OnDeathLinkReceived += ProcessDeathLink;
+        dlService.OnDeathLinkReceived += ProcessDeathLink; // note: i don't remember why is this here? moving this outside of Update could remove the need for DeathLinkCooldown
     }
 
     private void ProcessDeathLink(DeathLink dlPacket)
     {
+        if (worldgen.loadingObject.activeSelf)
+        {
+            return; // don't recieve deathlinks inside of loading screens
+        }
         if (DeathlinkCooldown > 0)
         {
             return; // so, for some reason, OnDeathLinkReceived is spammed about 350 ish times for each Deathlink sent.
