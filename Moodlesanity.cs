@@ -12,7 +12,8 @@ public class Moodlesanity : MonoBehaviour
     public static ArchipelagoSession Client;
     private MoodleManager Moodles;
     private PlayerCamera plrcam;
-    public List<string> AlreadySentChecks = new List<string>();
+    public List<long> AlreadySentChecks = new List<long>();
+    private List<string> MoodlesToSkip = new List<string>();
     private WorldGeneration worldgen;
     public static bool questboardMode = false;
     private static List<string> questboardList = [];
@@ -412,24 +413,25 @@ public class Moodlesanity : MonoBehaviour
             }
         }
         Startup.Logger.LogMessage("Moodlesanity is monitoring moodles...");
+        AlreadySentChecks = Client.Locations.AllLocationsChecked.ToList(); // Update the already checked locations list with the server
     }
     private void Update()
     {
         Moodle[] moodleComponents = Moodles.GetComponentsInChildren<Moodle>();
-        foreach (Moodle mood in moodleComponents) // For each moodle, send its check.
+        foreach (Moodle mood in moodleComponents) // For each moodle, send its location
         {
-            if (AlreadySentChecks.Contains(mood.type))
+            if (MoodlesToSkip.Contains(mood.type))
             {
-                continue; // Avoid spamming the server by not even attempting to send a check we already have sent.
+                continue; // skipping due to a previous error relating to this moodle
             }
             if (mood.type == "lowimmunity1" && worldgen.loadingObject.activeSelf)
             {
                 continue; // There's a bug where Experiment is Immunocompromised for the first few frames during worldgen.
-                          // This if statement makes the check not send in that case.
+                          // This if statement makes the location not send in that case.
             }
             if (mood.type == "death5")
             {
-                continue; // only used by Archipelago traps. obviously, those don't have checks
+                continue; // only used by Archipelago traps. obviously, those don't have locations
             }
             if (!questboardMode) // normal mode
             {
@@ -444,13 +446,17 @@ public class Moodlesanity : MonoBehaviour
                         string msg = APLocale.Get("moodleNotFound", APLocale.APLanguageType.Errors);
                         msg = msg.Replace("<mood>", mood.type);
                         APCanvas.EnqueueArchipelagoNotification(msg, 3);
-                        AlreadySentChecks.Add(mood.type);
+                        MoodlesToSkip.Add(mood.type); // don't process this moodle again as to not spam notifications
                         continue;
                     }
                 }
                 var CheckID = moodleIndex + startingMoodleId;
+                if (AlreadySentChecks.Contains(CheckID))
+                {
+                    continue; // Avoid spamming the server by not even attempting to send a check we already have sent.
+                }
                 APClientClass.ChecksToSend.Add(CheckID);
-                AlreadySentChecks.Add(mood.type);
+                AlreadySentChecks.Add(CheckID);
                 InternalMoodNameToCheck.TryGetValue(mood.type, out string checkName);
                 plrcam.DoAlert($"{APLocale.Get("sent", APLocale.APLanguageType.UI)}{checkName}!");
                 Sound.Play("close", Vector2.zero, true, false, null, 1f, 1f, true, true);
@@ -462,7 +468,7 @@ public class Moodlesanity : MonoBehaviour
                 {
                     Startup.Logger.LogError($"Could not find assocaited check for moodle {mood.type}!");
                     APCanvas.EnqueueArchipelagoNotification($"{APLocale.Get("moodleCheckMissing", APLocale.APLanguageType.Errors)}{mood.type}!", 3);
-                    AlreadySentChecks.Add(mood.type);
+                    MoodlesToSkip.Add(mood.type); // don't process this moodle again as to not spam notifications
                     continue;
                 }
                 if (APCanvas.ShuffledQuests.Take(APCanvas.UnlockedSlots).Contains(checkName)) // check only the slots we are displaying

@@ -46,6 +46,7 @@ public class DepthChecks : MonoBehaviour
                 GoalDepth = long.MaxValue; // not needed for this goal
             }
         }
+        AlreadySentChecks = Client.Locations.AllLocationsChecked.ToList(); // Update the already checked locations list with the server
     }
     private void Update()
     {
