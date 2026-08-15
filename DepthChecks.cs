@@ -3,6 +3,7 @@ using UnityEngine;
 using TMPro;
 using System.Collections;
 using Archipelago.MultiClient.Net;
+using System.Linq;
 
 namespace CUAP;
 
@@ -65,14 +66,21 @@ public class DepthChecks : MonoBehaviour
         }
         if (RoundedMeters % 100 == 0)
         {
-            CheckID = RoundedMeters / 100;
-            CheckID = 22318000 + CheckID - 1;
-            if (AlreadySentChecks.Contains(CheckID))
+            long currentMilestone = RoundedMeters / 100;
+            List<long> locationsToSend = [];
+            for (long milestone = 1; milestone <= currentMilestone; milestone++)
             {
-                return; // Avoid spamming the server by not even attempting to send a check we already have sent.
+                // check to see if any milestones between the current one and the first are NOT inside AlreadySentChecks
+                // this will send any depth milestones that may have been skipped accidentally
+                CheckID = 22318000 + milestone - 1;
+                if (AlreadySentChecks.Contains(CheckID))
+                {
+                    continue; // Avoid spamming the server by not even attempting to send a check we already have sent.
+                }
+                locationsToSend.Add(CheckID);
+                AlreadySentChecks.Add(CheckID);
             }
-            APClientClass.ChecksToSend.Add(CheckID);
-            AlreadySentChecks.Add(CheckID);
+            APClientClass.ChecksToSend.AddRange(locationsToSend);
         }
     }
     IEnumerator CheckForDepthExtenders()
