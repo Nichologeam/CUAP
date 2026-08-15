@@ -640,6 +640,12 @@ public class CraftingChecks : MonoBehaviour
         try
         {
             long locationID = recipeID + startingRecipeID;
+            if (Client.Locations.AllLocationsChecked.Contains(locationID)) // this location has already been checked (by a !collect, most likely)
+            {
+                currentAPItemNum++; // increase the sent locations counter
+                updateAllBPs = true; // force an update of all blueprints
+                return; // don't process this blueprint right now
+            }
             var rawScoutData = await Client.Locations.ScoutLocationsAsync(locationID);
             if (renderer == null)
             {
