@@ -23,6 +23,7 @@ class BuildingDropReplacer
         "overgrowntick", // not the normal cave ticks, because that can spam AP items if a Cave Ticks Trap is received
         "snowstrider", // futureproofing (doesn't spawn naturally in the latest demo)
         "wallbiter",
+        "crystalenemy", // futureproofing (doesn't spawn naturally in the latest demo)
         // traps
         "spikestabber",
         "jumppad",
