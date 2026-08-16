@@ -2,17 +2,7 @@
 using Archipelago.Gifting.Net.Utilities.CloseTraitParser;
 using Archipelago.Gifting.Net.Versioning.Gifts.Current;
 using Archipelago.MultiClient.Net;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Security.Cryptography;
-using UnityEngine;
-using UnityEngine.Analytics;
-using static UnityEngine.ExpressionEvaluator;
-using static UnityEngine.GraphicsBuffer;
-using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace CUAP;
 
@@ -38,7 +28,7 @@ public class Gifting
         giftService = new GiftingService(Client);
         shouldGiftBoxExist = true;
         giftService.CloseGiftBox(); // close the box if it's open
-        SetupGiftParser(); // set up the parser for receiving new gifts
+        RegisterEveryReasonablySpawnableObjectInsideTheGiftingLibraryBKCloseTraitParserToMakeSureThatAnyPlayerPlayingTheIndieGameCasualtiesUnknownCreatedByIndieDeveloperOrsoniksCanSendOrRecieveGiftsToAnyOtherVideoGameThatSupportsBothTheArchipelagoMultiGameRandomizerAndTheGiftingAPI();
         giftService.OnNewGift += OnGiftReceived;
         // todo: set up sending gifts (get receiving working first)
     }
@@ -64,7 +54,8 @@ public class Gifting
         UnityEngine.Debug.Log("found match: " + matches[0]);
         // todo: spawn the matched item (get the parsing working first)
     }
-    private static void SetupGiftParser() // set up the parser with a list of every item in the game
+    // here comes a funny function name
+    private static void RegisterEveryReasonablySpawnableObjectInsideTheGiftingLibraryBKCloseTraitParserToMakeSureThatAnyPlayerPlayingTheIndieGameCasualtiesUnknownCreatedByIndieDeveloperOrsoniksCanSendOrRecieveGiftsToAnyOtherVideoGameThatSupportsBothTheArchipelagoMultiGameRandomizerAndTheGiftingAPI()
     {
         // Gifting API specifications say that a Quality and Duration of 1.0 is considered "average" for that game
         // "Duration" doesn't really mean anything inside of Casualties, so all Casualties items will have a Duration of 1.0
@@ -143,6 +134,46 @@ public class Gifting
             new GiftTrait { Trait = "Consumeable" },
             new GiftTrait { Trait = "Cure", Quality = 2.5 } // increases immunity and decreases sepsis
         ]);
+        giftParser.RegisterAvailableGift("applejuice", [ // Apple juice carton
+            new GiftTrait { Trait = "Consumeable" },
+            new GiftTrait { Trait = "Drink", Quality = 1 }, // 9 thirst, 8 uses
+            new GiftTrait { Trait = "Fruit" } // apple
+        ]);
+        giftParser.RegisterAvailableGift("aquapple", [ // Aquapple
+            new GiftTrait { Trait = "Consumeable" },
+            new GiftTrait { Trait = "Drink", Quality = 0.25 } // 7 thirst, 1 use, decays rapidly
+        ]);
+        giftParser.RegisterAvailableGift("armwarmers", [ // Arm warmers
+            // I will be using "Armor" to determine how good a wearable item is
+            new GiftTrait { Trait = "Armor", Quality = 1 } // 6 hour decay time, 25% protection, 10% insulation
+        ]);
+        giftParser.RegisterAvailableGift("autoinjector", [ // Auto-injector
+            // Since the API was built off of Stardew Valley, items used in crafting or construction are called materials
+            new GiftTrait { Trait = "Material" },
+            new GiftTrait { Trait = "Life", Quality = 1 } // Auto-injector is used in medical recipes
+        ]);
+        giftParser.RegisterAvailableGift("autopump", [ // Auto-pump
+            new GiftTrait { Trait = "Armor", Quality = 0 }, // doesn't actually give any defense (trade off for its live-saving ability)
+            new GiftTrait { Trait = "Life", Quality = 3 } // Auto-pump keeps your blood pressure livable as long as it has power
+        ]);
+        giftParser.RegisterAvailableGift("autozoomgoggles", [ // Auto-zoom googles
+            new GiftTrait { Trait = "Armor", Quality = 0 }, // no defense
+            new GiftTrait { Trait = "Buff", Quality = 1.5 } // lasting effect (2 hours, as long as its powered)
+        ]);
+        giftParser.RegisterAvailableGift("balaclava", [ // Balaclava
+            new GiftTrait { Trait = "Armor", Quality = 2 } // no decay time, 25% protection, 20% insulation
+        ]);
+        giftParser.RegisterAvailableGift("banana", [ // Banana
+            new GiftTrait { Trait = "Consumeable" },
+            new GiftTrait { Trait = "Food", Quality = 0.5 }, // 9 hunger, 2 uses
+            new GiftTrait { Trait = "Drink", Quality = 0.3 }, // 4 thirst, 2 uses
+            new GiftTrait { Trait = "Fruit" } // banana
+        ]);
+        giftParser.RegisterAvailableGift("bananaplant", [ // Banana-plant
+            new GiftTrait { Trait = "Trap" },
+            new GiftTrait { Trait = "Damage" },
+            new GiftTrait { Trait = "Fruit" } // i debated also adding the Vegetable trait, but nah
+        ]);
 
         /* Here is a list of every "common" trait used inside the Gifting API along with a brief description of it (https://github.com/agilbert1412/Archipelago.Gifting.Net/blob/main/Documentation/Gifting%20API.md#gift-traits)
         Speed	    Increases Speed
@@ -187,36 +218,21 @@ public class Gifting
 }
 
 /* Below is a list of every spawnable object in the game
-applejuice
-aquapple
-armwarmers
-autoinjector
-autopump
-autozoomgoggles
-balaclava
-banana
-bananaplant
 bandage
 bandolier
-barbedwirefence
-beartrap
 bellyarmor
 belt
 bigpack
 bikehelmet
-bioterminal
 bleach
 blindfold
 blobflesh
 bloodbag
 bloodbaghuman
 bloodcoagulant
-BloodCrystal
 bloodcrystalshard
 bloodsac
-blueprint
 boneweldingtool
-bouncecap
 bowlofcereal
 box
 boxof12gauge
@@ -229,10 +245,8 @@ bruisekit
 bucketofchicken
 bucketofnochicken
 bulbskin
-bunchunk
 bundleofwires
 burger
-cactus
 cactusflesh
 cake
 campfire
@@ -256,41 +270,23 @@ circuitboard
 claws
 climbingclaws
 climbingrope
-climbingropeextended
 clottingmush
 coffee
-coil
 combatpen
-containercrate
 cookies
-corpse
-craftingbottle
 crudecleaver
-crystalbig
-crystalenemy
-crystalmassive
-crystalmedium
-crystalmini
-crystalsmall
-DigestionCrystal
 digestioncrystalshard
 disinfectant
 dogfood
-drillpod
-drillpodbroken
 drillrepairkit
-dropcapsule
 droppings
-drybush
 dryfoliage
 duffelbag
 dustmask
 dynamite
 emergencylight
-EmissiveCrystal
 emissivecrystalshard
 energydrink
-epda
 experimentflesh
 exposedcore
 fannypack
@@ -305,24 +301,13 @@ flimsyknife
 foliage
 foliagebag
 foliagemeal
-foodbox
-frigiant
 frigiantfruit
-fungalibungali
 funguschunk
 geigercounter
 geofruit
-geotree
-geyser
-glassshards
-glowplant
 glowplantfruit
-glowshroom
-grabberplant
-grabbershroom
 grapplinghook
 gravbag
-gunmine
 handcrank
 hardcandy
 headlamp
@@ -333,38 +318,26 @@ holidayhat
 hoodie
 hydreed
 icepack
-icestalactite
-icestalagmite
 icetea
 ilmenitechunk
 internalorgans
 jetpack
-jumppad
 keratinbooster
 ketchup
 kneepads
-ladder
-landmine
 lantern
 largebattery
 largecarcass
 latexgloves
 lcdscreen
-leadbush
 legpouch
 lemonade
-lifepodchest
-lifepodheater
-LifePodLight
-lifepodpump
-lifepodshower
 lightbulb
 lighter
 limbwraps
 liquidcentrifuge
 liquidpouch
 lockpickingkit
-LoreNote
 lrd
 machete
 magazinebase
@@ -376,17 +349,13 @@ makeshiftrifle
 makeshiftwrench
 manualdefibrillator
 materialpouch
-medcrate
-medicalstation
 medicalsuture
 mediumbattery
 medkit
 milk
 mindwipe
-minibarrel
 minilaserdrill
 morphine
-mp3player
 musharm
 mushpear
 mushroomdropper
@@ -397,13 +366,10 @@ nails
 naloxone
 naltrexone
 neuralbooster
-nondescriptcan
 nopopcorn
 nutrientbar
-oilpipe
 opium
 overgrowntick
-OxygenCrystal
 oxygencrystalshard
 paincream
 painkillers
@@ -419,23 +385,18 @@ plasticbag
 plasticbandage
 plasticchunk
 plushie
-pop
 popcorn
 popfruit
 pouch
-present
 primitivediggingtool
 processedcopper
 purse
-radbarrel
 rag
 rake
 rangefinder
 rawcopper
-rechargingstation
 reinforceddoor
 reinforcedrope
-ReliefCrystal
 reliefcrystalshard
 rifle
 riflemagazine
@@ -449,8 +410,6 @@ ryebulb
 ryeflour
 safetyglasses
 saline
-sandrose
-sawblade
 scaffoldingpack
 scarf
 scrapcube
@@ -462,12 +421,7 @@ scubadivinggear
 shadecrawler
 shotgun
 shovel
-shuttledoor
-shuttleelevator
 sickle
-sidestabber
-sidestabberflip
-skullcrusher
 sledgehammer
 sleepingbag
 sleepingpills
@@ -480,41 +434,22 @@ snowstrider
 sodabottle
 sodacan
 sodiumnitroprusside
-SoothingCrystal
 soothingcrystalshard
-soundcannon
 soup
 spacedrain
-spaceheater
-defibrack
-holidaytree
-marbleBackground
-mushroomrope
-mushroomropeend
-sandvinehook
-sandvinerope
-spentfuel
-spikestabber
 splint
 spraybottle
-stalactite
-stalagmite
 steak
 sterilizedbandage
 stick
 stonefruitclosed
-stonefruitopen
-stoneplant
 streptokinase
 striderpelt
 string
 syringe
 tacticalboots
 tacticalgloves
-terminal
 terrainscanner
-thornbackelder
-thornbackyoung
 titaniummachete
 titaniummultitool
 titaniumpickaxe
@@ -525,21 +460,14 @@ toolbox
 torch
 tornshirt
 tourniquet
-trader1
-trader2
-trader3
 trashbag
 traumarig
 trowel
-TurbulentCrystal
 turbulentcrystalshard
-turret
-tutorialcraftingbutton
 tweezers
 vasopressin
 venomgland
 wallbiter
-wallflower
 watch
 waterbottle
 waterjug
@@ -555,6 +483,5 @@ woodsickle
 woodtrowel
 woundglue
 wrench
-xaloris
 xalorissponge
 */
