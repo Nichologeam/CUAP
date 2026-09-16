@@ -101,11 +101,11 @@ public class TrapHandler : MonoBehaviour
         switch (TrapName)
         {
             case "Depression Trap":
-                Vitals.happiness = -20;
+                Vitals.happiness -= 20;
                 plrcam.DoAlert($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{ItemSender}{APLocale.Get("depression", APLocale.APLanguageType.UI)}", false);
                 break;
             case "Hearing Loss Trap":
-                Vitals.hearingLoss = +50;
+                Vitals.hearingLoss += 50;
                 string msg = APLocale.Get("hearing", APLocale.APLanguageType.UI);
                 msg = msg.Replace("<sender>",ItemSender.ToUpper());
                 plrcam.DoAlert(msg, false);
