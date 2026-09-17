@@ -73,19 +73,6 @@ public class Startup : BaseUnityPlugin
                 PlayerCamera.main.ToMainMenu();
                 APClientClass.Disconnect();
             }
-            if (APClientClass.selectedGoal == 3) // elder thornback goal
-            {
-                try
-                {
-                    var elder = GameObject.Find("thornbackelder(Clone)");
-                    if (elder.GetComponent<ElderThornback>()) return;
-                    elder.AddComponent<ElderThornback>();
-                }
-                catch
-                {
-                    return;
-                }
-            }
         }
     }
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
