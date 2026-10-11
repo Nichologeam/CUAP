@@ -135,6 +135,13 @@ public class APClientClass
                     SleepLink.instance.OnConnect();
                 }
             }
+            if (slotdata.TryGetValue("Gifting", out var gifts))
+            {
+                if (Convert.ToBoolean(gifts))
+                {
+                    Gifting.SetupGifting();
+                }
+            }
         }
         APCanvas.instance.StartCoroutine(NewConnectionCountdown()); // i need StartCoroutine, so i'll use APCanvas just because it is guarenteed to exist
     }

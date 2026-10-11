@@ -86,8 +86,8 @@
 		"tradeTransferFail": "Must be a number",
 		"sleepReceived": "SleepLink received. Goodnight!"
     },
-    "Commands": {
-        "dlDesc": "Toggles DeathLink for the current game session.",
+	"Commands": {
+		"dlDesc": "Toggles DeathLink for the current game session.",
 		"dlSeverity": "severity",
 		"dlSeverityDesc": "How punishing DeathLink should be. Choices are 'kill' and 'limbdamage'",
 		"dlInvalid": "CUAP: Severity of '<sev>' is invalid. Defaulted to 'kill'",
@@ -127,8 +127,22 @@
 		"setSkillSkillDesc": "Which skill to change the level of.",
 		"setSkillLevel": "level",
 		"setSkillLevelDesc": "What level to set the skill to.",
-		"screenshotNotif": "CUAP: Screenshot saved to "
-    },
+		"screenshotNotif": "CUAP: Screenshot saved to ",
+		"giftDesc": "Gift an item to another player. The item may change if the other player isn't playing Casualties.",
+		"giftPlayer": "player",
+		"giftPlayerDesc": "Slot name of the player to send this item to.",
+		"giftSlot": "slot",
+		"giftSlotDesc": "Which inventory slot to take the item from. Does not work if the item is favourited.",
+		"giftNetworkingNotice": "NOTE: The game may hang for a moment during the gifting process. Please be patient...",
+		"giftDisabled": "Gifting is not enabled. Make sure you are connected to a slot that has gifting enabled in the YAML.",
+		"giftPlayerUnable": "The selected player either has gifting disabled, or cannot currently receive gifts.",
+		"giftMainMenu": "You must be in-game to send or receive gifts.",
+		"giftIncorrectSlot": "The selected inventory slot does not exist.",
+		"giftNoHeldItem": "The selected inventory slot has no item in it.",
+		"giftFavorite": "Cannot gift a favourited item.",
+		"giftItemUnsupported": "The selected item is not supported by the Gifting API.",
+		"giftServiceFailure": "Gifting service failure."
+	},
     "Messages": {
         "archipelago": "Archipelago",
 		"countdown": " Server Countdown: ",
@@ -161,7 +175,7 @@
 		"bleedDeath2": " ran out of bandages.",
 		"bleedDeath3": " couldn't stop the bleeding.",
 		"genericDeath1": " became a statistic.",
-		"genericDeath2": " met the same fate.",
+		"genericDeath2": " met the same fate."
     },
 	"Errors": {
 		"noPort": "Connection error: No server port was given.",

@@ -1,4 +1,6 @@
-﻿using Archipelago.MultiClient.Net;
+﻿using Archipelago.Gifting.Net.Service.Result;
+using Archipelago.Gifting.Net.Versioning.Gifts;
+using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
 using System;
@@ -328,8 +330,7 @@ public class CommandPatch : MonoBehaviour
             Application.OpenURL("https://github.com/Nichologeam/CUAP/issues/new?template=issuetemplate.md");
         }, new Dictionary<int, List<string>> {
         {
-            0,
-            new List<string> {"true","false"}
+            0, new List<string> {"true","false"}
         } }, new ValueTuple<string, string>[]
         {
             new ValueTuple<string, string>(APLocale.Get("reportBugScreenshot", APLocale.APLanguageType.Commands), APLocale.Get("reportBugScreenshotDesc", APLocale.APLanguageType.Commands))
@@ -362,6 +363,81 @@ public class CommandPatch : MonoBehaviour
         }, null, new ValueTuple<string, string>[]
         {
             new ValueTuple<string, string>(APLocale.Get("langFile", APLocale.APLanguageType.Commands), APLocale.Get("langFileDesc", APLocale.APLanguageType.Commands))
+        }));
+        ConsoleScript.Commands.Add(new Command("apgift", APLocale.Get("giftDesc", APLocale.APLanguageType.Commands), delegate (string[] args)
+        {
+            CheckArgumentCount.Invoke(Console, [args, 2]);
+            if (!APClientClass.IsConnected())
+            {
+                throw new Exception(APLocale.Get("cmdNotConnected", APLocale.APLanguageType.Errors));
+            }
+            if (!APCanvas.InGame) // technically this could replace the connected check, since you can't be in-game if you aren't connected, but eh...
+            {
+                throw new Exception(APLocale.Get("giftMainMenu", APLocale.APLanguageType.Commands));
+            }
+            if (!Gifting.shouldGiftBoxExist)
+            {
+                throw new Exception(APLocale.Get("giftDisabled", APLocale.APLanguageType.Commands));
+            }
+            LogToConsole(APLocale.Get("giftNetworkingNotice", APLocale.APLanguageType.Commands));
+            if (!Gifting.giftService.CanGiftToPlayer(args[1]).CanGift)
+            {
+                throw new Exception(APLocale.Get("giftPlayerUnable", APLocale.APLanguageType.Commands));
+            }
+            body = GameObject.Find("Experiment/Body");
+            Item selectedItem = null;
+            switch (args[2]) // switch on selected inventory slot
+            {
+                case "Mouth":
+                    selectedItem = body.transform.Find("Head/InvSlot").GetComponentInChildren<Item>(); // there are no children if the inventory slot is empty
+                    break;
+                case "Main hand":
+                    selectedItem = body.transform.Find("HandF/InvSlot (3)").GetComponentInChildren<Item>();
+                    break;
+                case "Secondary hand":
+                    selectedItem = body.transform.Find("HandB/InvSlot (4)").GetComponentInChildren<Item>();
+                    break;
+                case "Upper back":
+                    selectedItem = body.transform.Find("UpTorso/InvSlot").GetComponentInChildren<Item>();
+                    break;
+                case "Middle back":
+                    selectedItem = body.transform.Find("UpTorso/InvSlot (1)").GetComponentInChildren<Item>();
+                    break;
+                case "Lower back":
+                    selectedItem = body.transform.Find("DownTorso/InvSlot (2)").GetComponentInChildren<Item>();
+                    break;
+                default:
+                    throw new Exception(APLocale.Get("giftIncorrectSlot", APLocale.APLanguageType.Commands));
+            }
+            if (selectedItem == null)
+            {
+                throw new Exception(APLocale.Get("giftNoHeldItem", APLocale.APLanguageType.Commands));
+            }
+            if (selectedItem.favourited)
+            {
+                throw new Exception(APLocale.Get("giftFavorite", APLocale.APLanguageType.Commands)); // not a limitation, just a QOL feature to prevent accidental gift sends
+            }
+            if (!Gifting.Gifts.TryGetValue(selectedItem.Stats.fullName, out Gifting.GiftDefinition gift)) // using Stats.fullName instead of Item.fullName because the Item version includes condition percentage
+            {
+                throw new Exception(APLocale.Get("giftItemUnsupported", APLocale.APLanguageType.Commands));
+            }
+            GiftItem item = new GiftItem(gift.Name, 1, 0);
+            GiftingResult result = Gifting.giftService.SendGift(item, gift.Traits, args[1]);
+            if (result.Success)
+            {
+                Destroy(selectedItem); // gift was sent! remove the sent item from the player's inventory
+            }
+            else
+            {
+                throw new Exception(APLocale.Get("giftServiceFailure", APLocale.APLanguageType.Commands)); // gift wasn't sent. throw error and keep the item
+            }
+        }, new Dictionary<int, List<string>> {
+        {
+            1, new List<string> {"Mouth","Main hand","Secondary hand","Upper back","Middle back","Lower back"}
+        } }, new ValueTuple<string, string>[]
+        {
+            new ValueTuple<string, string>(APLocale.Get("giftPlayer", APLocale.APLanguageType.Commands), APLocale.Get("giftPlayerDesc", APLocale.APLanguageType.Commands)),
+            new ValueTuple<string, string>(APLocale.Get("giftSlot", APLocale.APLanguageType.Commands), APLocale.Get("giftSlotDesc", APLocale.APLanguageType.Commands)),
         }));
         if (raceMode) return; // commands after this can be used to cheat. disable them in race mode
         ConsoleScript.Commands.Add(new Command("apcheat", APLocale.Get("cheatDesc", APLocale.APLanguageType.Commands), delegate (string[] args)
