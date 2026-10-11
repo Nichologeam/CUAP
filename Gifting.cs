@@ -3,6 +3,7 @@ using Archipelago.Gifting.Net.Utilities.CloseTraitParser;
 using Archipelago.Gifting.Net.Versioning.Gifts.Current;
 using Archipelago.MultiClient.Net;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CUAP;
 
@@ -160,139 +161,132 @@ public class Gifting
         {"Makeshift helmet", "makeshifthelmet"},
         {"Makeshift L.R.D.", "makeshiftlrd"},
         {"Makseshift rifle", "makeshiftrifle"},
-        /* Below objects are untested. Gifting support will not be finished until all objects have been tested.
-        makeshiftwrench
-        manualdefibrillator
-        materialpouch
-        medicalsuture
-        mediumbattery
-        medkit
-        milk
-        mindwipe
-        minilaserdrill
-        morphine
-        musharm
-        mushpear
-        mushtail
-        nails
-        naloxone
-        naltrexone
-        neuralbooster
-        nopopcorn
-        nutrientbar
-        opium
-        overgrowntick
-        oxygencrystalshard
-        paincream
-        painkillers
-        pancake
-        paprikash
-        pemmican
-        pickaxe
-        pistol
-        pitchfork
-        pizzaslice
-        plasmacutter
-        plasticbag
-        plasticbandage
-        plasticchunk
-        plushie
-        popcorn
-        popfruit
-        pouch
-        primitivediggingtool
-        processedcopper
-        purse
-        rag
-        rake
-        rangefinder
-        rawcopper
-        reinforcedrope
-        reliefcrystalshard
-        rifle
-        riflemagazine
-        ringersolution
-        riothelmet
-        rippeddressing
-        rope
-        rosepod
-        ryebulb
-        ryeflour
-        safetyglasses
-        saline
-        scaffoldingpack
-        scarf
-        scrapcube
-        scrapmetal
-        scrappanel
-        scraptube
-        scubadivinggear
-        shadecrawler
-        shotgun
-        shovel
-        sickle
-        sledgehammer
-        sleepingbag
-        sleepingpills
-        slingbag
-        smallbattery
-        smallmagazine
-        smallpack
-        sneakers
-        snowstrider
-        sodabottle
-        sodacan
-        sodiumnitroprusside
-        soothingcrystalshard
-        soup
-        spacedrain
-        splint
-        spraybottle
-        steak
-        sterilizedbandage
-        stick
-        stonefruitclosed
-        streptokinase
-        striderpelt
-        string
-        syringe
-        tacticalboots
-        tacticalgloves
-        terrainscanner
-        titaniummachete
-        titaniummultitool
-        titaniumpickaxe
-        titaniumrod
-        titaniumsheet
-        titaniumslab
-        toolbox
-        torch
-        tornshirt
-        tourniquet
-        trashbag
-        traumarig
-        trowel
-        turbulentcrystalshard
-        tweezers
-        vasopressin
-        venomgland
-        wallbiter
-        watch
-        waterbottle
-        waterjug
-        woodcube
-        wooddiggingtool
-        woodpanel
-        woodpickaxe
-        woodpitchfork
-        woodsandals
-        woodscraps
-        woodshovel
-        woodsickle
-        woodtrowel
-        woundglue
-        wrench
-        xalorissponge*/
+        {"Makeshift wrench", "makeshiftwrench"},
+        {"Manual defibrillator", "manualdefibrillator"},
+        {"Material pouch", "materialpouch"},
+        {"Medical suture", "medicalsuture"},
+        {"Medium battery", "mediumbattery"},
+        {"Med-kit", "medkit"},
+        {"Milk carton", "milk"},
+        {"Mindwipe", "mindwipe"},
+        {"Mini laser drill", "minilaserdrill"},
+        {"Morphine syringe", "morphine"},
+        {"Wrapvine", "musharm"},
+        {"Numberry", "mushpear"},
+        {"Naptail", "mushtail"},
+        {"Nails", "nails"},
+        {"Naloxone syringe", "naloxone"},
+        {"Neural booster", "neuralbooster"},
+        {"No popcorn", "nopopcorn"},
+        {"Nutrient bar", "nutrientbar"},
+        {"Opium syringe", "opium"},
+        {"Overgrown tick", "overgrowntick"},
+        {"Oxygen crystal shard", "oxygencrystalshard"},
+        {"Relief cream bottle", "paincream"},
+        {"Painkiller bottle", "painkillers"},
+        {"Pancakes", "pancake"},
+        {"Paprikash", "paprikash"},
+        {"Pemmican", "pemmican"},
+        {"Pickaxe", "pickaxe"},
+        {"Pistol", "pistol"},
+        {"Metal pitchfork", "pitchfork"},
+        {"Pizza slice", "pizzaslice"},
+        {"Plasma cutter", "plasmacutter"},
+        {"Plastic bag", "plasticbag"},
+        {"Plastic dressing", "plasticbandage"},
+        {"Chunk of plastic", "plasticchunk"},
+        {"Plushie", "plushie"},
+        {"Popcorn", "popcorn"},
+        {"Popfruit", "popfruit"},
+        {"Pouch", "pouch"},
+        {"Metal digging tool", "primitivediggingtool"},
+        {"Processed copper", "processedcopper"},
+        {"Purse", "purse"},
+        {"Old rag", "rag"},
+        {"Rake", "rake"},
+        {"Rangefinder", "rangefinder"},
+        {"Raw copper", "rawcopper"},
+        // {"???", "reinforcedrope"}, This item exists, but has no functional item name or description
+        {"Relief crystal shard", "reliefcrystalshard"},
+        {"Rifle", "rifle"},
+        {"Rifle magazine", "riflemagazine"},
+        {"Small IV bag", "ringersolution"},
+        {"Riot helmet", "riothelmet"},
+        {"Ripped dressing", "rippeddressing"},
+        {"Rope", "rope"},
+        {"Rose pod", "rosepod"},
+        {"Rye bulb", "ryebulb"},
+        {"Rye flour", "ryeflour"},
+        {"Safety glasses", "safetyglasses"},
+        {"IV bag", "saline"},
+        {"Scaffolding pack", "scaffoldingpack"},
+        {"Scarf", "scarf"},
+        {"Scrap metal", "scrapmetal"},
+        {"Advanced scuba diving gear", "scubadivinggear"},
+        {"Shade crawler", "shadecrawler"},
+        {"Pump-action shotgun", "shotgun"},
+        {"Metal shovel", "shovel"},
+        {"Metal sickle", "sickle"},
+        {"Sledgehammer", "sledgehammer"},
+        {"Sleeping bag", "sleepingbag"},
+        {"Sleeping pills packet", "sleepingpills"},
+        {"Sling bag", "slingbag"},
+        {"Small battery", "smallbattery"},
+        {"Small magazine", "smallmagazine"},
+        {"Small backpack", "smallpack"},
+        {"Sneakers", "sneakers"},
+        {"Snow strider", "snowstrider"},
+        {"Soda bottle", "sodabottle"},
+        {"Soda can", "sodacan"},
+        {"Sodium nitroprusside bottle", "sodiumnitroprusside"},
+        {"Soothing crystal shard", "soothingcrystalshard"},
+        {"Soup bowl", "soup"},
+        {"Space-drain", "spacedrain"},
+        {"Splint", "splint"},
+        {"Spray bottle", "spraybottle"},
+        {"Steak", "steak"},
+        {"Sterilized dressing", "sterilizedbandage"},
+        {"Stick", "stick"},
+        {"Stuck stone fruit", "stonefruitclosed"},
+        {"Streptokinase syringe", "streptokinase"},
+        {"Strider pelt", "striderpelt"},
+        {"String", "string"},
+        {"Syringe", "syringe"},
+        {"Tactical boots", "tacticalboots"},
+        {"Tactical gloves", "tacticalgloves"},
+        {"Terrain scanner", "terrainscanner"},
+        {"Titanium machete", "titaniummachete"},
+        {"Titanium multitool", "titaniummultiool"},
+        {"Titanium pickaxe", "titaniumpickaxe"},
+        {"Titanium rod", "titaniumrod"},
+        {"Titanium sheet", "titaniumsheet"},
+        {"Titanium slab", "titaniumslab"},
+        {"Toolbox", "toolbox"},
+        {"Torch", "torch"},
+        {"Torn shirt", "tornshirt"},
+        {"Tourniquet", "tourniquet"},
+        {"Trash bag", "trashbag"},
+        {"Trauma rig", "traumarig"},
+        {"Trowel", "trowel"},
+        {"Turbulent crystal shard", "turbulentcrystalshard"},
+        {"Tweezers", "tweezers"},
+        {"Vasopressin bottle", "vasopressin"},
+        {"Venom gland", "venomgland"},
+        {"Sand stalker", "wallbiter"},
+        {"Electronic watch", "watch"},
+        {"Water bottle", "waterbottle"},
+        {"Water jug", "waterjug"},
+        {"Wooden digging tool", "wooddiggingtool"},
+        {"Wooden pickaxe", "woodpickaxe"},
+        {"Wooden pitchfork", "woodpitchfork"},
+        {"Wood sandals", "woodsandals"},
+        {"Wood scraps", "woodscraps"},
+        {"Wooden shovel", "woodshovel"},
+        {"Wooden sickle", "woodsickle"},
+        {"Wooden trowel", "woodtrowel"},
+        {"Wound glue", "woundglue"},
+        {"Wrench", "wrench"},
+        {"Xaloris sponge", "xalorissponge"}
     };
     public static void SetupGifting()
     {
@@ -318,6 +312,22 @@ public class Gifting
     }
     private static void OnGiftReceived(Gift gift)
     {
+        Startup.Logger.LogDebug("Received gift from " + Client.Players.GetPlayerAlias(gift.SenderSlot) + " in slot " + gift.SenderSlot);
+        Startup.Logger.LogDebug("Gifted item name: " + gift.ItemName);
+        Startup.Logger.LogDebug("Is refund?: " + gift.IsRefund);
+        if (gift.Traits == null || gift.Traits.Length == 0)
+        {
+            Startup.Logger.LogDebug("Gifted item has no traits.");
+        }
+        else
+        {
+            Startup.Logger.LogDebug("Gifted item traits: ");
+            foreach (GiftTrait trait in gift.Traits)
+            {
+                // Casualties: Unknown doesn't use the duration of traits, so it's ignored in the debugging code as well
+                Startup.Logger.LogDebug(trait.Trait + " with a quality of " + trait.Quality);
+            }
+        }
         if (!APCanvas.InGame) // this should hopefully never trigger, since the box should be closed when not in-game anyway
         {
             giftService.RefundGift(gift);
@@ -335,15 +345,27 @@ public class Gifting
             CommandPatch.LogToConsole($"<color=#FF0000>CUAP: No matches found for received gift {gift.ItemName} from {sender}. Refunding...</color>"); // for the ingame console
             return;
         }
-        UnityEngine.Debug.Log("found match: " + matches[0]);
-        // todo: spawn the matched item (get the parsing working first)
-        // use ItemNameToPrefabName
+        string match = matches[0]; // only use the first match
+        Startup.Logger.LogDebug("Found match for gifted item: " + match); // log what item was matched
+        if (ItemNameToPrefabName.TryGetValue(match, out string prefabToSpawn)) // get the prefab to spawn
+        {
+            Vector2 playerPos = GameObject.Find("Experiment/Body").transform.position; // player's current position (at the body's center)
+            Object.Instantiate(Resources.Load<GameObject>(prefabToSpawn), playerPos, Quaternion.identity); // spawn the object there
+            APCanvas.EnqueueArchipelagoNotification($"You've been gifted a {prefabToSpawn} from {Client.Players.GetPlayerAlias(gift.SenderSlot)}!", 1);
+        }
+        else // couldn't find the item inside the list
+        {
+            Startup.Logger.LogError("Gifted item is not inside the prefab list!");
+            giftService.RefundGift(gift); // refund the gift since the game can't spawn the item
+        }
     }
     // here comes a funny function name
     private static void RegisterEveryReasonablySpawnableObjectInsideTheGiftingLibraryBKCloseTraitParserToMakeSureThatAnyPlayerPlayingTheIndieGameCasualtiesUnknownCreatedByIndieDeveloperOrsoniksCanSendOrRecieveGiftsToAnyOtherVideoGameThatSupportsBothTheArchipelagoMultiGameRandomizerAndTheGiftingAPI()
     {
         // TODO: go through all the things with the "Damage" trait and scale by raw DPS instead of just feel to make it less subjective.
-        
+        // TODO: certain tools deal higher damage against living enemies than if used on blocks. only titanium tools were tested for this.
+        // TODO: go through all the things with the "Cure" trait and scale by their in-game "Antiseptic" quality.
+
         // Gifting API specifications say that a Quality and Duration of 1.0 is considered "average" for that game
         // "Duration" doesn't really mean anything inside of Casualties, so all Casualties items will have a Duration of 1.0
         giftParser.RegisterAvailableGift("12-Gauge buckshot", [ // 12gauge
@@ -757,7 +779,7 @@ public class Gifting
             new GiftTrait { Trait = "Consumable" },
             // The concept of opiods being classified as Mana sounds absurd on paper and was originally a joke
             // but it made more and more sense the more I thought about it, so now it's staying
-            new GiftTrait { Trait = "Mana", Quality = 3 } // highly potent
+            new GiftTrait { Trait = "Mana", Quality = 3 } // quality is based on the in-game quality per ml
         ]);
         giftParser.RegisterAvailableGift("Filter straw", [ // filterstraw
             new GiftTrait { Trait = "Consumable" },
@@ -863,7 +885,7 @@ public class Gifting
         ]);
         giftParser.RegisterAvailableGift("Heroin syringe", [ // heroin
             new GiftTrait { Trait = "Consumable" },
-            new GiftTrait { Trait = "Mana", Quality = 1 } // about mid-range
+            new GiftTrait { Trait = "Mana", Quality = 1.5 }
         ]);
         giftParser.RegisterAvailableGift("Holiday hat", [ // holidayhat
             new GiftTrait { Trait = "Armor", Quality = 0.6 } // 3hr decay, 10% defense, 20% insulation
@@ -996,6 +1018,557 @@ public class Gifting
             // Need I explain this trait?
             new GiftTrait { Trait = "Gun", Quality = 0.5 }, // lower durability, jams easier. loaded with 9mm.
             new GiftTrait { Trait = "Weapon" }
+        ]);
+        giftParser.RegisterAvailableGift("Makeshift wrench", [ // makeshiftwrench
+            new GiftTrait { Trait = "Tool", Quality = 0.8 } // hammering tool. low durability. cannot help with dislocations
+        ]);
+        giftParser.RegisterAvailableGift("Manual defibrillator", [ // aed
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Life", Quality = 1.5 } // lower quality than the automatic defib
+        ]);
+        giftParser.RegisterAvailableGift("Material pouch", [ // materialpouch
+            new GiftTrait { Trait = "Container", Quality = 0.75 } // 5hr decay, 5u capacity, 0.25u per item
+        ]);
+        giftParser.RegisterAvailableGift("Medical suture", [ // medicalsuture
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Heal", Quality = 3 } // 1.27l/m of bleeding, 50 skin health
+        ]);
+        giftParser.RegisterAvailableGift("Medium battery", [ // mediumbattery
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Energy", Quality = 1.5 } // duh
+        ]);
+        giftParser.RegisterAvailableGift("Med-kit", [ // medkit
+            new GiftTrait { Trait = "Container", Quality = 1 } // 4hr decay time, 4u capacity, 1.5u per item
+        ]);
+        giftParser.RegisterAvailableGift("Milk carton", [ // milk
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Food", Quality = 0.9 }, // 3 hunger, 10 times
+            new GiftTrait { Trait = "Drink", Quality = 1.75 } // 8 thirst, 10 times
+        ]);
+        giftParser.RegisterAvailableGift("Mindwipe", [ // mindwipe
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Mana", Quality = 0.15 }, // contains 30ml of Morphine, which could be extracted with a centrifuge?
+            new GiftTrait { Trait = "Life", Quality = 0.25 } // can cure brain damage, but comes at the downside of removing all skills and dialogue
+            // This is such a unique item that it's hard to give it proper traits
+            // Should this have the Trap trait? It's not forced on the player when they get gifted it, but it's hard to say this is exactly a good item to receive in most cases
+        ]);
+        giftParser.RegisterAvailableGift("Mini laser drill", [ // minilaserdrill
+            new GiftTrait { Trait = "Tool" },
+            new GiftTrait { Trait = "Weapon" },
+            new GiftTrait { Trait = "Damage", Quality = 1.5 } // 25 damage, about twice as fast than normal, zero stamina usage
+        ]);
+        giftParser.RegisterAvailableGift("Morphine syringe", [ // morphine
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Mana", Quality = 1 }
+        ]);
+        giftParser.RegisterAvailableGift("Wrapvine", [ // musharm (yes, it's still internally called that)
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Material" }, // can be used as foliage
+            new GiftTrait { Trait = "Heal", Quality = 0.25 } // 0.11l/m of bleeding
+        ]);
+        giftParser.RegisterAvailableGift("Numberry", [ // mushpear (same with this one)
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Food", Quality = 0.3 }, // 5 hunger, downside of 7% sickness
+            new GiftTrait { Trait = "Drink", Quality = 0.25 }, // 3 thirst, downside of 7% sickness
+            new GiftTrait { Trait = "Mana", Quality = 0.2 } // contains some opiates
+            // Not sure how to show the weight loss effect through traits
+        ]);
+        giftParser.RegisterAvailableGift("Naptail", [ // mushtail (and this one too)
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Slowness" } // not sure how else to describe this one
+        ]);
+        giftParser.RegisterAvailableGift("Nails", [ // nails
+            new GiftTrait { Trait = "Metal" },
+            new GiftTrait { Trait = "Material" }
+        ]);
+        giftParser.RegisterAvailableGift("Naloxone syringe", [ // naloxone
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Life" } // anti-overdose
+        ]);
+        giftParser.RegisterAvailableGift("Neural booster", [ // neuralbooster
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Speed" },
+            new GiftTrait { Trait = "Life", Quality = 1.5 } // increases brain health by 10
+            // fun fact! the 'heal' command doesn't remove the flag of having used this! learned that the hard way by accidentally jumpscaring myself
+        ]);
+        giftParser.RegisterAvailableGift("No popcorn", [ // nopopcorn
+            new GiftTrait { Trait = "Container", Quality = 0.3 } // 20min decay time, 2u capacity, 2u per item
+        ]);
+        giftParser.RegisterAvailableGift("Nutrient bar", [ // nutrientbar
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Food", Quality = 1.5 } // 12 hunger, 3 times, doesn't spoil
+        ]);
+        giftParser.RegisterAvailableGift("Opium syringe", [ // opium
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Mana", Quality = 0.5 }
+        ]);
+        giftParser.RegisterAvailableGift("Overgrown tick", [ // overgrowntick
+            new GiftTrait { Trait = "Trap" },
+            new GiftTrait { Trait = "Monster", Quality = 0.75 }
+        ]);
+        giftParser.RegisterAvailableGift("Oxygen crystal shard", [ // oxygencrystalshard
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Buff" } // stamina regen
+        ]);
+        giftParser.RegisterAvailableGift("Relief cream bottle", [ // paincream
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Cure", Quality = 1.5 }
+        ]);
+        giftParser.RegisterAvailableGift("Painkiller bottle", [ // painkillers
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Mana", Quality = 1 }
+        ]);
+        giftParser.RegisterAvailableGift("Pancakes", [ // pancake
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Food", Quality = 1.75 } // 10 hunger, 4 times, downside of 1% sickness each time
+        ]);
+        giftParser.RegisterAvailableGift("Paprikash", [ // paprikash
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Meat" }, // has meat quality
+            new GiftTrait { Trait = "Food", Quality = 1.5 } // 12 hunger, 2 times, downside of 2% sickness each time
+        ]);
+        giftParser.RegisterAvailableGift("Pemmican", [ // pemmican
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Meat" }, // has meat quality
+            new GiftTrait { Trait = "Food", Quality = 2 } // 12 hunger, 4 times
+        ]);
+        giftParser.RegisterAvailableGift("Pickaxe", [ // pickaxe
+            new GiftTrait { Trait = "Tool" },
+            new GiftTrait { Trait = "Weapon" },
+            new GiftTrait { Trait = "Damage", Quality = 2 } // 106 damage, quite slow
+        ]);
+        giftParser.RegisterAvailableGift("Pistol", [ // pistol
+            new GiftTrait { Trait = "Gun", Quality = 1 }, // loaded with 9mm
+            new GiftTrait { Trait = "Weapon" }
+        ]);
+        giftParser.RegisterAvailableGift("Metal pitchfork", [ // pitchfork
+            new GiftTrait { Trait = "Tool" },
+            new GiftTrait { Trait = "Weapon" },
+            new GiftTrait { Trait = "Damage", Quality = 1.2 } // 38 damage, slightly slower than normal
+        ]);
+        giftParser.RegisterAvailableGift("Pizza slice", [ // pizzaslice
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Meat" }, // has meat quality
+            new GiftTrait { Trait = "Food", Quality = 1.8 } // 12 hunger, 3 times
+        ]);
+        giftParser.RegisterAvailableGift("Plasma cutter", [ // plasmacutter
+            new GiftTrait { Trait = "Tool" },
+            new GiftTrait { Trait = "Weapon" },
+            new GiftTrait { Trait = "Damage", Quality = 2.5 }, // 10 damage, nearly instant, no stamina usage
+            new GiftTrait { Trait = "Heal", Quality = 2.5 } // decreases bleeding by 80% on the selected limb, downside of pain
+        ]);
+        giftParser.RegisterAvailableGift("Plastic bag", [ // plasticbag
+            new GiftTrait { Trait = "Material", Quality = 0.25 }, // source of ripped dressing (1)
+            new GiftTrait { Trait = "Container", Quality = 0.5 } // 45min decay time, 3.5u capacity, 3.5u per item
+        ]);
+        giftParser.RegisterAvailableGift("Plastic dressing", [ // plasticbandage
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Heal", Quality = 1.5 } // 1.1l/m of bleeding, 30 skin health
+        ]);
+        giftParser.RegisterAvailableGift("Chunk of plastic", [ // plasticchunk
+            new GiftTrait { Trait = "Material" }
+        ]);
+        giftParser.RegisterAvailableGift("Plushie", [ // plushie
+            new GiftTrait { Trait = "Animal" } // the gifting API says that Animal can also mean "Companion" (can you tell I have no ideas for this one?)
+            // new GiftTrait { Trait = "weh" }
+        ]);
+        giftParser.RegisterAvailableGift("Popcorn", [ // popcorn
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Food", Quality = 1.75 } // 9 hunger, 5 times, leaves a useable container afterwards
+        ]);
+        giftParser.RegisterAvailableGift("Popfruit", [ // popfruit
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Food", Quality = 0.25 }, // 4 hunger, 2 times, downside of radiation
+            new GiftTrait { Trait = "Drink", Quality = 0.15 }, // 2 thirst, 2 times, downside of radiation
+        ]);
+        giftParser.RegisterAvailableGift("Pouch", [ // pouch
+            new GiftTrait { Trait = "Material", Quality = 0.25 }, // source of ripped dressing (1)
+            new GiftTrait { Trait = "Container", Quality = 0.4 } // 1hr decay time, 2.5u capacity, 1u per item
+        ]);
+        giftParser.RegisterAvailableGift("Metal digging tool", [ // primitivediggingtool
+            new GiftTrait { Trait = "Tool" },
+            new GiftTrait { Trait = "Weapon" },
+            new GiftTrait { Trait = "Damage", Quality = 1.5 } // 72 damage, slightly slower than normal
+        ]);
+        giftParser.RegisterAvailableGift("Processed copper", [ // processedcopper
+            new GiftTrait { Trait = "Metal" },
+            new GiftTrait { Trait = "Ore" },
+            new GiftTrait { Trait = "Material" }
+        ]);
+        giftParser.RegisterAvailableGift("Purse", [ // purse
+            new GiftTrait { Trait = "Container", Quality = 0.5 } // 2hr decay time, 2.5u capacity, 1.25u per item
+        ]);
+        giftParser.RegisterAvailableGift("Old rag", [ // rag
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Heal", Quality = 0.25 } // 0.18l/m of bleeding
+        ]);
+        giftParser.RegisterAvailableGift("Rake", [ // rake
+            new GiftTrait { Trait = "Tool" },
+            new GiftTrait { Trait = "Weapon" },
+            new GiftTrait { Trait = "Damage", Quality = 1 } // 33 damage, half normal speed
+        ]);
+        giftParser.RegisterAvailableGift("Rangefinder", [ // rangefinder
+            new GiftTrait { Trait = "Tool" } // yeah, I got no idea
+        ]);
+        giftParser.RegisterAvailableGift("Raw copper", [ // rawcopper
+            new GiftTrait { Trait = "Metal" },
+            new GiftTrait { Trait = "Ore", Quality = 0.5 },
+            new GiftTrait { Trait = "Material" }
+        ]);
+        //giftParser.RegisterAvailableGift("???", [ // reinforcedrope
+            // This item DOES exist in the spawn list and can be spawned, but has no item data, no name, no description, and no functionality. Putting this here for futureproofing.
+            //new GiftTrait { Trait = "sorry nothing" }
+        //]);
+        giftParser.RegisterAvailableGift("Relief crystal shard", [ // reliefcrystalshard
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Buff" } // pain reduction
+        ]);
+        giftParser.RegisterAvailableGift("Rifle", [ // rifle
+            new GiftTrait { Trait = "Gun", Quality = 1.25 }, // loaded with 5.56
+            new GiftTrait { Trait = "Weapon" }
+        ]);
+        giftParser.RegisterAvailableGift("Rifle magazine", [ // riflemagazine
+            new GiftTrait { Trait = "Ammo", Quality = 1.5 },
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Container" }
+        ]);
+        giftParser.RegisterAvailableGift("Small IV bag", [ // ringersolution
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Drink", Quality = 2.5 }, // 60 thirst
+            new GiftTrait { Trait = "Life", Quality = 1.5 } // 0.9l blood
+        ]);
+        giftParser.RegisterAvailableGift("Riot helmet", [ // riothelmet
+            new GiftTrait { Trait = "Armor", Quality = 3 } // 67% protection, 20% insulation, on a critical limb
+        ]);
+        giftParser.RegisterAvailableGift("Ripped dressing", [ // rippeddressing
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Heal", Quality = 0.3 } // 0.28l/m of bleeding
+        ]);
+        giftParser.RegisterAvailableGift("Rope", [ // rope
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Material" }
+        ]);
+        giftParser.RegisterAvailableGift("Rose pod", [ // rosepod
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Light", Quality = 2.5 }
+            // Only the closed pod can be gifted/received, so the recipient can use it when they're ready
+        ]);
+        giftParser.RegisterAvailableGift("Rye bulb", [ // ryebulb
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Material" }
+        ]);
+        giftParser.RegisterAvailableGift("Rye flour", [ // ryeflour
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Material" }
+        ]);
+        giftParser.RegisterAvailableGift("Safety glasses", [ // safetyglasses
+            new GiftTrait { Trait = "Armor", Quality = 1.5 } // 20% protection, on a critical limb
+        ]);
+        giftParser.RegisterAvailableGift("IV bag", [ // saline
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Drink", Quality = 2.5 }, // 60 thirst
+            new GiftTrait { Trait = "Life", Quality = 1.75 } // 1l blood
+        ]);
+        giftParser.RegisterAvailableGift("Scaffolding pack", [ // scaffoldingpack
+            new GiftTrait { Trait = "Tool" } // yeah, I got no idea
+        ]);
+        giftParser.RegisterAvailableGift("Scarf", [ // scarf
+            new GiftTrait { Trait = "Material", Quality = 0.5 }, // source of ripped dressing (2)
+            new GiftTrait { Trait = "Armor", Quality = 0.4 } // 6hr decay time, 15% insulation
+        ]);
+        giftParser.RegisterAvailableGift("Scrap metal", [ // scrapmetal
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Material" },
+            new GiftTrait { Trait = "Metal" }
+        ]);
+        giftParser.RegisterAvailableGift("Scarf", [ // scarf
+            new GiftTrait { Trait = "Material", Quality = 0.5 }, // source of ripped dressing (2)
+            new GiftTrait { Trait = "Armor", Quality = 0.4 } // 6hr decay time, 15% insulation
+        ]);
+        giftParser.RegisterAvailableGift("Advanced scuba diving gear", [ // scubadivinggear
+            new GiftTrait { Trait = "Speed" }, // manuverability increase underwater
+            new GiftTrait { Trait = "Armor", Quality = 2.5 } // 2hr decay time, 44% protection across multiple limbs, including critical ones
+        ]);
+        giftParser.RegisterAvailableGift("Shade crawler", [ // shadecrawler
+            new GiftTrait { Trait = "Trap" },
+            new GiftTrait { Trait = "Monster", Quality = 0.5 }
+        ]);
+        giftParser.RegisterAvailableGift("Pump-action shotgun", [ // shotgun
+            new GiftTrait { Trait = "Gun", Quality = 2 }, // loaded with 12-gauge
+            new GiftTrait { Trait = "Weapon" }
+        ]);
+        giftParser.RegisterAvailableGift("Metal shovel", [ // shovel
+            new GiftTrait { Trait = "Tool" },
+            new GiftTrait { Trait = "Weapon" },
+            new GiftTrait { Trait = "Damage", Quality = 1.5 } // 43 damage, normal speed
+        ]);
+        giftParser.RegisterAvailableGift("Metal sickle", [ // sickle
+            new GiftTrait { Trait = "Tool" },
+            new GiftTrait { Trait = "Weapon" },
+            new GiftTrait { Trait = "Damage", Quality = 1.1 } // 33 damage, normal speed
+        ]);
+        giftParser.RegisterAvailableGift("Metal sickle", [ // sickle
+            new GiftTrait { Trait = "Tool", Quality = 3 }, // 1000 hammering quality
+            new GiftTrait { Trait = "Weapon" },
+            new GiftTrait { Trait = "Damage", Quality = 1.2 } // 86 damage, very slow
+        ]);
+        giftParser.RegisterAvailableGift("Sleeping bag", [ // sleepingbag
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Slowness" },
+            new GiftTrait { Trait = "Tool" }
+        ]);
+        giftParser.RegisterAvailableGift("Sleeping pills packet", [ // sleepingpills
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Slowness" }
+        ]);
+        giftParser.RegisterAvailableGift("Sling bag", [ // slingbag
+            new GiftTrait { Trait = "Material", Quality = 0.25 }, // source of ripped dressing (1)
+            new GiftTrait { Trait = "Container", Quality = 1 } // 50min decay time, 4u capacity, 2.5u per item
+        ]);
+        giftParser.RegisterAvailableGift("Small battery", [ // smallbattery
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Energy", Quality = 1 } // duh
+        ]);
+        giftParser.RegisterAvailableGift("Small magazine", [ // smallmagazine
+            new GiftTrait { Trait = "Ammo", Quality = 0.5 },
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Container" }
+        ]);
+        giftParser.RegisterAvailableGift("Small backpack", [ // smallpack
+            new GiftTrait { Trait = "Material", Quality = 0.25 }, // source of ripped dressing (1)
+            new GiftTrait { Trait = "Container", Quality = 0.8 } // 3hr decay time, 3.25u capacity, 2u per item
+        ]);
+        giftParser.RegisterAvailableGift("Sneakers", [ // sneakers
+            new GiftTrait { Trait = "Material", Quality = 0.25 }, // source of ripped dressing (1)
+            new GiftTrait { Trait = "Armor", Quality = 0.4 } // 5hr decay time, 50% protection, 7% insulation
+        ]);
+        giftParser.RegisterAvailableGift("Snow strider", [ // snowstrider
+            new GiftTrait { Trait = "Trap" },
+            new GiftTrait { Trait = "Monster", Quality = 1 }
+        ]);
+        giftParser.RegisterAvailableGift("Soda bottle", [ // sodabottle
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Drink", Quality = 1.75 } // 9 thirst, 10 times, downside of 5% sickness each time
+        ]);
+        giftParser.RegisterAvailableGift("Soda can", [ // sodacan
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Drink", Quality = 0.75 } // 9 thirst, 3 times, downside of 5% sickness each time
+        ]);
+        giftParser.RegisterAvailableGift("Sodium nitroprusside bottle", [ // sodiumnitroprusside
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Life", Quality = 0.5 } // lowers blood pressure
+        ]);
+        giftParser.RegisterAvailableGift("Soothing crystal shard", [ // soothingcrystalshard
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Buff" }
+        ]);
+        giftParser.RegisterAvailableGift("Soup bowl", [ // soup
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Food", Quality = 1.5 }, // 10 hunger, 3 times
+            new GiftTrait { Trait = "Drink", Quality = 1.5 }, // 9 thirst, 3 times
+        ]);
+        giftParser.RegisterAvailableGift("Space-drain", [ // spacedrain
+            new GiftTrait { Trait = "Tool" } // yeah, I got no idea
+        ]);
+        giftParser.RegisterAvailableGift("Splint", [ // splint
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Life", Quality = 2 }, // splint. heals broken bones. more durable than carcass variant
+        ]);
+        giftParser.RegisterAvailableGift("Spray bottle", [ // spraybottle
+            new GiftTrait { Trait = "Tool", Quality = 2 } // required to make some antiseptics work properly
+        ]);
+        giftParser.RegisterAvailableGift("Steak", [ // steak
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Meat" }, // has meat quality
+            new GiftTrait { Trait = "Food", Quality = 3 } // 15 hunger, 3 times
+        ]);
+        giftParser.RegisterAvailableGift("Sterilized dressing", [ // sterilizedbandage
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Heal", Quality = 1 }, // 0.7l/m of bleeding
+            new GiftTrait { Trait = "Cure" } // disinfects
+        ]);
+        giftParser.RegisterAvailableGift("Stick", [ // stick
+            new GiftTrait { Trait = "Wood" },
+            new GiftTrait { Trait = "Tool", Quality = 0.1 }, // very bad hammering tool
+            new GiftTrait { Trait = "Material" },
+            new GiftTrait { Trait = "Fire" } // flammable
+        ]);
+        giftParser.RegisterAvailableGift("Stuck stone fruit", [ // stonefruitclosed
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Fruit" },
+            new GiftTrait { Trait = "Food", Quality = 0.75 } // 8 hunger, downside of pain and -5 thirst
+        ]);
+        giftParser.RegisterAvailableGift("Streptokinase syringe", [ // streptokinase
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Life", Quality = 0.4 }, // lowers blood viscosity
+        ]);
+        giftParser.RegisterAvailableGift("Strider pelt", [ // striderpelt
+            new GiftTrait { Trait = "Armor", Quality = 2.25 }, // 29% protection, 40% insulation, on multiple critial limbs
+            new GiftTrait { Trait = "Monster", Quality = 1 }
+        ]);
+        giftParser.RegisterAvailableGift("String", [ // string
+            new GiftTrait { Trait = "Material" }
+        ]);
+        giftParser.RegisterAvailableGift("Syringe", [ // syringe
+            new GiftTrait { Trait = "Tool", Quality = 2.5 } // very useful to have on hand
+        ]);
+        giftParser.RegisterAvailableGift("Tactical boots", [ // tacticalboots
+            new GiftTrait { Trait = "Material", Quality = 0.5 }, // source of ripped dressing (2)
+            new GiftTrait { Trait = "Armor", Quality = 3 } // 67% protection, 30% insulation
+        ]);
+        giftParser.RegisterAvailableGift("Tactical gloves", [ // tacticalgloves
+            new GiftTrait { Trait = "Armor", Quality = 2 } // 50% protection, 15% insulation
+        ]);
+        giftParser.RegisterAvailableGift("Terrain scanner", [ // terrainscanner
+            new GiftTrait { Trait = "Tool" }
+        ]);
+        giftParser.RegisterAvailableGift("Titanium machete", [ // titaniummachete
+            new GiftTrait { Trait = "Tool", Quality = 2 }, // 100 cutting quality
+            new GiftTrait { Trait = "Weapon" },
+            new GiftTrait { Trait = "Damage", Quality = 2.5 } // 77 damage, slightly faster than normal (only against living enemies)
+        ]);
+        giftParser.RegisterAvailableGift("Titanium multitool", [ // titaniummultitool
+            new GiftTrait { Trait = "Tool", Quality = 4 } // 300 cutting and 300 hammering quality
+        ]);
+        giftParser.RegisterAvailableGift("Titanium pickaxe", [ // titaniumpickaxe
+            new GiftTrait { Trait = "Tool" },
+            new GiftTrait { Trait = "Weapon" },
+            new GiftTrait { Trait = "Damage", Quality = 2.5 } // 135 damage, half normal speed
+        ]);
+        giftParser.RegisterAvailableGift("Titanium rod", [ // titaniumrod
+            new GiftTrait { Trait = "Material" },
+            new GiftTrait { Trait = "Metal" }
+        ]);
+        giftParser.RegisterAvailableGift("Titanium sheet", [ // titaniumsheet
+            new GiftTrait { Trait = "Material" },
+            new GiftTrait { Trait = "Metal" }
+        ]);
+        giftParser.RegisterAvailableGift("Titanium slab", [ // titaniumslab
+            new GiftTrait { Trait = "Material" },
+            new GiftTrait { Trait = "Metal" }
+        ]);
+        giftParser.RegisterAvailableGift("Toolbox", [ // toolbox
+            new GiftTrait { Trait = "Container", Quality = 3 } // 8hr decay time, 10u capacity, 6u per item, can only hold in hands
+        ]);
+        giftParser.RegisterAvailableGift("Torch", [ // torch
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Light", Quality = 2 } // good light, but liquids put it out
+        ]);
+        giftParser.RegisterAvailableGift("Torn shirt", [ // tornshirt
+            new GiftTrait { Trait = "Material", Quality = 0.25 }, // source of ripped dressing (1)
+            new GiftTrait { Trait = "Armor", Quality = 1 } // 20% protection, 10% insulation
+        ]);
+        giftParser.RegisterAvailableGift("Tourniquet", [ // tourniquet
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Heal" } // stops bleeding temporarially, downside of pain if left too long
+        ]);
+        giftParser.RegisterAvailableGift("Trash bag", [ // trashbag
+            new GiftTrait { Trait = "Material", Quality = 0.25 }, // source of ripped dressing (1)
+            new GiftTrait { Trait = "Container", Quality = 1 } // 1hr decay time, 4u capacity, 4u per item
+        ]);
+        giftParser.RegisterAvailableGift("Trauma rig", [ // traumarig
+            new GiftTrait { Trait = "Material", Quality = 0.25 }, // source of ripped dressing (1)
+            new GiftTrait { Trait = "Container", Quality = 3.5 }, // +24hr decay time, 6u capacity, 5u per item
+            new GiftTrait { Trait = "Armor", Quality = 2.5 } // +24hr decay time, 44% protection
+        ]);
+        giftParser.RegisterAvailableGift("Trowel", [ // trowel
+            new GiftTrait { Trait = "Tool" },
+            new GiftTrait { Trait = "Weapon" },
+            new GiftTrait { Trait = "Damage", Quality = 1.25 } // 30 damage, normal speed
+        ]);
+        giftParser.RegisterAvailableGift("Turbulent crystal shard", [ // turbulentcrystalshard
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Buff" },
+            new GiftTrait { Trait = "Speed" } // movement
+        ]);
+        giftParser.RegisterAvailableGift("Tweezers", [ // tweezers
+            new GiftTrait { Trait = "Tool" },
+            // Tweezers help with removing shrapnel. When shrapnel is in a limb, it's maximum muscle health is capped to 50
+            // The "Heal" trait is used for restoring skin/muscle health, and this is a tool to remove a cap on muscle health
+            // Bit of a stretch, I know
+            new GiftTrait { Trait = "Heal" }
+        ]);
+        giftParser.RegisterAvailableGift("Vasopressin bottle", [ // vasopressin
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Life", Quality = 0.4 }, // increases blood pressure
+        ]);
+        giftParser.RegisterAvailableGift("Venom gland", [ // venomgland
+            new GiftTrait { Trait = "Material" },
+            new GiftTrait { Trait = "Cure" } // material that can be processed into an anti-venom
+        ]);
+        giftParser.RegisterAvailableGift("Sand stalker", [ // wallbiter
+            new GiftTrait { Trait = "Trap" },
+            new GiftTrait { Trait = "Monster", Quality = 1.5 }
+        ]);
+        giftParser.RegisterAvailableGift("Electronic watch", [ // watch
+            new GiftTrait { Trait = "Tool" }
+        ]);
+        giftParser.RegisterAvailableGift("Water bottle", [ // waterbottle
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Drink", Quality = 2 } // 9 thirst, 5 times
+        ]);
+        giftParser.RegisterAvailableGift("Water jug", [ // waterjug
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Drink", Quality = 4 } // 9 thirst, 30 times
+        ]);
+        giftParser.RegisterAvailableGift("Wooden digging tool", [ // wooddiggingtool
+            new GiftTrait { Trait = "Wood" },
+            new GiftTrait { Trait = "Tool" },
+            new GiftTrait { Trait = "Weapon" },
+            new GiftTrait { Trait = "Damage", Quality = 0.8 } // 47 damage, half speed, terrible durability
+        ]);
+        giftParser.RegisterAvailableGift("Wooden pickaxe", [ // woodpickaxe
+            new GiftTrait { Trait = "Wood" },
+            new GiftTrait { Trait = "Tool" },
+            new GiftTrait { Trait = "Weapon" },
+            new GiftTrait { Trait = "Damage", Quality = 1.2 } // 181 damage, slow speed, terrible durability
+        ]);
+        giftParser.RegisterAvailableGift("Wooden pitchfork", [ // woodpitchfork
+            new GiftTrait { Trait = "Wood" },
+            new GiftTrait { Trait = "Tool" },
+            new GiftTrait { Trait = "Weapon" },
+            new GiftTrait { Trait = "Damage", Quality = 0.75 } // 33 damage, half speed, terrible durability
+        ]);
+        giftParser.RegisterAvailableGift("Wood sandals", [ // woodsandals
+            new GiftTrait { Trait = "Wood" },
+            new GiftTrait { Trait = "Armor" }
+        ]);
+        giftParser.RegisterAvailableGift("Wood scraps", [ // woodscraps
+            new GiftTrait { Trait = "Wood" },
+            new GiftTrait { Trait = "Material" },
+            new GiftTrait { Trait = "Fire" } // flammable
+        ]);
+        giftParser.RegisterAvailableGift("Wooden shovel", [ // woodshovel
+            new GiftTrait { Trait = "Wood" },
+            new GiftTrait { Trait = "Tool" },
+            new GiftTrait { Trait = "Weapon" },
+            new GiftTrait { Trait = "Damage", Quality = 1 } // 38 damage, slightly slower, terrible durability
+        ]);
+        giftParser.RegisterAvailableGift("Wooden sickle", [ // woodsickle
+            new GiftTrait { Trait = "Wood" },
+            new GiftTrait { Trait = "Tool" },
+            new GiftTrait { Trait = "Weapon" },
+            new GiftTrait { Trait = "Damage", Quality = 0.9 } // 30 damage, slightly slower, terrible durability
+        ]);
+        giftParser.RegisterAvailableGift("Wooden trowel", [ // woodtrowel
+            new GiftTrait { Trait = "Wood" },
+            new GiftTrait { Trait = "Tool" },
+            new GiftTrait { Trait = "Weapon" },
+            new GiftTrait { Trait = "Damage", Quality = 1.1 } // 27 damage, normal speed, terrible durability
+        ]);
+        giftParser.RegisterAvailableGift("Wound glue", [ // wouldglue
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Heal", Quality = 4 }, // 1.84l/m of bleeding, 40 skin health
+            new GiftTrait { Trait = "Cure", Quality = 2 } // full disinfect on used limb, 4 times
+        ]);
+        giftParser.RegisterAvailableGift("Wrench", [ // wrench
+            new GiftTrait { Trait = "Tool", Quality = 2.5 }, // 150 hammering quality
+            new GiftTrait { Trait = "Life", Quality = 1.3 } // helps with dislocations
+        ]);
+        giftParser.RegisterAvailableGift("Xaloris sponge", [ // xalorissponge
+            new GiftTrait { Trait = "Consumable" },
+            new GiftTrait { Trait = "Food", Quality = 0 }, // 8 hunger, downside of 2% sickness and 5 sepsis
+            new GiftTrait { Trait = "Cure", Quality = 0.9 } // full disinfect on used limb, downside of 8 sepsis and 5% pain
         ]);
 
         /* Here is a list of every "common" trait used inside the Gifting API along with a brief description of it (https://github.com/agilbert1412/Archipelago.Gifting.Net/blob/main/Documentation/Gifting%20API.md#gift-traits)
