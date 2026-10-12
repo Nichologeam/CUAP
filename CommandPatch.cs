@@ -380,30 +380,29 @@ public class CommandPatch : MonoBehaviour
                 throw new Exception(APLocale.Get("giftDisabled", APLocale.APLanguageType.Commands));
             }
             LogToConsole(APLocale.Get("giftNetworkingNotice", APLocale.APLanguageType.Commands));
-            if (!Gifting.giftService.CanGiftToPlayer(args[1]).CanGift)
-            {
-                throw new Exception(APLocale.Get("giftPlayerUnable", APLocale.APLanguageType.Commands));
-            }
+            string playerName = string.Join(" ", args.Skip(2));
+            // This line below is supposed to check if the receiving player has gifting enabled, but it always returns false for some reason?
+            // if (!Gifting.giftService.CanGiftToPlayer(playerName).CanGift) {throw new Exception(APLocale.Get("giftPlayerUnable", APLocale.APLanguageType.Commands));}
             body = GameObject.Find("Experiment/Body");
             Item selectedItem = null;
-            switch (args[2]) // switch on selected inventory slot
+            switch (args[1]) // switch on selected inventory slot
             {
                 case "Mouth":
                     selectedItem = body.transform.Find("Head/InvSlot").GetComponentInChildren<Item>(); // there are no children if the inventory slot is empty
                     break;
-                case "Main hand":
+                case "MainHand":
                     selectedItem = body.transform.Find("HandF/InvSlot (3)").GetComponentInChildren<Item>();
                     break;
-                case "Secondary hand":
+                case "SecondaryHand":
                     selectedItem = body.transform.Find("HandB/InvSlot (4)").GetComponentInChildren<Item>();
                     break;
-                case "Upper back":
+                case "UpperBack":
                     selectedItem = body.transform.Find("UpTorso/InvSlot").GetComponentInChildren<Item>();
                     break;
-                case "Middle back":
+                case "MiddleBack":
                     selectedItem = body.transform.Find("UpTorso/InvSlot (1)").GetComponentInChildren<Item>();
                     break;
-                case "Lower back":
+                case "LowerBack":
                     selectedItem = body.transform.Find("DownTorso/InvSlot (2)").GetComponentInChildren<Item>();
                     break;
                 default:
@@ -422,10 +421,10 @@ public class CommandPatch : MonoBehaviour
                 throw new Exception(APLocale.Get("giftItemUnsupported", APLocale.APLanguageType.Commands));
             }
             GiftItem item = new GiftItem(gift.Name, 1, 0);
-            GiftingResult result = Gifting.giftService.SendGift(item, gift.Traits, args[1]);
+            GiftingResult result = Gifting.giftService.SendGift(item, gift.Traits, playerName);
             if (result.Success)
             {
-                Destroy(selectedItem); // gift was sent! remove the sent item from the player's inventory
+                Destroy(selectedItem.gameObject); // gift was sent! remove the sent item from the player's inventory
             }
             else
             {
@@ -433,11 +432,11 @@ public class CommandPatch : MonoBehaviour
             }
         }, new Dictionary<int, List<string>> {
         {
-            1, new List<string> {"Mouth","Main hand","Secondary hand","Upper back","Middle back","Lower back"}
+            0, new List<string> {"Mouth","MainHand","SecondaryHand","UpperBack","MiddleBack","LowerBack"}
         } }, new ValueTuple<string, string>[]
         {
-            new ValueTuple<string, string>(APLocale.Get("giftPlayer", APLocale.APLanguageType.Commands), APLocale.Get("giftPlayerDesc", APLocale.APLanguageType.Commands)),
             new ValueTuple<string, string>(APLocale.Get("giftSlot", APLocale.APLanguageType.Commands), APLocale.Get("giftSlotDesc", APLocale.APLanguageType.Commands)),
+            new ValueTuple<string, string>(APLocale.Get("giftPlayer", APLocale.APLanguageType.Commands), APLocale.Get("giftPlayerDesc", APLocale.APLanguageType.Commands))
         }));
         if (raceMode) return; // commands after this can be used to cheat. disable them in race mode
         ConsoleScript.Commands.Add(new Command("apcheat", APLocale.Get("cheatDesc", APLocale.APLanguageType.Commands), delegate (string[] args)

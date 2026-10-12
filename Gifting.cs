@@ -44,7 +44,7 @@ public class Gifting
     }
     private static void OnGiftReceived(Gift gift)
     {
-        Startup.Logger.LogDebug("Received gift from " + Client.Players.GetPlayerAlias(gift.SenderSlot) + " in slot " + gift.SenderSlot);
+        Startup.Logger.LogInfo("Received gift from " + Client.Players.GetPlayerAlias(gift.SenderSlot) + " in slot " + gift.SenderSlot);
         Startup.Logger.LogDebug("Gifted item name: " + gift.ItemName);
         Startup.Logger.LogDebug("Is refund?: " + gift.IsRefund);
         if (gift.Traits == null || gift.Traits.Length == 0)
@@ -68,23 +68,43 @@ public class Gifting
             APCanvas.EnqueueArchipelagoNotification(APLocale.Get("giftOutOfGame", APLocale.APLanguageType.Errors), 3);
             return;
         }
-        // TODO: skip trait parsing if an exact name match exists
-        List<string> matches = giftParser.FindClosestAvailableGift(gift.Traits); // get the closest available items that have the traits this gift does
-        if (matches == null || matches.Count == 0)
+        string match = null;
+        if (Gifts.TryGetValue(gift.ItemName, out GiftDefinition giftInfo)) // the item name is an exact match to a Casualties item
         {
-            giftService.RefundGift(gift); // no matches could be found, refund this gift
-            string sender = Client.Players.GetPlayerName(gift.SenderSlot);
-            Startup.Logger.LogWarning($"No matches found for received gift {gift.ItemName} from {sender}. Refunding..."); // for the bepinex log
-            CommandPatch.LogToConsole($"<color=#FF0000>CUAP: No matches found for received gift {gift.ItemName} from {sender}. Refunding...</color>"); // for the ingame console
-            return;
+            match = gift.ItemName; // skip the parser and just use the item with the same name
         }
-        string match = matches[0]; // only use the first match
-        Startup.Logger.LogDebug("Found match for gifted item: " + match); // log what item was matched
+        else
+        {
+            List<string> matches = giftParser.FindClosestAvailableGift(gift.Traits); // get the closest available items that have the traits this gift does
+            if (matches == null || matches.Count == 0)
+            {
+                giftService.RefundGift(gift); // no matches could be found, refund this gift
+                string sender = Client.Players.GetPlayerName(gift.SenderSlot);
+                Startup.Logger.LogWarning($"No matches found for received gift {gift.ItemName} from {sender}. Refunding..."); // for the bepinex log
+                string error = APLocale.Get("giftNoMatches", APLocale.APLanguageType.Errors);
+                error = error.Replace("<item>", gift.ItemName);
+                error = error.Replace("<sender>", sender);
+                CommandPatch.LogToConsole($"<color=#FF0000>{error}</color>"); // for the ingame console
+                return;
+            }
+            match = matches[0]; // only use the first match
+            Startup.Logger.LogDebug("Found match for gifted item: " + match); // log what item was matched
+        }
         if (Gifts.TryGetValue(match, out GiftDefinition info)) // get the prefab to spawn
         {
-            Vector2 playerPos = GameObject.Find("Experiment/Body").transform.position; // player's current position (at the body's center)
+            Vector2 playerPos = GameObject.Find("Experiment/Body").transform.position; // player's current position (at the player's feet)
             Object.Instantiate(Resources.Load<GameObject>(info.PrefabName), playerPos, Quaternion.identity); // spawn the object there
-            APCanvas.EnqueueArchipelagoNotification($"You've been gifted a {match} from {Client.Players.GetPlayerAlias(gift.SenderSlot)}!", 1);
+            if (!gift.IsRefund) // only show the message if this isn't a refund
+            {
+                string message = APLocale.Get("giftReceived", APLocale.APLanguageType.Messages);
+                message = message.Replace("<item>", match);
+                message = message.Replace("<plr>", Client.Players.GetPlayerAlias(gift.SenderSlot));
+                APCanvas.EnqueueArchipelagoNotification(message, 1);
+            }
+            else // otherwise, show a refund message
+            {
+                APCanvas.EnqueueArchipelagoNotification(APLocale.Get("giftRefunded", APLocale.APLanguageType.Messages), 1);
+            }
         }
         else // couldn't find the item inside the list
         {

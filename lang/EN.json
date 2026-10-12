@@ -143,8 +143,8 @@
 		"giftItemUnsupported": "The selected item is not supported by the Gifting API.",
 		"giftServiceFailure": "Gifting service failure."
 	},
-    "Messages": {
-        "archipelago": "Archipelago",
+	"Messages": {
+		"archipelago": "Archipelago",
 		"countdown": " Server Countdown: ",
 		"countdownOver": " Server Countdown: GO!",
 		"joinSpectator": " has started spectating.",
@@ -175,8 +175,10 @@
 		"bleedDeath2": " ran out of bandages.",
 		"bleedDeath3": " couldn't stop the bleeding.",
 		"genericDeath1": " became a statistic.",
-		"genericDeath2": " met the same fate."
-    },
+		"genericDeath2": " met the same fate.",
+		"giftReceived": "You've been gifted a '<item>' by <plr>!",
+		"giftRefunded": "Your gift was refunded!"
+	},
 	"Errors": {
 		"noPort": "Connection error: No server port was given.",
 		"invalidPort": "Connection error: <port> is not a valid port.",
@@ -200,7 +202,8 @@
 		"ringLinkSelf": "Got a RingLink packet from ourselves. Ignoring.",
 		"sleepLinkSelf": "Got a SleepLink packet from ourselves. Ignoring.",
 		"noteScoutError": "Scouting error! Whatever hint was supposed to be here didn't get scouted properly, please report this with the apreportbug command.",
-		"giftOutOfGame": "Received a gift while not in-game! The Giftbox wasn't closed properly somewhere!"
+		"giftOutOfGame": "Received a gift while not in-game! The Giftbox wasn't closed properly somewhere!",
+		"giftNoMatches": "CUAP: No matches found for received gift <item> from <sender>. Refunding..."
 	},
 	"Notes": {
 		"noteForTranslators": "Feel free to add or remove new lines in each of these categories. The mod will pick a random one out of all of the ones in the file. Just be sure to include the <plr>, <item>, and <loc> tags.",
