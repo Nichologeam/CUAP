@@ -15,7 +15,7 @@ To use this mod on the Itch.io version, use mod version v0.8.0 on the Itch.io br
 # **Creating Your .yaml Settings**
 There are two ways to edit your .yaml file, and what you pick comes down to convenience.
 ### **Through Archipelago**
-1. Download [Archipelago 0.6.7](https://github.com/ArchipelagoMW/Archipelago/releases/tag/0.6.7) or newer
+1. Download [Archipelago 0.6.7](https://github.com/ArchipelagoMW/Archipelago/releases/tag/0.6.8) or newer
 2. Download the APWorld and place it into the custom_worlds folder of your Archipelago install, restarting the launcher if it was open
      - If you don't know where this is, the Archipelago Launcher comes with a `Browse Files` option
      - Fresh installs of Archipelago also create a desktop shortcut to the Archipelago folder
@@ -32,15 +32,16 @@ This method is more hands-on, but you don't have to download anything more than 
 
 # **Connecting To The Multiworld**
 1. Get the world's connection information. If you are hosting on archipelago.gg, this is directly above the playerlist, in the format of `/connect archipelago.gg:xxxxx`
-2. Open Casualties: Unknown. An Archipelago GUI should show up in the top left corner
+2. Open Casualties: Unknown. An Archipelago GUI should show up on the right side
 3. Enter the connection info as shown:
       - The top textbox is the server IP, which is that `archipelago.gg:xxxxx` on the connection page. If the server is hosted on your own PC, this is `localhost`
       - The middle textbox is your slot name. This is the name inside your .yaml file
       - The bottom textbox is the server's password
 4. Upon connecting, the game's console (assigned to ~ on QWERTY keyboards) can be used as a text client. See the section below for more info
-5. If anything goes wrong while playing, please let me know. This is still in development, and bugs may happen
-	- You can contact me in the AP After Dark Discord in the Casualties: Unknown thread in #future-game-design
-	- or in the Target Planet Discord in the C:U Multiworld Randomizer (Archipelago) thread in #art
+5. If anything goes wrong while playing, please let me know. You can contact me...
+	- In the AP After Dark Discord in the Casualties: Unknown thread in #future-game-design
+	- In the Target Planet Discord in the C:U Multiworld Randomizer (Archipelago) thread in #art
+    - In the Casualties Unknown Modding Community Discord in the C:U Multiworld Randomizer (Archipelago) thread in #public-creations
 
 # **In-game Text Client**
 The in-game debug console now has various new Archipelago-related commands. You can open the in-game debug console with ~
@@ -52,7 +53,8 @@ The in-game debug console now has various new Archipelago-related commands. You 
 - apcollect: Alias for `apchat !collect`
 - apcheat: Alias for `apchat !getitem`
 - apalias [name]: Alias for `apchat !alias`
-- aplang [file]: Change the mod's langauge to a different one. See the next section for more information.
+- aplang [file]: Change the mod's langauge to a different one. See the next section for more information
+- apgift [inventorySlot] [Player]: Gift an item to another player. Must be enabled in the YAML for both players
 ### **Debug Commands**
 - apreportbug: Opens a bug report in this GitHub repository. Optionally takes a screenshot as well
 - apresetantispam: Clears local records of sent checks, allowing them to be sent again. Use this if a certain location isn't sending
@@ -62,5 +64,4 @@ The in-game debug console now has various new Archipelago-related commands. You 
 # **Custom Translations**
 This mod supports custom translations! Inside the lang folder of both this repo and the client mod, there is an included EN.json file that anyone can edit to support any lanuage they want. Simply made a copy, change the text, and run `aplang` ingame! A few things to note:
 - Text inside \<angled brackets\> is to be left alone. Changing the text inside the brackets can cause the mod to break or behave oddly.
-- Some text on UIs is hardcoded. I plan to expand custom translations in the future, but for now, they will remain in English.
 - Some text will be sent to the Archipelago server, such as when a Deathlink is sent.
