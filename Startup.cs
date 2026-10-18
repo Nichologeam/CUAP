@@ -12,6 +12,7 @@ using UnityEngine.UI;
 namespace CUAP;
 
 [BepInPlugin("nichologeam.cuap", "Casualties: Archipelago", "0.12.0.0")]
+[BepInIncompatibility("KrokoshaCasualtiesMP")]
 public class Startup : BaseUnityPlugin
 {
     public static new ManualLogSource Logger;
