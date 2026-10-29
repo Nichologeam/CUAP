@@ -114,17 +114,9 @@ public class APClientClass
             {
                 minigameRandom = Convert.ToInt32(minigames);
             }
-            if (slotdata.TryGetValue("RingLink", out var ringTrading))
-            {
-                TraderLink.ringTrading = Convert.ToBoolean(ringTrading);
-                if (Convert.ToBoolean(ringTrading))
-                {
-                    session.ConnectionInfo.UpdateConnectionOptions(session.ConnectionInfo.Tags.Append("RingLink").ToArray());
-                }
-            }
             if (slotdata.TryGetValue("EnergyLink", out var energyTrading))
             {
-                TraderLink.energyTrading = Convert.ToBoolean(energyTrading);
+                TraderLink.linkEnabled = Convert.ToBoolean(energyTrading);
             }
             TraderLink.instance.OnConnect();
             if (slotdata.TryGetValue("SleepLink", out var sleep))
