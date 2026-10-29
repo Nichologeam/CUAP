@@ -11,13 +11,13 @@ using UnityEngine.UI;
 
 namespace CUAP;
 
-[BepInPlugin("nichologeam.cuap", "Casualties: Archipelago", "0.12.0.0")]
+[BepInPlugin("nichologeam.cuap", "Casualties: Archipelago", "0.12.1")]
 [BepInIncompatibility("KrokoshaCasualtiesMP")]
 public class Startup : BaseUnityPlugin
 {
     public static new ManualLogSource Logger;
     public static ArchipelagoSession Client;
-    public static string CUAPVersion = "v0.12.0";
+    public static string CUAPVersion = "v0.12.1";
     public static AssetBundle apassets;
     private static Harmony apHarmony;
     public static Startup instance;
