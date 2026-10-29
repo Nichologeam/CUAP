@@ -6,15 +6,15 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using HarmonyLib;
-using System.Threading.Tasks;
 using UnityEngine.UI;
-using System.Runtime.CompilerServices;
 using System.Collections;
+using BepInEx.Bootstrap;
+using System;
 
 namespace CUAP;
 
 [BepInPlugin("nichologeam.cuap", "Casualties: Archipelago", "0.12.1")]
-[BepInIncompatibility("KrokoshaCasualtiesMP")]
+[BepInDependency("CasualtiesMP", BepInDependency.DependencyFlags.SoftDependency)] // ensure the MP mod is loaded first if it exists. do nothing if it doesn't
 public class Startup : BaseUnityPlugin
 {
     public static new ManualLogSource Logger;
@@ -31,9 +31,17 @@ public class Startup : BaseUnityPlugin
         
     private void Awake()
     {
+        if (Chainloader.PluginInfos.TryGetValue("CasualtiesMP", out PluginInfo MPMod)) // fails silently if Multiplayer isn't installed
+        {
+            bool isDisabled = Convert.ToBoolean(PlayerPrefs.GetInt("CasualtiesMP_FORCE_DISABLE_MP_MOD"));
+            if (!isDisabled)
+            {
+                throw new System.Exception("[Casualties: Archipelago] This mod is not compatable with multiplayer! Disable or remove the multiplayer mod to use Casualties: Archipelago!");
+            }
+        }
         instance = this;
         Logger = base.Logger;
-        Logger.LogMessage($"Casualties: Unknown Archipelago Plugin {CUAPVersion} loaded!");
+        Logger.LogMessage($"Casualties: Archipelago {CUAPVersion} loaded!");
         StartCoroutine(InitWhenSceneExists());
     }
     private void Init()
