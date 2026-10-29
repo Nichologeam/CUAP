@@ -8,6 +8,8 @@ using UnityEngine.SceneManagement;
 using HarmonyLib;
 using System.Threading.Tasks;
 using UnityEngine.UI;
+using System.Runtime.CompilerServices;
+using System.Collections;
 
 namespace CUAP;
 
@@ -27,12 +29,16 @@ public class Startup : BaseUnityPlugin
     GameObject WorldGen;
     GameObject Moodles;
         
-    private async void Awake()
+    private void Awake()
     {
-        await Task.Delay(1000);
         instance = this;
         Logger = base.Logger;
         Logger.LogMessage($"Casualties: Unknown Archipelago Plugin {CUAPVersion} loaded!");
+        StartCoroutine(InitWhenSceneExists());
+    }
+    private void Init()
+    {
+        Logger.LogMessage("Init");
         Handler = new GameObject("Archipelago Handler");
         DontDestroyOnLoad(Handler);
         APLocale.LoadLang("EN.json");
@@ -44,11 +50,18 @@ public class Startup : BaseUnityPlugin
         apHarmony.PatchAll();
         Logger.LogMessage($"Harmony patches applied!");
         SceneManager.sceneLoaded += OnSceneLoaded;
-        MainMenuPatches();
         Console = GameObject.Find("Console(Clone)");
         Console.AddComponent<CommandPatch>();
         var betaNotif = GameObject.Find("GlobalDark(Clone)/betabuild").GetComponent<TextMeshProUGUI>();
         betaNotif.text = $"{betaNotif.text}\n{APLocale.Get("mainMenuMessage", APLocale.APLanguageType.UI)}";
+    }
+
+    // due to a change in Cas: Unk version 5.0.2, the mod stopped loading properly due to it initalizing before Unity had actually made the scene
+    // because of this nonsense, I have to move a majority of the startup code from Awake to a custom Init function.
+    private IEnumerator InitWhenSceneExists()
+    {
+        yield return new WaitUntil(() => SceneManager.sceneCount > 0 && SceneManager.GetActiveScene().IsValid() &&  SceneManager.GetActiveScene().isLoaded);
+        Init();
     }
     public void Update()
     {
@@ -115,16 +128,8 @@ public class Startup : BaseUnityPlugin
             Body = null;
             WorldGen = null;
             Moodles = null;
-            MainMenuPatches();
+            GameObject.Find("Canvas/Logo").GetComponent<Image>().sprite = apassets.LoadAsset<Sprite>("logotext");
             Client.SetClientState(Archipelago.MultiClient.Net.Enums.ArchipelagoClientState.ClientConnected);
         }
-    }
-    // due to a change in Cas: Unk version 5.0.2, the mod stopped loading properly without some odd workarounds (hence the `await Task.Delay` in Awake)
-    // because of this nonsense, I can't actually hook SceneManager.sceneLoaded quick enough to catch the main menu loading on game start
-    // so I have to put this both in Awake, and in OnSceneLoaded. why duplicate code when I can just make it a function instead?
-    // that's why this random function with one line is here.
-    private void MainMenuPatches()
-    {
-        GameObject.Find("Canvas/Logo").GetComponent<Image>().sprite = apassets.LoadAsset<Sprite>("logotext");
     }
 }

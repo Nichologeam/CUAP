@@ -287,7 +287,6 @@ public class APClientClass
 
     public static void Update()
     {
-        Startup.instance.Update(); // after V5.0.2, Startup gets force disabled at game startup. Reennabling it doesn't work, so I'll just call update manually!
         try
         {
             if (WoundView.view.gameObject.activeInHierarchy) // woundview is open (client covers it)
