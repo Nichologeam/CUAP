@@ -1,0 +1,526 @@
+{
+	"_comment":{
+		"overview": "This JSON file is here to give the Archipelago Rules Builder easy access to recipe requirements, while allowing easy editing later.",
+		"recipesDesc": "A list of every recipe in the game. Includes what recipes are required to make them, what layers the player needs, and the minimum INT for guaranteed crafting success."
+	},
+	"recipes": {
+		"Craftsanity - Foliage rope":{
+			"intRequired": 1
+		},
+		"Craftsanity - Foliage":{
+			"intRequired": 12,
+			"needsLayerAny": [6],
+			"impossible": true
+		},
+		"Craftsanity - String":{
+			"intRequired": 5,
+			"reliesOn": ["Foliage rope"]
+		},
+		"Craftsanity - Canvas":{
+			"intRequired": 2
+		},
+		"Craftsanity - Wood scraps":{
+			"intRequired": 3
+		},
+		"Craftsanity - Ripped dressing":{
+			
+		},
+		"Craftsanity - Sterilized dressing":{
+			"intRequired": 1
+		},
+		"Craftsanity - Bio-chem fluid":{
+			"intRequired": 4
+		},
+		"Craftsanity - Opium":{
+			"intRequired": 7,
+			"reliesOn": ["Bio-chem fluid"],
+			"needsLayerAny": [1,2,5]
+		},
+		"Craftsanity - Morphine":{
+			"intRequired": 9,
+			"reliesOn": ["Bio-chem fluid", "Opium"]
+		},
+		"Craftsanity - Fentanyl":{
+			"intRequired": 11,
+			"reliesOn": ["Bio-chem fluid", "Morphine", "Flammable powder"]
+		},
+		"Craftsanity - Painkillers":{
+			"intRequired": 10,
+			"reliesOn": ["Bio-chem fluid"]
+		},
+		"Craftsanity - Neural booster":{
+			"intRequired": 18,
+			"reliesOn": ["Bio-chem fluid", "Circuit board"]
+		},
+		"Craftsanity - Canteen":{
+			"intRequired": 6,
+			"reliesOn": ["Bio-chem fluid", "Foliage rope"]
+		},
+		"Craftsanity - Foliage bag":{
+			"intRequired": 5,
+			"reliesOn": ["Foliage rope", "Canvas"]
+		},
+		"Craftsanity - Sling bag":{
+			"intRequired": 7,
+			"reliesOn": ["Foliage bag", "String", "Foliage rope"]
+		},
+		"Craftsanity - Scrap cube":{
+			"intRequired": 6,
+			"reliesOn": ["Bio-chem fluid"]
+		},
+		"Craftsanity - Scrap panel":{
+			"intRequired": 5,
+			"reliesOn": ["Scrap cube"]
+		},
+		"Craftsanity - Scrap tube":{
+			"intRequired": 5,
+			"reliesOn": ["Scrap cube"]
+		},
+		"Craftsanity - Nails":{
+			"intRequired": 5,
+			"reliesOn": ["Scrap cube"]
+		},
+		"Craftsanity - Wood cube":{
+			"intRequired": 4,
+			"reliesOn": ["Bio-chem fluid"]
+		},
+		"Craftsanity - Wood panel":{
+			"intRequired": 4,
+			"reliesOn": ["Wood cube"]
+		},
+		"Craftsanity - Stick":{
+			"intRequired": 4,
+			"reliesOn": ["Wood cube"]
+		},
+		"Craftsanity - Flimsy knife":{
+			"intRequired": 4,
+			"reliesOn": ["Foliage rope", "Wood cube"]
+		},
+		"Craftsanity - Processed copper":{
+			"intRequired": 10,
+			"reliesOn": ["Bio-chem fluid"]
+		},
+		"Craftsanity - Bundle of wires":{
+			"intRequired": 10,
+			"reliesOn": ["Processed copper"]
+		},
+		"Craftsanity - Titanium slab":{
+			"intRequired": 15,
+			"needsLayerAny": [5],
+			"reliesOn": ["Bio-chem fluid"]
+		},
+		"Craftsanity - Titanium sheet":{
+			"intRequired": 15,
+			"needsLayerAny": [5],
+			"reliesOn": ["Titanium slab", "Bio-chem fluid"]
+		},
+		"Craftsanity - Titanium rod":{
+			"intRequired": 15,
+			"needsLayerAny": [5],
+			"reliesOn": ["Titanium slab", "Bio-chem fluid"]
+		},
+		"Craftsanity - Alien blood":{
+			"intRequired": 2
+		},
+		"Craftsanity - Saline":{
+			"intRequired": 9,
+			"reliesOn": ["Bio-chem fluid"]
+		},
+		"Craftsanity - Antivenom":{
+			"intRequired": 10,
+			"reliesOn": ["Bio-chem fluid"]
+		},
+		"Craftsanity - Blood":{
+			"intRequired": 8,
+			"reliesOn": ["Alien blood", "Bio-chem fluid"]
+		},
+		"Craftsanity - Makeshift wrench":{
+			"intRequired": 9,
+			"reliesOn": ["Scrap tube", "Bio-chem fluid"]
+		},
+		"Craftsanity - Wrench":{
+			"intRequired": 12,
+			"reliesOn": ["Makeshift wrench", "Scrap tube", "Bio-chem fluid"]
+		},
+		"Craftsanity - Crude cleaver":{
+			"intRequired": 9,
+			"reliesOn": ["Stick", "Scrap panel"]
+		},
+		"Craftsanity - Machete":{
+			"intRequired": 12,
+			"reliesOn": ["Crude cleaver", "Scrap panel", "Bio-chem fluid"]
+		},
+		"Craftsanity - Flammable powder":{
+			"intRequired": 8,
+			"reliesOn": ["Bio-chem fluid"]
+		},
+		"Craftsanity - Casing":{
+			"intRequired": 10,
+			"reliesOn": ["Scrap panel"]
+		},
+		"Craftsanity - 9mm round":{
+			"intRequired": 12,
+			"reliesOn": ["Casing", "Flammable powder"]
+		},
+		"Craftsanity - 5.56 round":{
+			"intRequired": 12,
+			"reliesOn": ["Casing", "Flammable powder"]
+		},
+		"Craftsanity - 12-Gauge buckshot":{
+			"intRequired": 12,
+			"reliesOn": ["Casing", "Flammable powder"]
+		},
+		"Craftsanity - Magazine base":{
+			"intRequired": 12,
+			"reliesOn": ["Scrap panel"]
+		},
+		"Craftsanity - Small magazine":{
+			"intRequired": 12,
+			"reliesOn": ["Magazine base"]
+		},
+		"Craftsanity - Rifle magazine":{
+			"intRequired": 12,
+			"reliesOn": ["Magazine base"]
+		},
+		"Craftsanity - Box of 12-Guage":{
+			"intRequired": 8,
+			"reliesOn": ["Wood panel"]
+		},
+		"Craftsanity - Dynamite":{
+			"intRequired": 10,
+			"reliesOn": ["Flammable powder", "String", "Scrap panel"]
+		},
+		"Craftsanity - Large carcass":{
+			"intRequired": 4,
+			"reliesOn": ["Bio-chem fluid"]
+		},
+		"Craftsanity - Circuit board":{
+			"intRequired": 9,
+			"reliesOn": ["Bundle of wires"]
+		},
+		"Craftsanity - Small battery":{
+			"intRequired": 11,
+			"reliesOn": ["Processed copper", "Bio-chem fluid"]
+		},
+		"Craftsanity - Medium battery":{
+			"intRequired": 12,
+			"reliesOn": ["Small battery", "Scrap panel", "Bio-chem fluid"]
+		},
+		"Craftsanity - Large battery":{
+			"intRequired": 13,
+			"reliesOn": ["Medium battery", "Processed copper", "Bio-chem fluid"]
+		},
+		"Craftsanity - Flashlight":{
+			"intRequired": 10,
+			"reliesOn": ["Lightbulb", "Scrap tube", "Flexiglass", "Bundle of wires", "Circuit board"]
+		},
+		"Craftsanity - Headlamp":{
+			"intRequired": 8,
+			"reliesOn": ["Flashlight", "Foliage rope"]
+		},
+		"Craftsanity - LCD screen":{
+			"intRequired": 11,
+			"reliesOn": ["Flexiglass", "Bundle of wires", "Circuit board", "Bio-chem fluid"]
+		},
+		"Craftsanity - Flexiglass":{
+			"intRequired": 9,
+			"reliesOn": ["Bio-chem fluid"]
+		},
+		"Craftsanity - Lightbulb":{
+			"intRequired": 11,
+			"reliesOn": ["Flexiglass", "Scrap cube", "Bundle of wires"]
+		},
+		"Craftsanity - Limb wraps":{
+			"intRequired": 6,
+			"reliesOn": ["Dressing"]
+		},
+		"Craftsanity - Makeshift lamp":{
+			"intRequired": 4,
+			"reliesOn": ["Foliage rope"]
+		},
+		"Craftsanity - Bicycle helmet":{
+			"intRequired": 13,
+			"reliesOn": ["Makeshift helmet", "Scrap panel", "Bio-chem fluid"]
+		},
+		"Craftsanity - Riot helmet":{
+			"intRequred": 17,
+			"reliesOn": ["Bicycle helmet", "Titanium sheet", "Flexiglass", "Bio-chem fluid"]
+		},
+		"Craftsanity - Makeshift helmet":{
+			"intRequired": 8,
+			"reliesOn": ["Foliage rope", "String", "Bio-chem fluid"]
+		},
+		"Craftsanity - Makeshift digging tool":{
+			"intRequired": 7,
+			"reliesOn": ["Flimsy knife", "Foliage rope", "Stick", "Bio-chem fluid"]
+		},
+		"Craftsanity - Makeshift rifle":{
+			"intRequired": 12,
+			"reliesOn": ["Magazine base", "Scrap panel", "Scrap tube", "String"]
+		},
+		"Craftsanity - Mini laser drill":{
+			"intRequired": 16,
+			"reliesOn": ["Titanium sheet", "Flexiglass", "Bundle of wires", "Circuit board", "Flashlight"]
+		},
+		"Craftsanity - Dressing":{
+			"intRequired": 5,
+			"reliesOn": ["Ripped dressing"]
+		},
+		"Craftsanity - Lantern":{
+			"intRequired": 10,
+			"reliesOn": ["Flexiglass", "Wood panel"]
+		},
+		"Craftsanity - Terrain scanner":{
+			"intRequired": 12,
+			"reliesOn": ["Scrap panel", "Scrap tube", "LCD screen", "Bundle of wires", "Circuit board"]
+		},
+		"Craftsanity - Geiger counter":{
+			"intRequired": 11,
+			"reliesOn": ["Scrap panel", "Scrap cube", "LCD screen", "Bundle of wires", "Circuit board", "Bio-chem fluid"]
+		},
+		"Craftsanity - Lockpicking kit":{
+			"intRequired": 10,
+			"reliesOn": ["Scrap panel", "Scrap tube"]
+		},
+		"Craftsanity - Advanced scuba diving gear":{
+			"intRequired": 12,
+			"reliesOn": ["Scrap panel", "Scrap tube", "Flexiglass", "Bio-chem fluid", "Bundle of wires"]
+		},
+		"Craftsanity - Pickaxe":{
+			"intRequired": 12,
+			"reliesOn": ["Makeshift digging tool", "Scrap tube", "Scrap panel", "Bio-chem fluid"]
+		},
+		"Craftsanity - Scaffolding pack":{
+			"intRequired": 14,
+			"reliesOn": ["Titanium slab", "Foliage rope"]
+		},
+		"Craftsanity - Backpack":{
+			"intRequired": 13,
+			"reliesOn": ["Foliage rope", "Wood panel", "Canvas", "String"]
+		},
+		"Craftsanity - Wood sandals":{
+			"intRequired": 8,
+			"reliesOn": ["Wood panel", "Foliage rope", "String"]
+		},
+		"Craftsanity - Tactical boots":{
+			"intRequired": 16,
+			"reliesOn": ["Titanium sheet", "String", "Bio-chem fluid"]
+		},
+		"Craftsanity - Tactical gloves":{
+			"intRequired": 15,
+			"reliesOn": ["Titanium sheet", "Scrap panel", "String", "Bio-chem fluid"]
+		},
+		"Craftsanity - Duffel bag":{
+			"intRequired": 11,
+			"reliesOn": ["Foliage rope", "String", "Wood panel"]
+		},
+		"Craftsanity - Material pouch":{
+			"intRequired": 10,
+			"reliesOn": ["Foliage rope", "String", "Wood panel", "Canvas"]
+		},
+		"Craftsanity - Belt":{
+			"intRequired": 10,
+			"reliesOn": ["Foliage rope", "String", "Wood panel"]
+		},
+		"Craftsanity - Trauma rig":{
+			"intRequired": 15,
+			"reliesOn": ["Belt", "Titanium sheet", "String", "Bio-chem fluid"]
+		},
+		"Craftsanity - Bowl of cereal":{
+			"intRequired": 2,
+			"reliesOn": ["Milk"]
+		},
+		"Craftsanity - Fat":{
+			"intRequired": 8
+		},
+		"Craftsanity - Soap":{
+			"intRequired": 8,
+			"reliesOn": ["Bio-chem fluid"]
+		},
+		"Craftsanity - Clotting mush":{
+			"intRequired": 10,
+			"reliesOn": ["Flammable powder", "Bio-chem fluid", "Flexiglass"]
+		},
+		"Craftsanity - Naltrexone":{
+			"intRequired": 10,
+			"reliesOn": ["Bio-chem fluid"]
+		},
+		"Craftsanity - Antidepressants":{
+			"intRequired": 10,
+			"reliesOn": ["Bio-chem fluid", "Flammable powder"]
+		},
+		"Craftsanity - Auto-injector":{
+			"intRequired": 12,
+			"reliesOn": ["Scrap tube", "Flexiglass", "Bio-chem fluid", "Bundle of wires", "Circuit board"]
+		},
+		"Craftsanity - Chest drain":{
+			"intRequired": 12,
+			"reliesOn": ["Auto-injector", "Flexiglass", "Bio-chem fluid", "Scrap tube"]
+		},
+		"Craftsanity - Hand crank charger":{
+			"intRequired": 14,
+			"reliesOn": ["Circuit board", "Titanium sheet", "Processed copper", "Bundle of wires", "Scrap tube", "Bio-chem fluid"]
+		},
+		"Craftsanity - Antiseptic mush":{
+			"intRequired": 8
+		},
+		"Craftsanity - Plastic dressing":{
+			"intRequired": 14,
+			"reliesOn": ["Dressing", "Bio-chem fluid", "Titanium sheet"]
+		},
+		"Craftsanity - Tourniquet":{
+			"intRequired": 9, 
+			"reliesOn": ["Foliage rope", "String", "Bio-chem fluid"]
+		},
+		"Craftsanity - Bone welding tool":{
+			"intRequired": 14,
+			"reliesOn": ["Scrap panel", "Bundle of wires", "Circuit board", "Bio-chem fluid", "L.R.D. Serum"]
+		},
+		"Craftsanity - Tweezers":{
+			"intRequired": 9,
+			"reliesOn": ["Scrap panel"]
+		},
+		"Craftsanity - Blood bag":{
+			"intRequired": 12,
+			"reliesOn": ["Flexiglass", "Bundle of wires", "Auto-injector", "Bio-chem fluid"]
+		},
+		"Craftsanity - Saline bottle":{
+			"intRequired": 11,
+			"reliesOn": ["Flexiglass", "Scrap tube", "Bio-chem fluid"]
+		},
+		"Craftsanity - Antiseptic":{
+			"intRequired": 9,
+			"reliesOn": ["Bio-chem fluid", "Soap"]
+		},
+		"Craftsanity - Relief cream":{
+			"intRequired": 9,
+			"reliesOn": ["Flammable powder", "Bio-chem fluid"]
+		},
+		"Craftsanity - Splint":{
+			"intRequired": 8,
+			"reliesOn": ["Wood panel", "Scrap tube"]
+		},
+		"Craftsanity - Bruise kit":{
+			"intRequired": 10,
+			"reliesOn": ["Dressing", "Bio-chem fluid"]
+		},
+		"Craftsanity - Carcass splint":{
+			"intRequired": 6,
+			"reliesOn": ["Large carcass", "Foliage rope"]
+		},
+		"Craftsanity - Makeshift L.R.D.":{
+			"intRequired": 10,
+			"reliesOn": ["Scrap panel", "Bundle of wires", "Scrap tube"]
+		},
+		"Craftsanity - L.R.D.":{
+			"intRequired": 15,
+			"reliesOn": ["Makeshift L.R.D.", "Titanium sheet", "Bio-chem fluid", "Auto-injector", "Circuit board", "Bundle of wires"]
+		},
+		"Craftsanity - L.R.D. Serum":{
+			"intRequired": 11,
+			"reliesOn": ["Bio-chem fluid"]
+		},
+		"Craftsanity - Produce juice":{
+			"intRequired": 2
+		},
+		"Craftsanity - Milk":{
+			
+		},
+		"Craftsanity - Refined juice":{
+			"intRequired": 4,
+			"reliesOn": ["Produce juice"]
+		},
+		"Craftsanity - Drill repair kit":{
+			"intRequired": 9,
+			"reliesOn": ["Scrap panel", "Scrap tube", "Scrap cube", "Bundle of wires", "Circuit board"]
+		},
+		"Craftsanity - Procoagulant":{
+			"intRequired": 14,
+			"reliesOn": ["Clotting mush", "Bio-chem fluid"],
+			"needsLayerAny": [7],
+			"impossible": true
+		},
+		"Craftsanity - Spray bottle":{
+			"intRequired": 7,
+			"reliesOn": ["Canteen"]
+		},
+		"Craftsanity - Syringe":{
+			"intRequired": 8,
+			"reliesOn": ["Canteen", "Scrap tube", "Bio-chem fluid"]
+		},
+		"Craftsanity - Firestarter":{
+			"intRequired": 8,
+			"reliesOn": ["Stick", "Foliage rope"]
+		},
+		"Craftsanity - Campfire":{
+			"intRequired": 4
+		},
+		"Craftsanity - Water":{
+			"intRequired": 1
+		},
+		"Craftsanity - Charcoal":{
+			"intRequired": 7,
+			"reliesOn": ["Bio-chem fluid"]
+		},
+		"Craftsanity - Bread":{
+			"intRequired": 7
+		},
+		"Craftsanity - Pancake":{
+			"intRequired": 5,
+			"needsLayerAny": [5]
+		},
+		"Craftsanity - Rye flour":{
+			"intRequired": 6
+		},
+		"Craftsanity - Torch":{
+			"intRequired": 5,
+			"reliesOn": ["Stick", "Foliage rope"]
+		},
+		"Craftsanity - Torch (relight)":{
+			"intRequired": 5,
+			"reliesOn": ["Torch"]
+		},
+		"Craftsanity - Nutrient bar":{
+			"intRequired": 9
+		},
+		"Craftsanity - Pemmican":{
+			"intRequired": 6
+		},
+		"Craftsanity - Foliage meal":{
+			"intRequired": 7
+		},
+		"Craftsanity - Burger":{
+			"intRequired": 6,
+			"reliesOn": ["Bread"]
+		},
+		"Craftsanity - Soup":{
+			"intRequired": 9
+		},
+		"Craftsanity - Ice pack":{
+			"intRequired": 14,
+			"reliesOn": ["Canvas", "String", "Circuit board"],
+			"needsLayerAny": [6],
+			"impossible": true
+		},
+		"Craftsanity - Scarf":{
+			"intRequired": 10,
+			"reliesOn": ["Canvas", "String"]
+		},
+		"Craftsanity - Titanium pickaxe":{
+			"intRequired": 16,
+			"reliesOn": ["Pickaxe", "Titanium rod", "Bio-chem fluid"]
+		},
+		"Craftsanity - Titanium machete":{
+			"intRequired": 16,
+			"reliesOn": ["Machete", "Titanium sheet", "Bio-chem fluid"]
+		},
+		"Craftsanity - Titanium multitool":{
+			"intRequired": 16,
+			"reliesOn": ["Titanium sheet", "Titanium rod", "Bio-chem fluid"]
+		},
+		"Craftsanity - Climbing rope":{
+			"intRequired": 7,
+			"reliesOn": ["Foliage rope"]
+		}
+	}
+}
