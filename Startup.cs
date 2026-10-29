@@ -103,6 +103,7 @@ public class Startup : BaseUnityPlugin
                 Moodles.AddComponent<Moodlesanity>();
                 Handler.AddComponent<CraftingChecks>();
             }
+            Client.SetClientState(Archipelago.MultiClient.Net.Enums.ArchipelagoClientState.ClientPlaying); // could also check to see if the player isn't in the tutorial?
         }
         else if (scene.name == "PreGen") // Scene loaded was PreGen, let's clear these objects to avoid errors.
         {
@@ -115,6 +116,7 @@ public class Startup : BaseUnityPlugin
             WorldGen = null;
             Moodles = null;
             MainMenuPatches();
+            Client.SetClientState(Archipelago.MultiClient.Net.Enums.ArchipelagoClientState.ClientConnected);
         }
     }
     // due to a change in Cas: Unk version 5.0.2, the mod stopped loading properly without some odd workarounds (hence the `await Task.Delay` in Awake)
