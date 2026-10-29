@@ -124,7 +124,10 @@ public class Startup : BaseUnityPlugin
                 Moodles.AddComponent<Moodlesanity>();
                 Handler.AddComponent<CraftingChecks>();
             }
-            Client.SetClientState(Archipelago.MultiClient.Net.Enums.ArchipelagoClientState.ClientPlaying); // could also check to see if the player isn't in the tutorial?
+            if (WorldGeneration.world.biomeOverride != WorldGeneration.OverrideSceneType.Tutorial)
+            {
+                Client.SetClientState(Archipelago.MultiClient.Net.Enums.ArchipelagoClientState.ClientPlaying);
+            }
         }
         else if (scene.name == "PreGen") // Scene loaded was PreGen, let's clear these objects to avoid errors.
         {
