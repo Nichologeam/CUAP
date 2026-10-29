@@ -1,15 +1,17 @@
-﻿using BepInEx;
+﻿using Archipelago.MultiClient.Net;
+using BepInEx;
+using BepInEx.Bootstrap;
 using BepInEx.Logging;
-using Archipelago.MultiClient.Net;
+using HarmonyLib;
+using System;
+using System.Collections;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using HarmonyLib;
 using UnityEngine.UI;
-using System.Collections;
-using BepInEx.Bootstrap;
-using System;
 
 namespace CUAP;
 
@@ -17,6 +19,8 @@ namespace CUAP;
 [BepInDependency("CasualtiesMP", BepInDependency.DependencyFlags.SoftDependency)] // ensure the MP mod is loaded first if it exists. do nothing if it doesn't
 public class Startup : BaseUnityPlugin
 {
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    private static extern bool SetWindowText(IntPtr hWnd, string lpString);
     public static new ManualLogSource Logger;
     public static ArchipelagoSession Client;
     public static string CUAPVersion = "v0.12.1";
@@ -62,6 +66,7 @@ public class Startup : BaseUnityPlugin
         Console.AddComponent<CommandPatch>();
         var betaNotif = GameObject.Find("GlobalDark(Clone)/betabuild").GetComponent<TextMeshProUGUI>();
         betaNotif.text = $"{betaNotif.text}\n{APLocale.Get("mainMenuMessage", APLocale.APLanguageType.UI)}";
+        SetWindowTitle($"Casualties: Archipelago | Disconnected");
     }
 
     // due to a change in Cas: Unk version 5.0.2, the mod stopped loading properly due to it initalizing before Unity had actually made the scene
@@ -141,6 +146,24 @@ public class Startup : BaseUnityPlugin
             Moodles = null;
             GameObject.Find("Canvas/Logo").GetComponent<Image>().sprite = apassets.LoadAsset<Sprite>("logotext");
             Client.SetClientState(Archipelago.MultiClient.Net.Enums.ArchipelagoClientState.ClientConnected);
+        }
+    }
+
+    public static void SetWindowTitle(string title)
+    {
+        if (SystemInfo.operatingSystemFamily != OperatingSystemFamily.Windows)
+        {
+            Logger.LogWarning("Changing the window title is disabled on systems other than Windows.");
+            return;
+        }
+        IntPtr hWnd = Process.GetCurrentProcess().MainWindowHandle;
+        if (hWnd != IntPtr.Zero)
+        {
+            SetWindowText(hWnd, title);
+        }
+        else
+        {
+            Logger.LogError("hWnd returned IntPtr.Zero when changing window title!"); // no translation, as this doesn't need to be user facing
         }
     }
 }
