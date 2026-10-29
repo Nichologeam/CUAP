@@ -38,6 +38,7 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
         Client = APClientClass.session;
         dlService = APClientClass.dlService;
         Startup.Logger.LogMessage("DeathlinkManager is monitoring Vitals...");
+        dlService.OnDeathLinkReceived += ProcessDeathLink;
     }
     private void Update()
     {
@@ -57,7 +58,6 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
             DeathLinkText.text = "";
             DeathlinkCooldown = -2; // This makes it only empty the text once. There's probably a much better way to do this, but I don't really care.
         }
-        dlService.OnDeathLinkReceived += ProcessDeathLink; // note: i don't remember why is this here? moving this outside of Update could remove the need for DeathLinkCooldown
     }
 
     private void ProcessDeathLink(DeathLink dlPacket)
@@ -68,8 +68,7 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
         }
         if (DeathlinkCooldown > 0)
         {
-            return; // so, for some reason, OnDeathLinkReceived is spammed about 350 ish times for each Deathlink sent.
-            // This cooldown prevents 349 ish of those deathlinks from going though, as it entierly destroys Experiment if Large Limb Damage is on.
+            return;
         }   
         if (dlPacket.Source.IsNullOrWhiteSpace()) // should never happen, realistically.
         {

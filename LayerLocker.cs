@@ -3,7 +3,6 @@ using HarmonyLib;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using static CUAP.APCanvas;
 
 namespace CUAP;
 
@@ -85,12 +84,12 @@ class PickLayerBeforeGeneration
     }
     static void ShowLayerSelector(WorldGeneration instance)
     {
-        layerSelector.SetActive(true);
-        SetupLayerButton(glButton, instance, 0);
-        SetupLayerButton(dglButton, instance, 1);
-        SetupLayerButton(ddButton, instance, 2);
-        SetupLayerButton(wlButton, instance, 3);
-        SetupLayerButton(odButton, instance, 4);
+        APCanvas.layerSelector.SetActive(true);
+        SetupLayerButton(APCanvas.glButton, instance, 0);
+        SetupLayerButton(APCanvas.dglButton, instance, 1);
+        SetupLayerButton(APCanvas.ddButton, instance, 2);
+        SetupLayerButton(APCanvas.wlButton, instance, 3);
+        SetupLayerButton(APCanvas.odButton, instance, 4);
     }
     static void SetupLayerButton(Button button, WorldGeneration instance, int layerID)
     {
@@ -115,7 +114,7 @@ class PickLayerBeforeGeneration
     }
     public static void LayerButtonPressed(WorldGeneration instance, int layerID)
     {
-        layerSelector.SetActive(false);
+        APCanvas.layerSelector.SetActive(false);
         resuming = true;
         instance.biomeDepth = layerID;
         instance.StartCoroutine("GenerateWorld");

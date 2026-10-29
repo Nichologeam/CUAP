@@ -719,11 +719,11 @@ class CraftsanitySender
         {
             return; // craftsanity is disabled. don't send anything.
         }
-        if ((!__state && __instance.hasMadeBefore) && !alreadySentChecks.Contains(__instance.index)) // if the recipe wasn't made before, but now has been after the function has ran, send the check
+        if ((!__state && __instance.hasMadeBefore) && !alreadySentChecks.Contains(__instance.index)) // if the recipe wasn't made before, but now has been after the function has ran, check the location
         {
             long CheckID = craftsanityLocID + __instance.index;
             APClientClass.ChecksToSend.Add(CheckID);
-            alreadySentChecks.Add(__instance.index); // add to list so we don't send the same check twice
+            alreadySentChecks.Add(__instance.index); // add to list so we don't check the same location twice
         }
     }
 }

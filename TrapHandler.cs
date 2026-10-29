@@ -170,7 +170,7 @@ public class TrapHandler : MonoBehaviour
                 }
                 if (heldItems.Count == 0) break; // return early if there are no items
                 Item chosenItem = heldItems[UnityEngine.Random.Range(0, heldItems.Count)];
-                Debug.Log($"{chosenItem.fullName} was chosen to be damaged");
+                Startup.Logger.LogInfo($"{chosenItem.fullName} was chosen to be damaged");
                 if (chosenItem.TryGetComponent(out WaterContainerItem _))
                 {
                     plrcam.DoAlert($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{ItemSender} {APLocale.Get("fragile", APLocale.APLanguageType.UI)} {chosenItem.fullName}", false);
@@ -229,7 +229,7 @@ public class TrapHandler : MonoBehaviour
     {
         if (worldgen.unchippedMode)
         {
-            yield break; // the layer is solarstuck or the run is already unchipped.
+            yield break; // the layer is solarstruck or the run is already unchipped.
         }
         unchippedActive = true;
         unchippedEndTime = Time.realtimeSinceStartup + 50;

@@ -8,7 +8,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using static Archipelago.MultiClient.Net.Helpers.ArchipelagoSocketHelperDelagates;
 
 namespace CUAP;
 
@@ -16,7 +15,7 @@ public class TraderLink : MonoBehaviour
 {
     public static TraderLink instance;
     public static bool linkEnabled;
-    private PacketReceivedHandler packetHandler;
+    private Archipelago.MultiClient.Net.Helpers.ArchipelagoSocketHelperDelagates.PacketReceivedHandler packetHandler;
     private bool postConnect;
     private GameObject containerObject;
     private TMP_InputField amountInput;
