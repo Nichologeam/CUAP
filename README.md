@@ -4,7 +4,7 @@ This mod is made for the V7.0.1 version of Casualties: Unknown, which can be dow
 
 To use this mod on the Itch.io version, use mod version v0.8.0 on the Itch.io branch. Keep in mind that the Itch.io version of Casualties: Unknown is no longer receiving mod updates.
 
-To use this mod on the Steam Demo version, use mod version v0.12.1 on the Steam Demo branch. Keep in mind that the Steam Demo version of Casualties: Unknown is no longer receiving mod updates.
+To use this mod on the Steam Demo version, use mod version v0.12.3 on the Steam Demo branch. Keep in mind that the Steam Demo version of Casualties: Unknown is no longer receiving mod updates.
 
 # **Installing The Mod**
 1. Download BepInEx v5.4.23.5 from its [Github Page](https://github.com/BepInEx/BepInEx/releases/tag/v5.4.23.5)
