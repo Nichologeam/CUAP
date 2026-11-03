@@ -23,7 +23,7 @@ public class ElderThornback : MonoBehaviour
     }
 }
 
-[HarmonyPatch(typeof(WorldGeneration), "GenerateWorld")]
+[HarmonyPatch(typeof(WorldGeneration), "FinishWorldGeneration")]
 // Attaches the above script to all Elder Thornbacks after worldgen
 class ElderThornbackGoalAttacher
 {
