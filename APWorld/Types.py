@@ -39,6 +39,7 @@ class LocData(NamedTuple):
     region: Optional[str]
 
 def load_recipe_data():
+    rule_cache.clear() # prevents a cache from a previous generation from leaking into a new one (easiest seen inside fuzzer enviroments)
     data = pkgutil.get_data(__name__, "recipes.json")
     return json.loads(data.decode("utf-8"))
 
