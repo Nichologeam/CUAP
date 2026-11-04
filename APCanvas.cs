@@ -7,7 +7,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static CUAP.APClientClass;
 
 namespace CUAP;
 
@@ -213,7 +212,7 @@ public class APCanvas : MonoBehaviour
         {
             apItemsTracker.SetActive(InGame);
         }
-        if (!IsConnected())
+        if (!APClientClass.IsConnected())
         {
             ConnectionBackground.SetActive(true);
             ConnectedBackground.SetActive(false);
@@ -253,7 +252,7 @@ public class APCanvas : MonoBehaviour
                 return;
             }
         }
-        var error = TryConnect(Ipporttext.text, Slot.text, Password.text);
+        var error = APClientClass.TryConnect(Ipporttext.text, Slot.text, Password.text);
         if (error is not null)
         {
             EnqueueArchipelagoNotification(APLocale.Get("genericError", APLocale.APLanguageType.Errors) + string.Join("\n", error),3);
@@ -288,9 +287,9 @@ public class APCanvas : MonoBehaviour
     public static void UpdateGUIDescriptions()
     {
         if (!InGame) return; // you can't see this on the main menu anyway
-        if (selectedGoal == 1)
+        if (APClientClass.selectedGoal == 1)
         {
-            var maxDepth = (300 * DepthExtendersRecieved) + 300;
+            var maxDepth = (300 * APClientClass.DepthExtendersRecieved) + 300;
             Status.text =
                 $"""
                 {APLocale.Get("reachDepth1", APLocale.APLanguageType.UI)}
@@ -298,10 +297,10 @@ public class APCanvas : MonoBehaviour
                 {APLocale.Get("reachDepth3", APLocale.APLanguageType.UI)}
                 """;
             Status.text = Status.text.Replace("<gd>", $"{DepthChecks.instance.GoalDepth}m"); // gd for Goal Depth
-            Status.text = Status.text.Replace("<de>", DepthExtendersRecieved.ToString()); // de for Depth Extenders
+            Status.text = Status.text.Replace("<de>", APClientClass.DepthExtendersRecieved.ToString()); // de for Depth Extenders
             Status.text = Status.text.Replace("<md>", $"{maxDepth}m"); // md for Max Depth
         }
-        else if (selectedGoal == 2)
+        else if (APClientClass.selectedGoal == 2)
         {
             Status.text =
                 $"""
@@ -309,17 +308,17 @@ public class APCanvas : MonoBehaviour
                 {APLocale.Get("escapeOvergrown2", APLocale.APLanguageType.UI)}
                 {APLocale.Get("escapeOvergrown3", APLocale.APLanguageType.UI)}
                 """;
-            Status.text = Status.text.Replace("<lu>", DepthExtendersRecieved.ToString()); // lu for Layer Unlocks
-            Status.text = Status.text.Replace("<dl>", LayerLocker.LayerIDToName[DepthExtendersRecieved]).Replace(" Unlock", ""); // dl for Deepest Layer
+            Status.text = Status.text.Replace("<lu>", APClientClass.DepthExtendersRecieved.ToString()); // lu for Layer Unlocks
+            Status.text = Status.text.Replace("<dl>", LayerLocker.LayerIDToName[APClientClass.DepthExtendersRecieved]).Replace(" Unlock", ""); // dl for Deepest Layer
         }
-        else if (selectedGoal == 3)
+        else if (APClientClass.selectedGoal == 3)
         {
             Status.text =
                 $"""
                 {APLocale.Get("defeatElder1", APLocale.APLanguageType.UI)}
                 {APLocale.Get("defeatElder2", APLocale.APLanguageType.UI)}
                 """;
-            Status.text = Status.text.Replace("<ou>", LayerUnlockDictionary.Contains("Overgrown Depths Unlock") ? "Unlocked" : "Locked"); // ou for Overgrown Unlocked
+            Status.text = Status.text.Replace("<ou>", APClientClass.LayerUnlockDictionary.Contains("Overgrown Depths Unlock") ? "Unlocked" : "Locked"); // ou for Overgrown Unlocked
         }
     }
     public static void UpdateSkillsanityValues(int skill, float newExp)
@@ -410,7 +409,6 @@ public class APCanvas : MonoBehaviour
         {
             instance.StartCoroutine(instance.RerollCooldown());
         }
-
     }
     private IEnumerator RerollCooldown()
     {

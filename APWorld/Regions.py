@@ -87,6 +87,7 @@ def create_region(world: "CasualtiesUnknownWorld", name: str) -> Region:
             continue
 
         location = CasualtiesUnknownLocation(world.player, key, data.ap_code, reg)
+        rule = True_()
 
         if key.startswith("Depth Milestone - "):
             milestone_depth = int(key.split(" ")[-1][:-1])

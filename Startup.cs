@@ -1,23 +1,29 @@
-﻿using BepInEx;
+﻿using Archipelago.MultiClient.Net;
+using BepInEx;
+using BepInEx.Bootstrap;
 using BepInEx.Logging;
-using Archipelago.MultiClient.Net;
+using HarmonyLib;
+using System;
+using System.Collections;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using HarmonyLib;
-using System.Threading.Tasks;
 using UnityEngine.UI;
 
 namespace CUAP;
 
-[BepInPlugin("nichologeam.cuap", "Casualties: Archipelago", "0.12.1")]
-[BepInIncompatibility("KrokoshaCasualtiesMP")]
+[BepInPlugin("nichologeam.cuap", "Casualties: Archipelago", "0.12.3")]
+[BepInDependency("CasualtiesMP", BepInDependency.DependencyFlags.SoftDependency)] // ensure the MP mod is loaded first if it exists. do nothing if it doesn't
 public class Startup : BaseUnityPlugin
 {
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    private static extern bool SetWindowText(IntPtr hWnd, string lpString);
     public static new ManualLogSource Logger;
     public static ArchipelagoSession Client;
-    public static string CUAPVersion = "v0.12.1";
+    public static string CUAPVersion = "v0.12.3";
     public static AssetBundle apassets;
     private static Harmony apHarmony;
     public static Startup instance;
@@ -27,12 +33,24 @@ public class Startup : BaseUnityPlugin
     GameObject WorldGen;
     GameObject Moodles;
         
-    private async void Awake()
+    private void Awake()
     {
-        await Task.Delay(1000);
+        if (Chainloader.PluginInfos.TryGetValue("CasualtiesMP", out PluginInfo MPMod)) // fails silently if Multiplayer isn't installed
+        {
+            bool isDisabled = Convert.ToBoolean(PlayerPrefs.GetInt("CasualtiesMP_FORCE_DISABLE_MP_MOD"));
+            if (!isDisabled)
+            {
+                throw new System.Exception("[Casualties: Archipelago] This mod is not compatable with multiplayer! Disable or remove the multiplayer mod to use Casualties: Archipelago!");
+            }
+        }
         instance = this;
         Logger = base.Logger;
-        Logger.LogMessage($"Casualties: Unknown Archipelago Plugin {CUAPVersion} loaded!");
+        Logger.LogMessage($"Casualties: Archipelago {CUAPVersion} loaded!");
+        StartCoroutine(InitWhenSceneExists());
+    }
+    private void Init()
+    {
+        Logger.LogMessage("Init");
         Handler = new GameObject("Archipelago Handler");
         DontDestroyOnLoad(Handler);
         APLocale.LoadLang("EN.json");
@@ -44,11 +62,19 @@ public class Startup : BaseUnityPlugin
         apHarmony.PatchAll();
         Logger.LogMessage($"Harmony patches applied!");
         SceneManager.sceneLoaded += OnSceneLoaded;
-        MainMenuPatches();
         Console = GameObject.Find("Console(Clone)");
         Console.AddComponent<CommandPatch>();
         var betaNotif = GameObject.Find("GlobalDark(Clone)/betabuild").GetComponent<TextMeshProUGUI>();
         betaNotif.text = $"{betaNotif.text}\n{APLocale.Get("mainMenuMessage", APLocale.APLanguageType.UI)}";
+        SetWindowTitle($"Casualties: Archipelago | Disconnected");
+    }
+
+    // due to a change in Cas: Unk version 5.0.2, the mod stopped loading properly due to it initalizing before Unity had actually made the scene
+    // because of this nonsense, I have to move a majority of the startup code from Awake to a custom Init function.
+    private IEnumerator InitWhenSceneExists()
+    {
+        yield return new WaitUntil(() => SceneManager.sceneCount > 0 && SceneManager.GetActiveScene().IsValid() &&  SceneManager.GetActiveScene().isLoaded);
+        Init();
     }
     public void Update()
     {
@@ -103,7 +129,10 @@ public class Startup : BaseUnityPlugin
                 Moodles.AddComponent<Moodlesanity>();
                 Handler.AddComponent<CraftingChecks>();
             }
-            Client.SetClientState(Archipelago.MultiClient.Net.Enums.ArchipelagoClientState.ClientPlaying); // could also check to see if the player isn't in the tutorial?
+            if (WorldGeneration.world.biomeOverride != WorldGeneration.OverrideSceneType.Tutorial)
+            {
+                Client.SetClientState(Archipelago.MultiClient.Net.Enums.ArchipelagoClientState.ClientPlaying);
+            }
         }
         else if (scene.name == "PreGen") // Scene loaded was PreGen, let's clear these objects to avoid errors.
         {
@@ -115,16 +144,26 @@ public class Startup : BaseUnityPlugin
             Body = null;
             WorldGen = null;
             Moodles = null;
-            MainMenuPatches();
+            GameObject.Find("Canvas/Logo").GetComponent<Image>().sprite = apassets.LoadAsset<Sprite>("logotext");
             Client.SetClientState(Archipelago.MultiClient.Net.Enums.ArchipelagoClientState.ClientConnected);
         }
     }
-    // due to a change in Cas: Unk version 5.0.2, the mod stopped loading properly without some odd workarounds (hence the `await Task.Delay` in Awake)
-    // because of this nonsense, I can't actually hook SceneManager.sceneLoaded quick enough to catch the main menu loading on game start
-    // so I have to put this both in Awake, and in OnSceneLoaded. why duplicate code when I can just make it a function instead?
-    // that's why this random function with one line is here.
-    private void MainMenuPatches()
+
+    public static void SetWindowTitle(string title)
     {
-        GameObject.Find("Canvas/Logo").GetComponent<Image>().sprite = apassets.LoadAsset<Sprite>("logotext");
+        if (SystemInfo.operatingSystemFamily != OperatingSystemFamily.Windows)
+        {
+            Logger.LogWarning("Changing the window title is disabled on systems other than Windows.");
+            return;
+        }
+        IntPtr hWnd = Process.GetCurrentProcess().MainWindowHandle;
+        if (hWnd != IntPtr.Zero)
+        {
+            SetWindowText(hWnd, title);
+        }
+        else
+        {
+            Logger.LogError("hWnd returned IntPtr.Zero when changing window title!"); // no translation, as this doesn't need to be user facing
+        }
     }
 }

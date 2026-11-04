@@ -79,6 +79,7 @@ public class APClientClass
         outOfItems = false;
         APCanvas.versionTag.text = APLocale.Get("versionTag", APLocale.APLanguageType.UI) + Startup.CUAPVersion;
         Time.timeScale = 1;
+        Startup.SetWindowTitle($"Casualties: Archipelago | Disconnected");
     }
 
     public static void HasConnected()
@@ -136,6 +137,7 @@ public class APClientClass
             }
         }
         APCanvas.instance.StartCoroutine(NewConnectionCountdown()); // i need StartCoroutine, so i'll use APCanvas just because it is guarenteed to exist
+        Startup.SetWindowTitle($"Casualties: Archipelago | Connected as {session?.Players.GetPlayerAlias(session.ConnectionInfo.Slot)} - Playing with {session?.Players.AllPlayers.Count() - 1} others");
     }
 
     private static IEnumerator NewConnectionCountdown()
@@ -287,7 +289,6 @@ public class APClientClass
 
     public static void Update()
     {
-        Startup.instance.Update(); // after V5.0.2, Startup gets force disabled at game startup. Reennabling it doesn't work, so I'll just call update manually!
         try
         {
             if (WoundView.view.gameObject.activeInHierarchy) // woundview is open (client covers it)

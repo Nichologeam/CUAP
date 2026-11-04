@@ -6,14 +6,13 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using static Archipelago.MultiClient.Net.Helpers.ArchipelagoSocketHelperDelagates;
 
 namespace CUAP;
 
 public class SleepLink : MonoBehaviour
 {
     public static SleepLink instance;
-    private PacketReceivedHandler packetHandler;
+    private Archipelago.MultiClient.Net.Helpers.ArchipelagoSocketHelperDelagates.PacketReceivedHandler packetHandler;
     private Body Vitals;
     private bool postConnect;
     private bool reactingToLink;
