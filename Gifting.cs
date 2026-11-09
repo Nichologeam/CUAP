@@ -92,7 +92,7 @@ public class Gifting
         }
         if (Gifts.TryGetValue(match, out GiftDefinition info)) // get the prefab to spawn
         {
-            Vector2 playerPos = GameObject.Find("Experiment/Body").transform.position; // player's current position (at the player's feet)
+            Vector2 playerPos = Startup.GetPlayerBodyObject().transform.position; // player's current position (at the player's feet)
             Object.Instantiate(Resources.Load<GameObject>(info.PrefabName), playerPos, Quaternion.identity); // spawn the object there
             if (!gift.IsRefund) // only show the message if this isn't a refund
             {

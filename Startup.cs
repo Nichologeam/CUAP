@@ -8,14 +8,13 @@ using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace CUAP;
 
-[BepInPlugin("nichologeam.cuap", "Casualties: Archipelago", "0.12.3")]
+[BepInPlugin("nichologeam.cuap", "Casualties: Archipelago", "0.13.0")]
 [BepInDependency("CasualtiesMP", BepInDependency.DependencyFlags.SoftDependency)] // ensure the MP mod is loaded first if it exists. do nothing if it doesn't
 public class Startup : BaseUnityPlugin
 {
@@ -23,7 +22,7 @@ public class Startup : BaseUnityPlugin
     private static extern bool SetWindowText(IntPtr hWnd, string lpString);
     public static new ManualLogSource Logger;
     public static ArchipelagoSession Client;
-    public static string CUAPVersion = "v0.12.3";
+    public static string CUAPVersion = "v0.13.0";
     public static AssetBundle apassets;
     private static Harmony apHarmony;
     public static Startup instance;
@@ -64,9 +63,7 @@ public class Startup : BaseUnityPlugin
         SceneManager.sceneLoaded += OnSceneLoaded;
         Console = GameObject.Find("Console(Clone)");
         Console.AddComponent<CommandPatch>();
-        var betaNotif = GameObject.Find("GlobalDark(Clone)/betabuild").GetComponent<TextMeshProUGUI>();
-        betaNotif.text = $"{betaNotif.text}\n{APLocale.Get("mainMenuMessage", APLocale.APLanguageType.UI)}";
-        SetWindowTitle($"Casualties: Archipelago | Disconnected");
+        SetWindowTitle($"Casualties: Archipelago {CUAPVersion} | Disconnected");
     }
 
     // due to a change in Cas: Unk version 5.0.2, the mod stopped loading properly due to it initalizing before Unity had actually made the scene
@@ -111,7 +108,7 @@ public class Startup : BaseUnityPlugin
                 Gifting.giftService.OpenGiftBox(true, []); // all gifts accepted, no traits desired
                 Logger.LogMessage("Giftbox open");
             }
-            Body = GameObject.Find("Experiment/Body");
+            Body = GetPlayerBodyObject();
             if (Body.GetComponent<TrapHandler>())
             {
                 return; // Patches have already been applied, no need to apply them again.
@@ -165,5 +162,41 @@ public class Startup : BaseUnityPlugin
         {
             Logger.LogError("hWnd returned IntPtr.Zero when changing window title!"); // no translation, as this doesn't need to be user facing
         }
+    }
+
+    // Helper functions that I don't know where else to put
+    public static GameObject GetPlayerBodyObject()
+    {
+        GameObject camera = GameObject.Find("Main Camera");
+        if (camera == null)
+        {
+            Logger.LogError("Can't get the player's Body object when they aren't in a run!");
+            return null;
+        }
+        Body body = camera.GetComponent<PlayerCamera>().body;
+        return body.gameObject;
+    }
+
+    public static Body GetPlayerBodyScript()
+    {
+        GameObject camera = GameObject.Find("Main Camera");
+        if (camera == null)
+        {
+            Logger.LogError("Can't get the player's Body script when they aren't in a run!");
+            return null;
+        }
+        return camera.GetComponent<PlayerCamera>().body;
+    }
+
+    public static int GetPlayerSpecies()
+    {
+        GameObject camera = GameObject.Find("Main Camera");
+        if (camera == null)
+        {
+            Logger.LogError("Can't get the player's species when they aren't in a run!");
+            return -1;
+        }
+        Body body = camera.GetComponent<PlayerCamera>().body;
+        return body.charType; // Expie = 0, Milky = 1, Dune = 2
     }
 }

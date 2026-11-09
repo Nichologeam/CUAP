@@ -1,7 +1,6 @@
 {
     "langName": "English",
     "UI": {
-        "mainMenuMessage": "Bug reports for the Archipelago mod would be appreciated. You can report bugs by using `apreportbug` in the console.",
 		"reachDepth1": "Goal: Reach <gd>",
 		"reachDepth2": "Depth Extenders: <de>",
 		"reachDepth3": "Max Depth: <md>",

@@ -190,7 +190,7 @@ public class CommandPatch : MonoBehaviour
                 APCanvas.DeathlinkEnabled = false;
                 try
                 {
-                    body = GameObject.Find("Experiment/Body");
+                    body = Startup.GetPlayerBodyObject();
                     Destroy(body.GetComponent<DeathlinkManager>());
                 }
                 catch
@@ -204,7 +204,7 @@ public class CommandPatch : MonoBehaviour
                 APCanvas.DeathlinkEnabled = true;
                 try
                 {
-                    body = GameObject.Find("Experiment/Body");
+                    body = Startup.GetPlayerBodyObject();
                     body.AddComponent<DeathlinkManager>();
                 }
                 catch
@@ -249,7 +249,7 @@ public class CommandPatch : MonoBehaviour
             Client.Say(chatMessage);
             if (APCanvas.InGame)
             {
-                GameObject.Find("Experiment/Body").GetComponent<Talker>().Talk(chatMessage, force: true);
+                Startup.GetPlayerBodyObject().GetComponent<Talker>().Talk(chatMessage, force: true);
             }
         }, null, new ValueTuple<string, string>[]
         {
@@ -383,7 +383,7 @@ public class CommandPatch : MonoBehaviour
             string playerName = string.Join(" ", args.Skip(2));
             // This line below is supposed to check if the receiving player has gifting enabled, but it always returns false for some reason?
             // if (!Gifting.giftService.CanGiftToPlayer(playerName).CanGift) {throw new Exception(APLocale.Get("giftPlayerUnable", APLocale.APLanguageType.Commands));}
-            body = GameObject.Find("Experiment/Body");
+            body = Startup.GetPlayerBodyObject();
             Item selectedItem = null;
             switch (args[1]) // switch on selected inventory slot
             {

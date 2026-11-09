@@ -40,7 +40,7 @@ public class SleepLink : MonoBehaviour
         if (!postConnect) return; // only run this after connecting
         if (SceneManager.GetActiveScene().name != "SampleScene" && Vitals == null)
         {
-            Vitals = GameObject.Find("Experiment/Body").GetComponent<Body>();
+            Vitals = Startup.GetPlayerBodyScript();
         }
         linkCooldown -= Time.deltaTime;
         if (linkCooldown > 0) return;
