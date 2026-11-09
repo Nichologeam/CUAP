@@ -213,43 +213,15 @@ public class APClientClass
                 MinigameLocker.minigamesUnlocked.Add(item.ItemName);
                 processed = true;
             }
+            if (item.ItemName.EndsWith(" Unlock"))
+            {
+                LayerUnlockDictionary.Add(item.ItemName);
+                processed = true;
+            }
             if (!processed)
             {
                 switch (item.ItemName) // then put everything else in a switch statement to make it cleaner
                 {
-                    case "Gravel Lands Unlock":
-                        LayerUnlockDictionary.Add(item.ItemName);
-                        break;
-                    case "Deeper Gravel Lands Unlock":
-                        LayerUnlockDictionary.Add(item.ItemName);
-                        break;
-                    case "Dried Desert Unlock":
-                        LayerUnlockDictionary.Add(item.ItemName);
-                        break;
-                    case "Wasteland Unlock":
-                        LayerUnlockDictionary.Add(item.ItemName);
-                        break;
-                    case "Overgrown Depths Unlock":
-                        LayerUnlockDictionary.Add(item.ItemName);
-                        break;
-                    case "Frozen Chasm Unlock":
-                        LayerUnlockDictionary.Add(item.ItemName);
-                        break;
-                    case "Fungal Pools Unlock":
-                        LayerUnlockDictionary.Add(item.ItemName);
-                        break;
-                    case "Crystaline Hollow Unlock":
-                        LayerUnlockDictionary.Add(item.ItemName);
-                        break;
-                    case "Geothermal Vents Unlock":
-                        LayerUnlockDictionary.Add(item.ItemName);
-                        break;
-                    case "WHERE WE MUST REACH Unlock":
-                        LayerUnlockDictionary.Add(item.ItemName);
-                        break;
-                    case "CRIMSON ASCENT Unlock":
-                        LayerUnlockDictionary.Add(item.ItemName);
-                        break;
                     case "Progressive Layer":
                         DepthExtendersRecieved++; // reusing this since it would be unused in Overgrown Depths goal
                         break;
