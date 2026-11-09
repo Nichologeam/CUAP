@@ -79,11 +79,18 @@ public class APCanvas : MonoBehaviour
     public static TMP_Text versionTag;
     private static bool ErrorProcessing;
     public static GameObject layerSelector;
-    public static Button glButton;
-    public static Button dglButton;
-    public static Button ddButton;
-    public static Button wlButton;
-    public static Button odButton;
+    public static Button glButton; // Gravel Lands
+    public static Button dglButton; // Deeper Gravel Lands
+    public static Button ddButton; // Dried Desert
+    public static Button wlButton; // Wasteland
+    public static Button odButton; // Overgrown Depths
+    public static Button fcButton; // Frozen Chasm
+    public static Button fpButton; // Fungal Pools
+    public static Button chButton; // Crystaline Hollow
+    public static Button gvButton; // Geothermal Vents
+    public static Button wwmrButton; // WHERE WE MUST REACH
+
+    public static Button caButton; // CRIMSON ASCENT + EARTH
     private static GameObject apItemsTracker;
     public static TMP_Text apItemsCounter;
     private static Queue<string> TextQueue = new Queue<string>();
@@ -162,6 +169,12 @@ public class APCanvas : MonoBehaviour
         ddButton = layerSelector.transform.Find("Dried Desert Button").gameObject.GetComponent<Button>();
         wlButton = layerSelector.transform.Find("Wasteland Button").gameObject.GetComponent<Button>();
         odButton = layerSelector.transform.Find("Overgrown Depths Button").gameObject.GetComponent<Button>();
+        fcButton = layerSelector.transform.Find("Frozen Chasm Button").gameObject.GetComponent<Button>();
+        fpButton = layerSelector.transform.Find("Fungal Pools Button").gameObject.GetComponent<Button>();
+        chButton = layerSelector.transform.Find("Crystaline Hollow Button").gameObject.GetComponent<Button>();
+        gvButton = layerSelector.transform.Find("Geothermal Vents Button").gameObject.GetComponent<Button>();
+        wwmrButton = layerSelector.transform.Find("WHERE WE MUST REACH Button").gameObject.GetComponent<Button>();
+        caButton = layerSelector.transform.Find("CRIMSON ASCENT Button").gameObject.GetComponent<Button>();
         apItemsTracker = GameObject.Find("APCanvas(Clone)/APCanvas/AP Items Tracker");
         apItemsCounter = apItemsTracker.transform.Find("Counter").gameObject.GetComponent<TMP_Text>();
         TraderLink = GameObject.Find("APCanvas(Clone)/APCanvas/TraderLink"); // containing object for the TraderLink system

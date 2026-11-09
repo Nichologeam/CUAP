@@ -18,6 +18,12 @@ public class LayerLocker : MonoBehaviour
         {"Dried Desert Unlock",2},
         {"Wasteland Unlock",3},
         {"Overgrown Depths Unlock",4},
+        {"Frozen Chasm Unlock",5},
+        {"Fungal Pools Unlock",6},
+        {"Crystaline Hollow Unlock",7},
+        {"Geothermal Vents Unlock",8},
+        {"WHERE WE MUST REACH Unlock",9},
+        {"CRIMSON ASCENT Unlock",10}
     };
     public static Dictionary<int, string> LayerIDToName = new Dictionary<int, string>()
     {
@@ -26,6 +32,12 @@ public class LayerLocker : MonoBehaviour
         {2,"Dried Desert Unlock"},
         {3,"Wasteland Unlock"},
         {4,"Overgrown Depths Unlock"},
+        {5,"Frozen Chasm Unlock"},
+        {6,"Fungal Pools Unlock"},
+        {7,"Crystaline Hollow Unlock"},
+        {8,"Geothermal Vents Unlock"},
+        {9,"WHERE WE MUST REACH Unlock"},
+        {10,"CRIMSON ASCENT Unlock"}
     };
 
     private void OnEnable()
@@ -75,6 +87,10 @@ class PickLayerBeforeGeneration
         {
             return true; // layers are progressive. don't pick a layer
         }
+        if (__instance.biomeDepth == 10)
+        {
+            return true; // end of CRIMSON ASCENT, let the game take the player to Earth
+        }
         __instance.loadingObject.SetActive(true);
         __instance.generatingWorld = true;
         Time.timeScale = 0; // the game continues in the background until the player selects an option
@@ -90,6 +106,12 @@ class PickLayerBeforeGeneration
         SetupLayerButton(APCanvas.ddButton, instance, 2);
         SetupLayerButton(APCanvas.wlButton, instance, 3);
         SetupLayerButton(APCanvas.odButton, instance, 4);
+        SetupLayerButton(APCanvas.fcButton, instance, 5);
+        SetupLayerButton(APCanvas.fpButton, instance, 6);
+        SetupLayerButton(APCanvas.chButton, instance, 7);
+        SetupLayerButton(APCanvas.gvButton, instance, 8);
+        SetupLayerButton(APCanvas.wwmrButton, instance, 9);
+        SetupLayerButton(APCanvas.caButton, instance, 10);
     }
     static void SetupLayerButton(Button button, WorldGeneration instance, int layerID)
     {
@@ -100,14 +122,16 @@ class PickLayerBeforeGeneration
         if (unlocked) // we have this layer
         {
             text.text = name.Replace(" Unlock",""); // strip the unlock
-            text.fontSize = 13;
+            if (layerID == 1 || layerID == 4 || layerID == 9)
+            {
+                text.fontSize = 13; // default font size is too large
+            }
             button.interactable = true;
             button.onClick.AddListener(() => LayerButtonPressed(instance, layerID));
         }
         else
         {
             text.text = "Layer Locked!";
-            text.fontSize = 17;
             button.interactable = false;
             // don't even bother adding the listener
         }

@@ -232,6 +232,24 @@ public class APClientClass
                     case "Overgrown Depths Unlock":
                         LayerUnlockDictionary.Add(item.ItemName);
                         break;
+                    case "Frozen Chasm Unlock":
+                        LayerUnlockDictionary.Add(item.ItemName);
+                        break;
+                    case "Fungal Pools Unlock":
+                        LayerUnlockDictionary.Add(item.ItemName);
+                        break;
+                    case "Crystaline Hollow Unlock":
+                        LayerUnlockDictionary.Add(item.ItemName);
+                        break;
+                    case "Geothermal Vents Unlock":
+                        LayerUnlockDictionary.Add(item.ItemName);
+                        break;
+                    case "WHERE WE MUST REACH Unlock":
+                        LayerUnlockDictionary.Add(item.ItemName);
+                        break;
+                    case "CRIMSON ASCENT Unlock":
+                        LayerUnlockDictionary.Add(item.ItemName);
+                        break;
                     case "Progressive Layer":
                         DepthExtendersRecieved++; // reusing this since it would be unused in Overgrown Depths goal
                         break;
