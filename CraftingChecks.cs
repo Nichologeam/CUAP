@@ -42,7 +42,8 @@ public class CraftingChecks : MonoBehaviour
         {"Wood scraps Recipe","woodscraps"},
         {"Ripped dressing Recipe","rippeddressing"},
         {"Sterilized dressing Recipe","sterilizedbandage"},
-        {"Bio-chem fluid Recipe",null},
+        {"Bio-chem fluid (from Glowplant) Recipe",null},
+        {"Bio-chem fluid (from Lumalgae) Recipe",null},
         {"Opium Recipe","opium"},
         {"Morphine Recipe","morphine"},
         {"Fentanyl Recipe","fentanyl"},
@@ -163,9 +164,13 @@ public class CraftingChecks : MonoBehaviour
         {"Soup Recipe","soup"},
         {"Ice pack Recipe","icepack"},
         {"Scarf Recipe","scarf"},
+        {"M.E.R.C. scarf Recipe","mercscarf"},
         {"Titanium pickaxe Recipe","titaniumpickaxe"},
         {"Titanium machete Recipe","titaniummachete"},
         {"Titanium multitool Recipe","titaniummultitool"},
+        {"Peg limb Recipe","peglimb"},
+        {"Steel prosthesis Recipe","steelprosthesis"},
+        {"P.E.O. limb Recipe","peo"},
         {"Climbing rope Recipe","climbingrope"}
     };
     private static Dictionary<string, int> RecipeToINTRequirement = new Dictionary<string, int>()
@@ -177,12 +182,13 @@ public class CraftingChecks : MonoBehaviour
         {"Wood scraps Recipe",3},
         {"Ripped dressing Recipe",0},
         {"Sterilized dressing Recipe",1},
-        {"Bio-chem fluid Recipe",4},
+        {"Bio-chem fluid (from Glowplant) Recipe",4},
+        {"Bio-chem fluid (from Lumalgae) Recipe",12},
         {"Opium Recipe",7},
         {"Morphine Recipe",9},
         {"Fentanyl Recipe",11},
         {"Painkillers Recipe",10},
-        {"Neural booster Recipe",18}, // current highest INT cost in the game
+        {"Neural booster Recipe",18}, // tied for highest INT cost in the game
         {"Canteen Recipe",6},
         {"Foliage bag Recipe",5},
         {"Sling bag Recipe",7},
@@ -298,10 +304,14 @@ public class CraftingChecks : MonoBehaviour
         {"Soup Recipe",9},
         {"Ice pack Recipe",14},
         {"Scarf Recipe",10},
+        {"M.E.R.C. scarf Recipe",18}, // tied for highest INT cost in the game
         {"Titanium pickaxe Recipe",16},
         {"Titanium machete Recipe",16},
         {"Titanum multitool Recipe",16},
-        {"Climbing rope Recipe",7},
+        {"Peg limb Recipe",7},
+        {"Steel prosthesis Recipe",11},
+        {"P.E.O. limb Recipe",16},
+        {"Climbing rope Recipe",7}
     };
     private static List<string> CheckNameToRecipeID = new List<string>()
     {   // Same order as items.py, and the internal recipe order in-game
@@ -312,7 +322,8 @@ public class CraftingChecks : MonoBehaviour
         "Wood scraps Recipe",
         "Ripped dressing Recipe",
         "Sterilized dressing Recipe",
-        "Bio-chem fluid Recipe",
+        "Bio-chem fluid (from Glowplant) Recipe",
+        "Bio-chem fluid (from Lumalgae) Recipe",
         "Opium Recipe",
         "Morphine Recipe",
         "Fentanyl Recipe",
@@ -433,9 +444,13 @@ public class CraftingChecks : MonoBehaviour
         "Soup Recipe",
         "Ice pack Recipe",
         "Scarf Recipe",
+        "M.E.R.C. scarf Recipe",
         "Titanium pickaxe Recipe",
         "Titanium machete Recipe",
         "Titanium multitool Recipe",
+        "Peg limb Recipe",
+        "Steel prosthesis Recipe",
+        "P.E.O. limb Recipe",
         "Climbing rope Recipe",
     };
     public static Dictionary<int, bool> RecipeCraftedBefore = new Dictionary<int, bool>();
@@ -478,9 +493,9 @@ public class CraftingChecks : MonoBehaviour
         }
         if (options.TryGetValue("Craftsanity", out var craft))
         {
-            craftsanity = Convert.ToBoolean(craft);
-            if (craftsanity)
+            if (Convert.ToInt32(craft) == 1)
             {
+                craftsanity = true;
                 var checkedLocations = Client.Locations.AllLocationsChecked;
                 long craftsanityLocID = 22318900;
                 foreach (var recipe in Recipes.recipes) // check which ones have been sent already
@@ -492,6 +507,10 @@ public class CraftingChecks : MonoBehaviour
                         recipe.hasMadeBefore = true;
                     }
                 }
+            }
+            if (Convert.ToInt32(craft) == 3)
+            {
+                craftsanity = false;
             }
         }
     }

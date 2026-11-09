@@ -33,10 +33,9 @@ class GoalRequirement(Choice):
     Defeat Elder Thornback: Start in a random layer that isn't Overgrown Depths and goal upon killing an Elder Thornback.
 
     BELOW GOALS ARE UNIMPLIMENTED!!
-    Complete the Ascent: Retrieve the cargo, ascend to the surface, and return to Earth. Any ending counts.
+    Complete the Ascent: Retrieve the cargo and ascend to the surface. Any ending counts.
     Escape Captivity: Retrieve the cargo, ascend to the surface, return to Earth, and escape captivity.
-    Chipless: Retrieve the cargo, ascend to the surface, and return to Earth. Do it all without the Brainchip.
-              WARNING: Chipless goal removes the Brainchip from the multiworld ENTIERLY. You will NEVER receive it.
+    Merc: Retrieve the cargo and ascend to the surface with the M.E.R.C. scarf.
     """
     display_name = "Goal Requirement"
     option_reach_depth = 1
@@ -44,13 +43,13 @@ class GoalRequirement(Choice):
     option_defeat_elder_thornback = 3
     option_complete_the_ascent = 4
     option_escape_captivity = 5
-    option_chipless = 6
+    option_merc = 6
     default = 1
 
 class AscentUnlockMode(Choice):
     """
     UNIMPLIMENTED!!
-    Only has an effect if your goal is Complete the Ascent, Escape Captivity, or Chipless.
+    Only has an effect if your goal is Complete the Ascent, Escape Captivity, or Merc.
     How should WHERE WE MUST REACH and CRIMSON ASCENT be unlocked?
     Dual Unlock: Another Progressive Layer is added that gives access to both WHERE WE MUST REACH and CRIMSON ASCENT.
     Individual: Two Progressive Layers are added, one for WHERE WE MUST REACH and one for CRIMSON ASCENT.
@@ -68,7 +67,7 @@ class StartingLayer(Choice):
     Determines which layer you'll start with.
     You will have to unlock the other layers through the multiworld.
     If your goal is Defeat Elder Thornback, your starting layer cannot be Overgrown Depths.
-    You cannot choose any layer past Geothermal Vents
+    You cannot choose any layer past Geothermal Vents.
     """
     display_name = "Starting Layer"
     option_gravel_lands = 1
@@ -163,7 +162,8 @@ class LimbUnlocks(Toggle):
 class RandomizeCrafting(Toggle):
     """
     If Recipes should be randomized.
-    If enabled, all 132 Recipes become items to recieve.
+    If enabled, 136 of the 137 Recipes become items to recieve.
+    The M.E.R.C. scarf Recipe will remain in its vanilla location.
     Blueprints will still spawn, but will only give INT experience (unless Archipelago Items is above 0).
     """
     display_name = "Randomize Recipes"
@@ -176,14 +176,21 @@ class FreeSamples(Toggle):
     """
     display_name = "Free Samples"
 
-class Craftsanity(Toggle):
+class Craftsanity(Choice):
     """
     Makes crafting each individual recipe in the game a location.
     Will be sphere 1 without additional options like Skillsanity and Randomize Recipes.
     Note: **Item qualities required for crafting are not considered in logic.**
-    Adds 132 locations.
+    
+    True: Adds 137 locations for all recipes.
+    Exclude M.E.R.C. scarf: Adds 136 locations. The M.E.R.C. scarf will not have a location.
+    False: No crafting recipes will have locations.
     """
     display_name = "Craftsanity"
+    option_true = 1
+    option_exclude_MERC_scarf = 2
+    option_false = 3
+    default = 3
 
 class Skillsanity(Toggle):
     """
@@ -192,14 +199,21 @@ class Skillsanity(Toggle):
     """
     display_name = "Skillsanity"
 
-class UnlockBrainchip(Toggle):
+class UnlockBrainchip(Choice):
     """
     UNIMPLIMENTED!!
     If enabled, the Brainchip will become an item in the multiworld.
-    Removes Unchipped Trap from the possible trap items.
-    This option is ignored if your goal is Chipless.
+    Removes Unchipped Trap from the possible trap items if enabled.
+
+    Start With: Vanilla behaviour. You start with the Brainchip.
+    As Item: The Brainchip becomes an item in the multiworld.
+    Remove Chip: The Brainchip is perminently removed from the game. You will never recieve it.
     """
     display_name = "Unlock Brainchip"
+    option_start_with = 1
+    option_as_item = 2
+    option_remove_chip = 3
+    default = 1
 
 class ArchipelagoItems(Range):
     """

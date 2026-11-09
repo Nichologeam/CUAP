@@ -9,8 +9,7 @@
 		},
 		"Craftsanity - Foliage":{
 			"intRequired": 12,
-			"needsLayerAny": [6],
-			"impossible": true
+			"needsLayerAny": [7]
 		},
 		"Craftsanity - String":{
 			"intRequired": 5,
@@ -28,8 +27,12 @@
 		"Craftsanity - Sterilized dressing":{
 			"intRequired": 1
 		},
-		"Craftsanity - Bio-chem fluid":{
+		"Craftsanity - Bio-chem fluid (from Glowplant)":{
 			"intRequired": 4
+		},
+		"Craftsanity - Bio-chem fluid (from Lumalgae)":{
+			"intRequired": 12,
+			"needsLayerAny": [2,5,7]
 		},
 		"Craftsanity - Opium":{
 			"intRequired": 7,
@@ -106,17 +109,17 @@
 		},
 		"Craftsanity - Titanium slab":{
 			"intRequired": 15,
-			"needsLayerAny": [5],
+			"needsLayerAny": [5,6,7,8,9,10,11],
 			"reliesOn": ["Bio-chem fluid"]
 		},
 		"Craftsanity - Titanium sheet":{
 			"intRequired": 15,
-			"needsLayerAny": [5],
+			"needsLayerAny": [5,6,7,8,9,10,11],
 			"reliesOn": ["Titanium slab", "Bio-chem fluid"]
 		},
 		"Craftsanity - Titanium rod":{
 			"intRequired": 15,
-			"needsLayerAny": [5],
+			"needsLayerAny": [5,6,7,8,9,10,11],
 			"reliesOn": ["Titanium slab", "Bio-chem fluid"]
 		},
 		"Craftsanity - Alien blood":{
@@ -437,8 +440,7 @@
 		"Craftsanity - Procoagulant":{
 			"intRequired": 14,
 			"reliesOn": ["Clotting mush", "Bio-chem fluid"],
-			"needsLayerAny": [7],
-			"impossible": true
+			"needsLayerAny": [7]
 		},
 		"Craftsanity - Spray bottle":{
 			"intRequired": 7,
@@ -499,12 +501,15 @@
 		"Craftsanity - Ice pack":{
 			"intRequired": 14,
 			"reliesOn": ["Canvas", "String", "Circuit board"],
-			"needsLayerAny": [6],
-			"impossible": true
+			"needsLayerAny": [6]
 		},
 		"Craftsanity - Scarf":{
 			"intRequired": 10,
 			"reliesOn": ["Canvas", "String"]
+		},
+		"Craftsanity - M.E.R.C. scarf":{
+			"intRequired": 18,
+			"reliesOn": ["Circuit board", "Scarf"]
 		},
 		"Craftsanity - Titanium pickaxe":{
 			"intRequired": 16,
@@ -517,6 +522,18 @@
 		"Craftsanity - Titanium multitool":{
 			"intRequired": 16,
 			"reliesOn": ["Titanium sheet", "Titanium rod", "Bio-chem fluid"]
+		},
+		"Craftsanity - Peg limb": {
+			"intRequired": 7,
+			"reliesOn": ["Wood cube", "Stick", "Foliage rope", "Nails", "Bio-chem fluid"]
+		},
+		"Craftsanity - Steel prosthesis": {
+			"intRequired": 11,
+			"reliesOn": ["Scrap cube", "Scrap tube", "Nails", "Bio-chem fluid"]
+		},
+		"Craftsanity - P.E.O. limb": {
+			"intRequired": 16,
+			"reliesOn": ["Titanium slab", "Titanium sheet", "Circuit board", "Bundle of wires", "Nails", "Bio-chem fluid"]
 		},
 		"Craftsanity - Climbing rope":{
 			"intRequired": 7,
