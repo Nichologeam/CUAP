@@ -42,18 +42,25 @@ class CasualtiesUnknownWorld(World):
         self.recipe_data = load_recipe_data()
 
     def generate_early(self):
+        if self.options.GoalRequirement.value in (4, 5, 6):
+            raise OptionError(f"""
+                ----- Casualties: Unknown -----
+                {self.multiworld.player_name[self.player]}'s YAML has an error.
+                The chosen goal is currently not implimented.
+                Please choose a different goal.
+                """)
         goal_depth = self.options.GoalDepth.value
         if goal_depth % 100 != 0:
             rounded = round(goal_depth / 100) * 100
-            print(f"Casualties Unknown: Goal Depth {goal_depth} rounded to {rounded}")
+            print(f"Casualties Unknown: {self.multiworld.player_name[self.player]}'s Goal Depth of {goal_depth} was rounded to {rounded}")
             self.options.GoalDepth.value = rounded
 
         if self.options.GoalRequirement != 1: # all other goals
             self.options.GoalDepth.value = 1500
         raw_exclusions = set()
         option_minimal = ("Last stand", "Tachycardia", "Bradycardia", "Palpitations")
-        option_deadly = ("Comatose", "Severe neurophysiological deterioration", "Neurological damage", "Respiratory arrest", "Lung failure", "Cardiac arrest", "Highly drugged", "Fatal opioid overdose", "Dying of withdrawal", "Catastrophic bleeding", "Life-threatening infection", "Septic shock", "Heatstroke", "Freezing to death", "Severe radiation sickness", "Chernobyl wannabe", "Last stand", "Severe hypoxemia", "Critical hypoxemia", "Ventricular fibrillation", "Palpitations", "Circulatory collapse", "Severe hypotension", "Hypertensive crisis", "Severe hypertension", "Toxic crisis")
-        option_difficult = ("Opiated", "Drugged", "Highly drugged", "Fatal opioid overdose", "Opioid craving", "Withdrawal", "Severe withdrawal", "Dying of withdrawal", "Drug overdose", "Bloated", "Hypervolemic", "Critically hypervolemic", "Lethally hypervolemic", "Fat", "Obese", "Last stand", "Tachycardia", "Bradycardia", "Rapid neuron regeneration sickness", "Blind", "Boosted regrowth", "Palpitations", "Critical hypoxemia",  "FOCUSED")
+        option_deadly = ("Comatose", "Severe neurophysiological deterioration", "Neurological damage", "Respiratory arrest", "Lung failure", "Cardiac arrest", "Highly drugged", "Fatal opioid overdose", "Dying of withdrawal", "Catastrophic bleeding", "Life-threatening infection", "Septic shock", "Heatstroke", "Freezing to death", "Severe radiation sickness", "Chernobyl wannabe", "Last stand", "Severe hypoxemia", "Critical hypoxemia", "Ventricular fibrillation", "Palpitations", "Circulatory collapse", "Severe hypotension", "Hypertensive crisis", "Severe hypertension", "Toxic crisis", "Critical barotrauma")
+        option_difficult = ("Opiated", "Drugged", "Highly drugged", "Fatal opioid overdose", "Opioid craving", "Withdrawal", "Severe withdrawal", "Dying of withdrawal", "Drug overdose", "Bloated", "Hypervolemic", "Critically hypervolemic", "Lethally hypervolemic", "Fat", "Obese", "Last stand", "Tachycardia", "Bradycardia", "Rapid neuron regeneration sickness", "Blind", "Boosted regrowth", "Palpitations", "Critical hypoxemia",  "FOCUSED", "Barotrauma", "Critical barotrauma", "Bent prosthesis")
         option_deadly_and_difficult = set(option_deadly) | set(option_difficult)
         for moodle_name in self.options.MoodlesanityExclusions.value:
             if moodle_name.lower() == "minimal":
@@ -148,7 +155,7 @@ class CasualtiesUnknownWorld(World):
             "Minigames":           self.options.RandomizeMinigames.value,
             "EnergyLink":          self.options.EnergyLink.value,
             "Gifting":             self.options.Gifting.value,
-            "APWorldVersion":      "v0.12.3",
+            "APWorldVersion":      "v0.13.0",
             
             "Seed": self.multiworld.seed_name,
             "Slot": self.multiworld.player_name[self.player],

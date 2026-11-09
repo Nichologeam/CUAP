@@ -43,9 +43,16 @@ def create_itempool(world: "CasualtiesUnknownWorld") -> list["CasualtiesUnknownI
     total_locations = len(locations)
 
     # --- Depth / Layer Progression ---
-    if world.options.GoalRequirement == 2:
+    if world.options.GoalRequirement.value == 2:
         for _ in range(4):
             pool.append(create_item(world, "Progressive Layer"))
+    elif world.options.GoalRequirement.value in (4, 5, 6):
+        if world.options.AscentUnlockMode.value == 1:
+            for _ in range(9):
+                pool.append(create_item(world, "Progressive Layer"))
+        if world.options.AscentUnlockMode.value == 2:
+            for _ in range(10):
+                pool.append(create_item(world, "Progressive Layer")) # extra progressive layer
     else:
         goal_depth = world.options.GoalDepth.value
         layers_needed = (goal_depth + 299) // 300
@@ -85,7 +92,7 @@ def create_itempool(world: "CasualtiesUnknownWorld") -> list["CasualtiesUnknownI
 
     # --- Quests ---
     if questboard_items_enabled(world):
-        for _ in range(10):
+        for _ in range(11):
             item = create_item(world, "Progressive Quests")
             pool.append(item)
         for _ in range(6):
@@ -141,7 +148,13 @@ layers = {
     "Deeper Gravel Lands Unlock": ItemData(22318001, ItemClassification.progression),
     "Dried Desert Unlock": ItemData(22318002, ItemClassification.progression),
     "Wasteland Unlock": ItemData(22318003, ItemClassification.progression),
-    "Overgrown Depths Unlock": ItemData(22318004, ItemClassification.progression)
+    "Overgrown Depths Unlock": ItemData(22318004, ItemClassification.progression),
+    "Frozen Chasm Unlock": ItemData(22318005, ItemClassification.progression),
+    "Fungal Pools Unlock": ItemData(22318006, ItemClassification.progression),
+    "Crystaline Hollow Unlock": ItemData(22318007, ItemClassification.progression),
+    "Geothermal Vents Unlock": ItemData(22318008, ItemClassification.progression),
+    "WHERE WE MUST REACH Unlock": ItemData(22318009, ItemClassification.progression),
+    "CRIMSON ASCENT Unlock": ItemData(22318010, ItemClassification.progression)
 }
 
 recipes = { # In the order of the game's internal recipe list

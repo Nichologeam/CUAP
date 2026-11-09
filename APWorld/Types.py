@@ -20,13 +20,25 @@ class LayerType(IntEnum):
     DriedDesert = 3
     Wasteland = 4
     OvergrownDepths = 5
+    FrozenChasm = 6
+    FungalPools = 7
+    CrystalineHollow = 8
+    GeothermalVents = 9
+    WhereWeMustReach = 10
+    CrimsonAscent = 11
 
 layer_type_to_name = {
     LayerType.GravelLands:              "Gravel Lands Unlock",
     LayerType.DeeperGravelLands:        "Deeper Gravel Lands Unlock",
     LayerType.DriedDesert:              "Dried Desert Unlock",
     LayerType.Wasteland:                "Wasteland Unlock",
-    LayerType.OvergrownDepths:          "Overgrown Depths Unlock"
+    LayerType.OvergrownDepths:          "Overgrown Depths Unlock",
+    LayerType.FrozenChasm:              "Frozen Chasm Unlock",
+    LayerType.FungalPools:              "Fungal Pools Unlock",
+    LayerType.CrystalineHollow:         "Crystaline Hollow Unlock",
+    LayerType.GeothermalVents:          "Geothermal Vents Unlock",
+    LayerType.WhereWeMustReach:         "WHERE WE MUST REACH Unlock",
+    LayerType.CrimsonAscent:            "CRIMSON ASCENT Unlock"
 }
 
 class ItemData(NamedTuple):

@@ -17,6 +17,13 @@ def create_regions(world: "CasualtiesUnknownWorld"):
     drieddesert = create_region_and_connect(world, "Dried Desert", "Menu -> Dried Desert", menu)
     wasteland = create_region_and_connect(world, "Wasteland", "Menu -> Wasteland", menu)
     overgrowndepths = create_region_and_connect(world, "Overgrown Depths", "Menu -> Overgrown Depths", menu)
+    if world.options.GoalRequirement.value != 2: # everything past OD doesn't exist on an Escape Overgrown run
+        frozenchasm = create_region_and_connect(world, "Frozen Chasm", "Menu -> Frozen Chasm", menu)
+        fungalpools = create_region_and_connect(world, "Fungal Pools", "Menu -> Fungal Pools", menu)
+        crystalinehollow = create_region_and_connect(world, "Crystaline Hollow", "Menu -> Crystaline Hollow", menu)
+        geothermalvents = create_region_and_connect(world, "Geothermal Vents", "Menu -> Geothermal Vents", menu)
+        wherewemustreach = create_region_and_connect(world, "WHERE WE MUST REACH", "Menu -> WHERE WE MUST REACH", menu)
+        crimsonascent = create_region_and_connect(world, "CRIMSON ASCENT", "Menu -> CRIMSON ASCENT", menu)
     starting_layer = world.options.StartingLayer.value
     world.set_rule(menu, True_())
 
@@ -64,6 +71,57 @@ def create_regions(world: "CasualtiesUnknownWorld"):
             world.set_rule(entrance, True_())
         else:
             world.set_rule(entrance, Has("Overgrown Depths Unlock"))
+
+    entrance = next(e for e in menu.exits if e.name == "Menu -> Frozen Chasm")
+    if world.options.GoalRequirement.value in (4, 5, 6):
+        world.set_rule(entrance, Has("Progressive Layer", count = 5))
+    else:
+        if starting_layer == 6:
+            world.set_rule(entrance, True_())
+        else:
+            world.set_rule(entrance, Has("Frozen Chasm Unlock"))
+
+    entrance = next(e for e in menu.exits if e.name == "Menu -> Fungal Pools")
+    if world.options.GoalRequirement.value in (4, 5, 6):
+        world.set_rule(entrance, Has("Progressive Layer", count = 6))
+    else:
+        if starting_layer == 7:
+            world.set_rule(entrance, True_())
+        else:
+            world.set_rule(entrance, Has("Fungal Pools Unlock"))
+
+    entrance = next(e for e in menu.exits if e.name == "Menu -> Crystaline Hollow")
+    if world.options.GoalRequirement.value in (4, 5, 6):
+        world.set_rule(entrance, Has("Progressive Layer", count = 7))
+    else:
+        if starting_layer == 8:
+            world.set_rule(entrance, True_())
+        else:
+            world.set_rule(entrance, Has("Crystaline Hollow Unlock"))
+
+    entrance = next(e for e in menu.exits if e.name == "Menu -> Geothermal Vents")
+    if world.options.GoalRequirement.value in (4, 5, 6):
+        world.set_rule(entrance, Has("Progressive Layer", count = 8))
+    else:
+        if starting_layer == 9:
+            world.set_rule(entrance, True_())
+        else:
+            world.set_rule(entrance, Has("Geothermal Vents Unlock"))
+
+    entrance = next(e for e in menu.exits if e.name == "Menu -> WHERE WE MUST REACH")
+    if world.options.GoalRequirement.value in (4, 5, 6):
+        world.set_rule(entrance, Has("Progressive Layer", count = 9))
+    else: # It's not possible to have WWMR as a starting layer
+        world.set_rule(entrance, Has("WHERE WE MUST REACH Unlock"))
+
+    entrance = next(e for e in menu.exits if e.name == "Menu -> CRIMSON ASCENT")
+    if world.options.GoalRequirement.value in (4, 5, 6):
+        if world.options.AscentUnlockMode.value == 1:
+            world.set_rule(entrance, Has("Progressive Layer", count = 9))
+        if world.options.AscentUnlockMode.value == 2:
+            world.set_rule(entrance, Has("Progressive Layer", count = 10)) # extra progressive layer
+    else:
+        world.set_rule(entrance, Has("CRIMSON ASCENT Unlock"))
 
 def create_region(world: "CasualtiesUnknownWorld", name: str) -> Region:
     if world.options.GoalRequirement.value != 1:

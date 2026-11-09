@@ -24,14 +24,42 @@ class ItemWeights(ItemDict):  # Modified from the ULTRAKILL APWorld
 class GoalRequirement(Choice):
     """
     Where is the goal placed?
+    Layers are individual items with the Reach Depth and Defeat Elder Thornback goals.
+    Layers are progressive with all other goals.
+    
     Reach Depth: Reach a chosen depth starting from a random or chosen layer. Depth Extenders allow you to go deeper.
     Escape Overgrown Depths: Start in Gravel Lands and goal upon escaping Overgrown Depths. Progressive Layers allow you to go deeper.
+                             Note: This excludes all content past Overgrown Depths besides recipes.
     Defeat Elder Thornback: Start in a random layer that isn't Overgrown Depths and goal upon killing an Elder Thornback.
+
+    BELOW GOALS ARE UNIMPLIMENTED!!
+    Complete the Ascent: Retrieve the cargo, ascend to the surface, and return to Earth. Any ending counts.
+    Escape Captivity: Retrieve the cargo, ascend to the surface, return to Earth, and escape captivity.
+    Chipless: Retrieve the cargo, ascend to the surface, and return to Earth. Do it all without the Brainchip.
+              WARNING: Chipless goal removes the Brainchip from the multiworld ENTIERLY. You will NEVER receive it.
     """
     display_name = "Goal Requirement"
     option_reach_depth = 1
     option_escape_overgrown_depths = 2
     option_defeat_elder_thornback = 3
+    option_complete_the_ascent = 4
+    option_escape_captivity = 5
+    option_chipless = 6
+    default = 1
+
+class AscentUnlockMode(Choice):
+    """
+    UNIMPLIMENTED!!
+    Only has an effect if your goal is Complete the Ascent, Escape Captivity, or Chipless.
+    How should WHERE WE MUST REACH and CRIMSON ASCENT be unlocked?
+    Dual Unlock: Another Progressive Layer is added that gives access to both WHERE WE MUST REACH and CRIMSON ASCENT.
+    Individual: Two Progressive Layers are added, one for WHERE WE MUST REACH and one for CRIMSON ASCENT.
+    
+    Reaching the cargo without access to CRIMSON ASCENT will loop WHERE WE MUST REACH upon interacting with the drill.
+    """
+    display_name = "Ascent Unlock Mode"
+    option_dual_unlock = 1
+    option_individual = 2
     default = 1
 
 class StartingLayer(Choice):
@@ -40,6 +68,7 @@ class StartingLayer(Choice):
     Determines which layer you'll start with.
     You will have to unlock the other layers through the multiworld.
     If your goal is Defeat Elder Thornback, your starting layer cannot be Overgrown Depths.
+    You cannot choose any layer past Geothermal Vents
     """
     display_name = "Starting Layer"
     option_gravel_lands = 1
@@ -47,11 +76,15 @@ class StartingLayer(Choice):
     option_dried_desert = 3
     option_wasteland = 4
     option_overgrown_depths = 5
+    option_frozen_chasm = 6
+    option_fungal_pools = 7
+    option_crystaline_hollow = 8
+    option_geothermal_vents = 9
     default = "random"
 
 class GoalDepth(Range):
     """
-    Only has an effect if your goal is Reach Depth.
+    Only has an effect if your goal is Reach Depth. Depths are in meters.
     How deep do you have to go in one run to goal? Must be a multiple of 100, and will be automatically rounded if it isn't.
     Each 300m requires a Depth Extender progression item.
     There will be the amount needed +5 in the item pool, unless your goal is 1500m or less, where there will be the exact amount needed.
@@ -59,16 +92,16 @@ class GoalDepth(Range):
     display_name = "Goal Depth"
     range_start = 100
     range_end = 5000
-    default = 1500
+    default = 2700 # roughly vanilla depth
 
 class Moodlesanity(Choice):
     """
-    Each possible moodle (status effect) is a check. Does not include Anxious and Deceased, as they are impossible to get.
-    Disabled: Moodles do not send checks.
-    Questboard: Adds a new UI that shows 'quests'. You must get the shown moodle to send its check. More moodles and
+    Each possible moodle (status effect) is a location. Does not include Anxious and Deceased, as they are impossible to get.
+    Disabled: Moodles do not check locations.
+    Questboard: Adds a new UI that shows 'quests'. You must get the shown moodle to check its location. More moodles and
                 questboard slots are unlocked via items. Each "Progressive Quests" item (12 in total) unlocks 15 moodles.
     Open: All moodle locations are available in sphere 1 (minus a few). Creates VERY LARGE sphere 1. Use with caution.
-    With every Moodle enabled, adds 166 locations.
+    With every Moodle enabled, adds 171 locations.
     """
     display_name = "Moodlesanity"
     option_disabled = 1
@@ -159,6 +192,15 @@ class Skillsanity(Toggle):
     """
     display_name = "Skillsanity"
 
+class UnlockBrainchip(Toggle):
+    """
+    UNIMPLIMENTED!!
+    If enabled, the Brainchip will become an item in the multiworld.
+    Removes Unchipped Trap from the possible trap items.
+    This option is ignored if your goal is Chipless.
+    """
+    display_name = "Unlock Brainchip"
+
 class ArchipelagoItems(Range):
     """
     How many Archipelago Items can be found throughout the cave system?
@@ -194,7 +236,7 @@ class Gifting(Toggle):
     Allows gifting inventory items between games.
     Sending gifts to other Casualties: Unknown games will give that player the exact same item.
     Sending gifts to any other game will attempt to translate the gift into something similar.
-    Most items are supported, but not all of them.
+    Most items from the demo are supported, but items exclusive to the full game are not.
 
     Use the `apgift` command in-game to send gifts to others.
     """

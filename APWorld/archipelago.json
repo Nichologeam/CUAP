@@ -1,6 +1,6 @@
 {
     "minimum_ap_version": "0.6.7", 
-    "world_version": "0.12.3",
+    "world_version": "0.13.0",
     "authors": ["Nichologeam"],
     "version": 7,
     "compatible_version": 7,
