@@ -34,7 +34,7 @@ class GoalRequirement(Choice):
 
     BELOW GOALS ARE UNIMPLIMENTED!!
     Complete the Ascent: Retrieve the cargo and ascend to the surface. Any ending counts.
-    Escape Captivity: Retrieve the cargo, ascend to the surface, return to Earth, and escape captivity.
+    Ascent Chipless: Retrieve the cargo, ascend to the surface, and return to Earth. Do it all without the Brainchip.
     Merc: Retrieve the cargo and ascend to the surface with the M.E.R.C. scarf.
     """
     display_name = "Goal Requirement"
@@ -42,14 +42,23 @@ class GoalRequirement(Choice):
     option_escape_overgrown_depths = 2
     option_defeat_elder_thornback = 3
     option_complete_the_ascent = 4
-    option_escape_captivity = 5
+    option_ascent_chipless = 5
     option_merc = 6
     default = 1
+
+class GoalRequiresAllSawians(Toggle):
+    """
+    UNIMPLIMENTED!!
+    Only has an effect if your goal is not Reach Depth.
+    Requries you to reach your set goal with all three playable Sawians.
+    Pairs well with the Unlock Sawians option.
+    """
+    display_name = "Goal Requires All Sawians"
 
 class AscentUnlockMode(Choice):
     """
     UNIMPLIMENTED!!
-    Only has an effect if your goal is Complete the Ascent, Escape Captivity, or Merc.
+    Only has an effect if your goal is Complete the Ascent, Ascent Chipless, or Merc.
     How should WHERE WE MUST REACH and CRIMSON ASCENT be unlocked?
     Dual Unlock: Another Progressive Layer is added that gives access to both WHERE WE MUST REACH and CRIMSON ASCENT.
     Individual: Two Progressive Layers are added, one for WHERE WE MUST REACH and one for CRIMSON ASCENT.
@@ -215,6 +224,26 @@ class UnlockBrainchip(Choice):
     option_remove_chip = 3
     default = 1
 
+class UnlockSawians(Toggle):
+    """
+    UNIMPLIMENTED!!
+    Turns the ability to play as each Sawian into an item.
+    You will always start with one.
+    """
+    display_name = "Unlock Sawians"
+
+class StartingSawian(Choice):
+    """
+    UNIMPLIMENTED!!
+    Only has an effect if Unlock Sawians is on.
+    Which Sawian to start the multiworld with.
+    """
+    display_name = "Starting Sawian"
+    choice_experiment = 1
+    choice_milky = 2
+    choice_dune = 3
+    default = "random"
+
 class ArchipelagoItems(Range):
     """
     How many Archipelago Items can be found throughout the cave system?
@@ -277,6 +306,8 @@ class TrapWeights(ItemWeights):
 @dataclass
 class CasualtiesUnknownOptions(PerGameCommonOptions):
     GoalRequirement:       GoalRequirement
+    GoalRequiresAllSawians:GoalRequiresAllSawians
+    AscentUnlockMode:      AscentUnlockMode
     StartingLayer:         StartingLayer
     GoalDepth:             GoalDepth
     Moodlesanity:          Moodlesanity
@@ -288,6 +319,8 @@ class CasualtiesUnknownOptions(PerGameCommonOptions):
     FreeSamples:           FreeSamples
     Craftsanity:           Craftsanity
     Skillsanity:           Skillsanity
+    UnlockBrainchip:       UnlockBrainchip
+    UnlockSawians:         UnlockSawians
     ArchipelagoItems:      ArchipelagoItems
     EnergyLink:            EnergyLink
     SleepLink:             SleepLink
@@ -297,10 +330,10 @@ class CasualtiesUnknownOptions(PerGameCommonOptions):
     start_inventory_from_pool:StartInventoryPool
 
 casualties_unknown_option_groups = [
-    OptionGroup("Goal", [GoalRequirement, StartingLayer, GoalDepth]),
+    OptionGroup("Goal", [GoalRequirement, GoalRequiresAllSawians, AscentUnlockMode, StartingLayer, GoalDepth]),
     OptionGroup("Moodlesanity", [Moodlesanity, MoodlesanityExclusions, QuestboardCooldownTime]),
-    OptionGroup("Recipes", [RandomizeCrafting, FreeSamples, Craftsanity, Skillsanity]),
-    OptionGroup("Other Locations", [RandomizeMinigames, LimbUnlocks, ArchipelagoItems]),
+    OptionGroup("Recipes", [RandomizeCrafting, FreeSamples, Craftsanity, Skillsanity, ArchipelagoItems]),
+    OptionGroup("Other Items", [RandomizeMinigames, LimbUnlocks, UnlockBrainchip, UnlockSawians]),
     OptionGroup("Traps", [TrapPercentage, TrapWeights]),
     OptionGroup("Cross-Game Interactions", [EnergyLink, SleepLink, Gifting])
 ]

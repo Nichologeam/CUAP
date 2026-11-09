@@ -155,7 +155,7 @@ class CasualtiesUnknownWorld(World):
             "Minigames":           self.options.RandomizeMinigames.value,
             "EnergyLink":          self.options.EnergyLink.value,
             "Gifting":             self.options.Gifting.value,
-            "APWorldVersion":      "v0.13.0",
+            "APWorldVersion":      "v0.13.0-pre1",
             
             "Seed": self.multiworld.seed_name,
             "Slot": self.multiworld.player_name[self.player],

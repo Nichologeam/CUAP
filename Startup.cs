@@ -22,7 +22,7 @@ public class Startup : BaseUnityPlugin
     private static extern bool SetWindowText(IntPtr hWnd, string lpString);
     public static new ManualLogSource Logger;
     public static ArchipelagoSession Client;
-    public static string CUAPVersion = "v0.13.0";
+    public static string CUAPVersion = "v0.13.0-pre1";
     public static AssetBundle apassets;
     private static Harmony apHarmony;
     public static Startup instance;
