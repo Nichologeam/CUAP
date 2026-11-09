@@ -161,6 +161,10 @@ public class Moodlesanity : MonoBehaviour
         "irradiated1",
         "irradiated2",
         "irradiated3",
+        "barotrauma0",
+        "barotrauma1",
+        "barotrauma2",
+        "barotrauma3",
         "energized5",
         "hemothorax1",
         "hollow",
@@ -184,6 +188,11 @@ public class Moodlesanity : MonoBehaviour
         "impendingdoom1",
         "horrified3",
         "focused8",
+        "cargo4",
+        "prosthetic9",
+        "loosescrews9",
+        "bentprosthesis9",
+        "severematerialloss9"
     };
     private static Dictionary<string, string> InternalMoodNameToCheck = new Dictionary<string, string>()
     {
@@ -348,6 +357,10 @@ public class Moodlesanity : MonoBehaviour
         {"irradiated1","Moodlesanity - Radiation sickness"},
         {"irradiated2","Moodlesanity - Severe radiation sickness"},
         {"irradiated3","Moodlesanity - Chernobyl wannabe"},
+        {"barotrauma0","Moodlesanity - High pressure"},
+        {"barotrauma1","Moodlesanity - Very high pressure"},
+        {"barotrauma2","Moodlesanity - Barotrauma"},
+        {"barotrauma3","Moodlesanity - Critical barotrauma"},
         {"energized5","Moodlesanity - Energized"},
         {"hemothorax1","Moodlesanity - Hemothorax"},
         {"hollow0","Moodlesanity - Hollow"},
@@ -374,7 +387,12 @@ public class Moodlesanity : MonoBehaviour
         {"keratinbooster5","Moodlesanity - Boosted regrowth"},
         {"impendingdoom1","Moodlesanity - Sense of impending doom"},
         {"horrified3","Moodlesanity - HORRIFIED"},
-        {"focused8","Moodlesanity - FOCUSED"}
+        {"focused8","Moodlesanity - FOCUSED"},
+        {"cargo4","Moodlesanity - Cargo embedded"},
+        {"prosthetic9","Moodlesanity - Prosthetic limb"},
+        {"loosescrews9","Moodlesanity - Loose screws"},
+        {"bentprosthesis9","Moodlesanity - Bent prosthesis"},
+        {"severematerialloss9","Moodlesanity - Critical material loss"}
     };
     public static Dictionary<string, string> CheckToInternalMoodID = InternalMoodNameToCheck.GroupBy(kv => kv.Value)
     .ToDictionary(
