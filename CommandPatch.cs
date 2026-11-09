@@ -509,8 +509,13 @@ public class CommandPatch : MonoBehaviour
     public static string ItemDataToPriorityColor(ItemFlags flags)
     {
         var itemColor = "#00EEEE"; // default to filler color (cyan)
-        // a switch statement would be better here, but it would't support items with more than one tag (rare, but they exist)
-        if (flags.HasFlag(ItemFlags.Trap))
+        // a switch statement would be better here, but it would't support items with more than one tag
+        if (flags.HasFlag(ItemFlags.Advancement) && flags.HasFlag(ItemFlags.NeverExclude))
+        {
+            itemColor = "#FFD700"; // gold (proguseful)
+            // This color technically isn't an official AP color, but it's common inside other games
+        }
+        else if (flags.HasFlag(ItemFlags.Trap))
         {
             itemColor = "#FA8072"; // salmon (trap)
         }
