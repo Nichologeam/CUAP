@@ -9,9 +9,9 @@ if TYPE_CHECKING:
 def moodlesanity_locations_enabled(world: "CasualtiesUnknownWorld") -> bool:
     return bool(world.options.Moodlesanity.value != 1)
 def skill_locations_enabled(world :"CasualtiesUnknownWorld") -> bool:
-    return bool(world.options.Skillsanity)
+    return bool(world.options.Skillsanity.value)
 def crafting_locations_enabled(world :"CasualtiesUnknownWorld") -> bool:
-    return bool(world.options.Craftsanity)
+    return bool(world.options.Craftsanity.value != 3)
 
 def get_total_locations(world: "CasualtiesUnknownWorld") -> int:
     total = 0

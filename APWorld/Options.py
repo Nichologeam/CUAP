@@ -226,15 +226,16 @@ class UnlockBrainchip(Choice):
 
 class UnlockSawians(Toggle):
     """
-    UNIMPLIMENTED!!
     Turns the ability to play as each Sawian into an item.
     You will always start with one.
+
+    Note: This option does not take into account if you have unlocked the characters legitimately.
+    Enabling this option will give you all Sawians in your vanilla save unless you back it up first.
     """
     display_name = "Unlock Sawians"
 
 class StartingSawian(Choice):
     """
-    UNIMPLIMENTED!!
     Only has an effect if Unlock Sawians is on.
     Which Sawian to start the multiworld with.
     """
@@ -321,6 +322,7 @@ class CasualtiesUnknownOptions(PerGameCommonOptions):
     Skillsanity:           Skillsanity
     UnlockBrainchip:       UnlockBrainchip
     UnlockSawians:         UnlockSawians
+    StartingSawian:        StartingSawian
     ArchipelagoItems:      ArchipelagoItems
     EnergyLink:            EnergyLink
     SleepLink:             SleepLink
@@ -333,7 +335,7 @@ casualties_unknown_option_groups = [
     OptionGroup("Goal", [GoalRequirement, GoalRequiresAllSawians, AscentUnlockMode, StartingLayer, GoalDepth]),
     OptionGroup("Moodlesanity", [Moodlesanity, MoodlesanityExclusions, QuestboardCooldownTime]),
     OptionGroup("Recipes", [RandomizeCrafting, FreeSamples, Craftsanity, Skillsanity, ArchipelagoItems]),
-    OptionGroup("Other Items", [RandomizeMinigames, LimbUnlocks, UnlockBrainchip, UnlockSawians]),
+    OptionGroup("Other Items", [RandomizeMinigames, LimbUnlocks, UnlockBrainchip, UnlockSawians, StartingSawian]),
     OptionGroup("Traps", [TrapPercentage, TrapWeights]),
     OptionGroup("Cross-Game Interactions", [EnergyLink, SleepLink, Gifting])
 ]

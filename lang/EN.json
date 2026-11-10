@@ -1,6 +1,6 @@
 {
     "langName": "English",
-    "UI": {
+	"UI": {
 		"reachDepth1": "Goal: Reach <gd>",
 		"reachDepth2": "Depth Extenders: <de>",
 		"reachDepth3": "Max Depth: <md>",
@@ -81,8 +81,10 @@
 		"tradeTransfer": "Deposit",
 		"tradeTransfering": "Transfering...",
 		"tradeTransferFail": "Must be a number",
-		"sleepReceived": "SleepLink received. Goodnight!"
-    },
+		"sleepReceived": "SleepLink received. Goodnight!",
+		"charLocked": "This Sawian is locked by ",
+		"charLockedDesc": "Receive this Sawian from the Multiworld to use them."
+	},
 	"Commands": {
 		"dlDesc": "Toggles DeathLink for the current game session.",
 		"dlSeverity": "severity",

@@ -7,7 +7,7 @@ from .Locations import get_location_names, get_total_locations, moodlesanity_loc
 from .Items import create_item, create_itempool, item_table, filler_items, junk_weights
 from .Options import CasualtiesUnknownOptions, casualties_unknown_option_groups
 from .Regions import create_regions
-from .Types import LayerType, layer_type_to_name, load_recipe_data, CasualtiesUnknownItem
+from .Types import LayerType, layer_type_to_name, load_recipe_data, CasualtiesUnknownItem, sawian_to_name
 from .Rules import set_rules
 
 class CasualtiesUnknownWeb(WebWorld):
@@ -104,6 +104,9 @@ class CasualtiesUnknownWorld(World):
             starting_layer_name = layer_type_to_name[LayerType(self.options.StartingLayer)]
         self.multiworld.push_precollected(create_item(self, starting_layer_name))
 
+        starting_sawian_name = sawian_to_name[self.options.UnlockSawians.value]
+        self.multiworld.push_precollected(create_item(self, starting_sawian_name))
+
     def generate_questboard(self) -> list[str]:
         moodle_locations = [location for location in Locations.moodlesanity_locations if location not in self.moodlesanity_excluded_locations]
 
@@ -150,6 +153,8 @@ class CasualtiesUnknownWorld(World):
             "FreeSamples":         self.options.FreeSamples.value,
             "QuestboardOrder":     self.questboard_order,
             "QuestboardCooldown":  self.options.QuestboardCooldown.value,
+            "UnlockSawians":       self.options.UnlockSawians.value,
+            "StartingSawian":      self.options.StartingSawian.value,
             "APItemAmount":        self.options.ArchipelagoItems.value,
             "Craftsanity":         self.options.Craftsanity.value,
             "Minigames":           self.options.RandomizeMinigames.value,
@@ -183,6 +188,8 @@ class CasualtiesUnknownWorld(World):
         self.options.FreeSamples.value = slot_data["FreeSamples"]
         self.questboard_order = slot_data["QuestboardOrder"]
         self.options.QuestboardCooldown.value = slot_data["QuestboardCooldown"]
+        self.options.UnlockSawians.value = slot_data["UnlockSawians"]
+        self.options.StartingSawian.value = slot_data["StartingSawian"]
         self.options.ArchipelagoItems.value = slot_data["APItemAmount"]
         self.options.Craftsanity.value = slot_data["Craftsanity"]
         self.options.RandomizeMinigames.value = slot_data["Minigames"]

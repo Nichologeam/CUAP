@@ -41,6 +41,12 @@ layer_type_to_name = {
     LayerType.CrimsonAscent:            "CRIMSON ASCENT Unlock"
 }
 
+sawian_to_name = {
+    1: "Sawian - Experiment",
+    2: "Sawian - Milky",
+    3: "Sawian - Dune"
+}
+
 class ItemData(NamedTuple):
     ap_code: Optional[int]
     classification: ItemClassification

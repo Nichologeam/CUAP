@@ -1,5 +1,5 @@
 from Options import OptionError
-from BaseClasses import Item, ItemClassification
+from BaseClasses import ItemClassification
 
 from .Types import ItemData, LayerType, CasualtiesUnknownItem, layer_type_to_name
 from typing import TYPE_CHECKING
@@ -8,15 +8,17 @@ if TYPE_CHECKING:
     from . import CasualtiesUnknownWorld
 
 def recipe_items_enabled(world: "CasualtiesUnknownWorld") -> bool:
-        return bool(world.options.RandomizeRecipes.value)
+    return bool(world.options.RandomizeRecipes.value)
 def skill_items_enabled(world: "CasualtiesUnknownWorld") -> bool:
-        return bool(world.options.Skillsanity)
+    return bool(world.options.Skillsanity.value)
 def limb_items_enabled(world: "CasualtiesUnknownWorld") -> bool:
-        return bool(world.options.LimbUnlocks)
+    return bool(world.options.LimbUnlocks.value)
 def questboard_items_enabled(world: "CasualtiesUnknownWorld") -> bool:
-        return bool(world.options.Moodlesanity.value == 2)
+    return bool(world.options.Moodlesanity.value == 2)
+def sawian_items_enabled(world: "CasualtiesUnknownWorld") -> bool:
+    return bool(world.options.UnlockSawians.value)
 def minigame_items(world: "CasualtiesUnknownWorld") -> int:
-        return int(world.options.RandomizeMinigames.value)
+    return int(world.options.RandomizeMinigames.value)
 
 def create_item(world: "CasualtiesUnknownWorld", name: str) -> CasualtiesUnknownItem:
     item_data = item_table.get(name)
@@ -112,6 +114,12 @@ def create_itempool(world: "CasualtiesUnknownWorld") -> list["CasualtiesUnknownI
             item = create_item(world, minigame)
             pool.append(item)
 
+    # --- Sawians ---
+    if sawian_items_enabled(world):
+        for sawian_name in sawians.keys():
+            item = create_item(world, sawian_name)
+            pool.append(item)
+
     if total_locations < len(pool):
         raise OptionError(f"""
         ----- Casualties: Unknown -----
@@ -155,6 +163,12 @@ layers = {
     "Geothermal Vents Unlock": ItemData(22318008, ItemClassification.progression),
     "WHERE WE MUST REACH Unlock": ItemData(22318009, ItemClassification.progression),
     "CRIMSON ASCENT Unlock": ItemData(22318010, ItemClassification.progression)
+}
+
+sawians = {
+    "Sawian - Experiment": ItemData(22318050, ItemClassification.progression),
+    "Sawian - Milky": ItemData(22318051, ItemClassification.progression),
+    "Sawian - Dune": ItemData(22318052, ItemClassification.progression)
 }
 
 recipes = { # In the order of the game's internal recipe list
@@ -375,6 +389,7 @@ junk_weights = {
 
 item_table = {
     **layers,
+    **sawians,
     **recipes,
     **skills,
     **minigames,

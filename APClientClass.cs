@@ -135,6 +135,13 @@ public class APClientClass
                     Gifting.SetupGifting();
                 }
             }
+            if (slotdata.TryGetValue("UnlockSawians", out var sawians))
+            {
+                if (Convert.ToBoolean(sawians))
+                {
+                    SawianUnlocks.SetupSawianUnlocks();
+                }
+            }
         }
         APCanvas.instance.StartCoroutine(NewConnectionCountdown()); // i need StartCoroutine, so i'll use APCanvas just because it is guarenteed to exist
         Startup.SetWindowTitle($"Casualties: Archipelago {Startup.CUAPVersion} | Connected as {session?.Players.GetPlayerAlias(session.ConnectionInfo.Slot)} - Playing with {session?.Players.AllPlayers.Count() - 1} others");
@@ -222,6 +229,15 @@ public class APClientClass
             {
                 switch (item.ItemName) // then put everything else in a switch statement to make it cleaner
                 {
+                    case "Sawian - Experiment":
+                        SawianUnlocks.UnlockSawian(0);
+                        break;
+                    case "Sawian - Milky":
+                        SawianUnlocks.UnlockSawian(1);
+                        break;
+                    case "Sawian - Dune":
+                        SawianUnlocks.UnlockSawian(2);
+                        break;
                     case "Progressive Layer":
                         DepthExtendersRecieved++; // reusing this since it would be unused in Overgrown Depths goal
                         break;
