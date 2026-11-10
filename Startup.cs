@@ -64,6 +64,7 @@ public class Startup : BaseUnityPlugin
         Console = GameObject.Find("Console(Clone)");
         Console.AddComponent<CommandPatch>();
         SetWindowTitle($"Casualties: Archipelago {CUAPVersion} | Disconnected");
+        SteamManager.disableAchievements = true;
     }
 
     // due to a change in Cas: Unk version 5.0.2, the mod stopped loading properly due to it initalizing before Unity had actually made the scene
