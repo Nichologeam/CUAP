@@ -202,9 +202,7 @@ def create_region(world: "CasualtiesUnknownWorld", name: str) -> Region:
             else: # If recipes are randomized
                 hearing_loss_rule = (
                     # Either the player can make the Drill Repair Kit
-                    (HasAll("Drill repair kit Recipe", "Titanium rod Recipe", "Nails Recipe", "Bundle of wires Recipe", "Circuit board Recipe")
-                    & HasAny("Wood panel Recipe", "Scrap panel Recipe")
-                    & HasAny("Wood cube Recipe", "Scrap cube Recipe"))
+                    (HasAll("Drill repair kit Recipe", "Nails Recipe", "Bundle of wires Recipe", "Scrap panel Recipe"))
 
                     # Or they have direct access to the Wasteland layer
                     | (Has("Wasteland Unlock") | Has("Progressive Layer", count = 3))

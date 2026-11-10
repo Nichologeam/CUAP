@@ -435,7 +435,7 @@
 		},
 		"Craftsanity - Drill repair kit":{
 			"intRequired": 9,
-			"reliesOn": ["Scrap panel", "Scrap tube", "Scrap cube", "Bundle of wires", "Circuit board"]
+			"reliesOn": ["Scrap panel", "Nails", "Bundle of wires"]
 		},
 		"Craftsanity - Procoagulant":{
 			"intRequired": 14,
