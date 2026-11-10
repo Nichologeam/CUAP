@@ -45,6 +45,12 @@ public class Startup : BaseUnityPlugin
         instance = this;
         Logger = base.Logger;
         Logger.LogMessage($"Casualties: Archipelago {CUAPVersion} loaded!");
+        Logger.LogWarning("If these lines appear in the console, but the mod does not initalize, do the following:");
+        Logger.LogMessage("Go to 'BepInEx/config' and open the BepInEx.cfg file in a text editor,");
+        Logger.LogMessage("Scroll down to the bottom, to the 'Preloader.Entrypoint' section,");
+        Logger.LogMessage("Change the 'Type' option (second one) from 'Application' to 'MonoBehaviour',");
+        Logger.LogMessage("Save the file and restart Casualties: Unknown.");
+        Logger.LogMessage("If the mod has no issues booting, ignore these instructions.");
         StartCoroutine(InitWhenSceneExists());
     }
     private void Init()
