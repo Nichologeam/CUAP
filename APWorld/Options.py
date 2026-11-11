@@ -118,7 +118,7 @@ class MoodlesanityExclusions(OptionList):
     What Moodlesanity locations will be excluded? Only has an effect if Moodlesanity is on.
 
     The 'Minimal' preset excludes only Last Stand, Tachycardia, and Bradycarda
-    The 'Deadly' preset excludes locations that will almost always kill Experiment (lung failure, comatose, etc...)
+    The 'Deadly' preset excludes locations that will almost always kill the Sawian (lung failure, comatose, etc...)
     The 'Difficult' preset excludes locations that rely on a specific item (drug overdose, rapid neuron regeneration sickness, etc...)
     The 'Deadly and Difficult' preset includes everything from the three presets above
     You can specify your own list as well.
@@ -157,7 +157,7 @@ class RandomizeMinigames(Choice):
 
 class LimbUnlocks(Toggle):
     """
-    Start with Experiment's arms being amputated, with them being unlocked progressively through the multiworld.
+    Start with the Sawians's arms being amputated, with them being unlocked progressively through the multiworld.
     Each arm has three progressive items, one for each limb.
     There is NO LOGIC applied to this. Use at your own risk, as you will not be able to break tiles without arms.
     Adds 6 items.
@@ -298,7 +298,7 @@ class TrapWeights(ItemWeights):
     If Unlock Brainchip is set to anything other than Start With, Unchipped Trap is forced off.
     """
     display_name = "Trap Item Weights"
-    valid_keys = ["Depression Trap", "Hearing Loss Trap", "Earthquake Trap", "Reverse Controls Trap", "Sleep Trap", "Unchipped Trap", "Elder Thornback Trap", "Cave Ticks Trap", "Bad Rep Trap", "Disfigured Trap", "Fellow Experiment", "Fragile Items Trap", "Mindwipe Trap", "Pushup Trap", "Temptation Trap", "Trip Trap"]
+    valid_keys = ["Depression Trap", "Hearing Loss Trap", "Earthquake Trap", "Reverse Controls Trap", "Sleep Trap", "Unchipped Trap", "Elder Thornback Trap", "Cave Ticks Trap", "Bad Rep Trap", "Disfigured Trap", "Fellow Sawian", "Fragile Items Trap", "Mindwipe Trap", "Pushup Trap", "Temptation Trap", "Trip Trap"]
     default = {item: 50 for item in valid_keys}
 
 @dataclass
