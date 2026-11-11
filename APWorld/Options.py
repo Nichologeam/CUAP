@@ -48,6 +48,7 @@ class GoalRequiresAllSawians(Toggle):
     """
     Only has an effect if your goal is not Reach Depth or Escape Overgrown Depths.
     Requries you to reach your set goal with all three playable Sawians.
+    Use the `apchecksawians` command in-game to check your progress.
     Pairs well with the Unlock Sawians option.
     """
     display_name = "Goal Requires All Sawians"

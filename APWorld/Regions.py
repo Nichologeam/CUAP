@@ -28,7 +28,7 @@ def create_regions(world: "CasualtiesUnknownWorld"):
     world.set_rule(menu, True_())
 
     entrance = next(e for e in menu.exits if e.name == "Menu -> Gravel Lands")
-    if world.options.GoalRequirement.value == 2:
+    if world.options.GoalRequirement.value in (2, 4, 5, 6):
         world.set_rule(entrance, True_())
     else:
         if starting_layer == 1:
@@ -37,7 +37,7 @@ def create_regions(world: "CasualtiesUnknownWorld"):
             world.set_rule(entrance, Has("Gravel Lands Unlock"))
 
     entrance = next(e for e in menu.exits if e.name == "Menu -> Deeper Gravel Lands")
-    if world.options.GoalRequirement.value == 2:
+    if world.options.GoalRequirement.value in (2, 4, 5, 6):
         world.set_rule(entrance, Has("Progressive Layer", count = 1))
     else:
         if starting_layer == 2:
@@ -46,7 +46,7 @@ def create_regions(world: "CasualtiesUnknownWorld"):
             world.set_rule(entrance, Has("Deeper Gravel Lands Unlock"))
 
     entrance = next(e for e in menu.exits if e.name == "Menu -> Dried Desert")
-    if world.options.GoalRequirement.value == 2:
+    if world.options.GoalRequirement.value in (2, 4, 5, 6):
         world.set_rule(entrance, Has("Progressive Layer", count = 2))
     else:
         if starting_layer == 3:
@@ -55,7 +55,7 @@ def create_regions(world: "CasualtiesUnknownWorld"):
             world.set_rule(entrance, Has("Dried Desert Unlock"))
 
     entrance = next(e for e in menu.exits if e.name == "Menu -> Wasteland")
-    if world.options.GoalRequirement.value == 2:
+    if world.options.GoalRequirement.value in (2, 4, 5, 6):
         world.set_rule(entrance, Has("Progressive Layer", count = 3))
     else:
         if starting_layer == 4:
@@ -64,7 +64,7 @@ def create_regions(world: "CasualtiesUnknownWorld"):
             world.set_rule(entrance, Has("Wasteland Unlock"))
 
     entrance = next(e for e in menu.exits if e.name == "Menu -> Overgrown Depths")
-    if world.options.GoalRequirement.value == 2:
+    if world.options.GoalRequirement.value in (2, 4, 5, 6):
         world.set_rule(entrance, Has("Progressive Layer", count = 4))
     else:
         if starting_layer == 5:
@@ -124,8 +124,10 @@ def create_regions(world: "CasualtiesUnknownWorld"):
         world.set_rule(entrance, Has("CRIMSON ASCENT Unlock"))
 
 def create_region(world: "CasualtiesUnknownWorld", name: str) -> Region:
-    if world.options.GoalRequirement.value != 1:
+    if world.options.GoalRequirement.value in (2, 3):
         max_depth = 1500
+    elif world.options.GoalRequirement.value in (4, 5, 6):
+        max_depth = 2700
     else:
         max_depth = world.options.GoalDepth.value
     max_ap_items = world.options.ArchipelagoItems.value
@@ -215,7 +217,7 @@ def create_region(world: "CasualtiesUnknownWorld", name: str) -> Region:
             if milestone_depth > max_depth:
                 continue
 
-            if world.options.GoalRequirement.value == 2:
+            if world.options.GoalRequirement.value in (2, 4, 5, 6):
                 required_layers = max(0, (milestone_depth + 299) // 300 - 1)
                 rule = Has("Progressive Layer", count = required_layers)
             else:
@@ -273,7 +275,7 @@ def create_region(world: "CasualtiesUnknownWorld", name: str) -> Region:
                     # Either the player can make the Drill Repair Kit
                     (HasAll("Drill repair kit Recipe", "Nails Recipe", "Bundle of wires Recipe", "Scrap panel Recipe"))
                     # Or they have direct access to the Wasteland layer
-                    | (Has("Wasteland Unlock") | Has("Progressive Layer", count = 3))
+                    | (HasAny("Wasteland Unlock", "WHERE WE MUST REACH Unlock") | Has("Progressive Layer", count = 3))
                 )
             rule = rule & hearing_loss_rule
 

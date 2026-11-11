@@ -157,7 +157,7 @@ public class TrapHandler : MonoBehaviour
                 plrcam.DoAlert($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{ItemSender}{APLocale.Get("disfig", APLocale.APLanguageType.UI)}", false);
                 StartCoroutine(Disfigurement());
                 break;
-            case "Fellow Experiment":
+            case "Fellow Sawian":
                 Instantiate(Resources.Load<GameObject>("corpse"), gameObject.transform.position, Quaternion.identity);
                 plrcam.DoAlert($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{ItemSender}{APLocale.Get("experiment", APLocale.APLanguageType.UI)}", false);
                 break;

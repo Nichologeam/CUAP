@@ -149,7 +149,9 @@ def create_itempool(world: "CasualtiesUnknownWorld") -> list["CasualtiesUnknownI
         trap_names = [name for name, data in item_table.items() if data.classification == ItemClassification.trap]
         trap_weights = [world.options.TrapWeights.get(name, 1) for name in trap_names]
         if world.options.UnlockBrainchip.value != 1:
-            trap_weights["Unchipped Trap"] = 0
+            for i, name in enumerate(trap_names):
+                if name == "Unchipped Trap":
+                    trap_weights[i] = 0
         for _ in range(trap_count):
             chosen = world.random.choices(trap_names, weights=trap_weights, k=1)[0]
             pool.append(create_item(world, chosen))
@@ -378,7 +380,7 @@ trap_items = {
     "Cave Ticks Trap": ItemData(22318557, ItemClassification.trap),
     "Bad Rep Trap": ItemData(22318558, ItemClassification.trap),
     "Disfigured Trap": ItemData(22318559, ItemClassification.trap),
-    "Fellow Experiment": ItemData(22318560, ItemClassification.trap),
+    "Fellow Sawian": ItemData(22318560, ItemClassification.trap),
     "Fragile Items Trap": ItemData(22318561, ItemClassification.trap),
     "Mindwipe Trap": ItemData(22318562, ItemClassification.trap),
     "Pushup Trap": ItemData(22318563, ItemClassification.trap),

@@ -1,5 +1,4 @@
 from typing import Dict, TYPE_CHECKING
-import logging
 
 from .Types import LocData
 
@@ -29,9 +28,9 @@ def is_valid_location(world: "CasualtiesUnknownWorld", name) -> bool:
         return False
     if name in world.moodlesanity_excluded_locations:
         return False
-    if not world.options.GoalRequirement == 3 and name == "Elder Thornback Defeated!":
+    if not world.options.GoalRequirement.value == 3 and name == "Elder Thornback Defeated!":
         return False
-    if world.options.Craftsanity == 2 and name == "Craftsanity - M.E.R.C. scarf":
+    if world.options.Craftsanity.value == 2 and name == "Craftsanity - M.E.R.C. scarf":
         return False
     if not skill_locations_enabled(world) and name in skill_locations:
         return False
@@ -466,7 +465,7 @@ archipelago_items = {
     "Archipelago Item 197": LocData(22318696, "Menu"),
     "Archipelago Item 198": LocData(22318697, "Menu"),
     "Archipelago Item 199": LocData(22318698, "Menu"),
-    "Archipelago Item 200": LocData(22318699, "Menu"),
+    "Archipelago Item 200": LocData(22318699, "Menu")
 }
 skill_locations = {
     "STR Level 1": LocData(22318800, "Menu"),
@@ -513,7 +512,7 @@ skill_locations = {
     "INT Level 12": LocData(22318841, "Menu"),
     "INT Level 13": LocData(22318842, "Menu"),
     "INT Level 14": LocData(22318843, "Menu"),
-    "INT Level 15": LocData(22318844, "Menu"),
+    "INT Level 15": LocData(22318844, "Menu")
 }
 crafting_locations = {
     "Craftsanity - Foliage rope": LocData(22318900, "Menu"),

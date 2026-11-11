@@ -80,6 +80,11 @@ public class APClientClass
         session?.Socket.DisconnectAsync();
         session = null;
         outOfItems = false;
+        leftArmUnlocks = 0;
+        rightArmUnlocks = 0;
+        MaxINT = 0;
+        MaxRES = 0;
+        MaxSTR = 0;
         goalNeedsAllSawians = false;
         dualUnlock = false;
         APCanvas.versionTag.text = APLocale.Get("versionTag", APLocale.APLanguageType.UI) + Startup.CUAPVersion;
@@ -203,7 +208,7 @@ public class APClientClass
             }
             bool processed = false;
             // Start with item groups
-            if (item.ItemName.EndsWith(" Trap") || item.ItemName == "Fellow Experiment") // Trap item. Send off to the TrapHandler to deal with.
+            if (item.ItemName.EndsWith(" Trap") || item.ItemName == "Fellow Sawian") // Trap item. Send off to the TrapHandler to deal with.
             {
                 if (APCanvas.InGame)
                 {

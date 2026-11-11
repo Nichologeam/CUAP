@@ -38,9 +38,6 @@ public class Gifting
         giftService.CloseGiftBox(); // close the box if it's open
         RegisterEveryReasonablySpawnableObjectInsideTheGiftingLibraryBKCloseTraitParserToMakeSureThatAnyPlayerPlayingTheIndieGameCasualtiesUnknownCreatedByIndieDeveloperOrsoniksCanSendOrRecieveGiftsToAnyOtherVideoGameThatSupportsBothTheArchipelagoMultiGameRandomizerAndTheGiftingAPI();
         giftService.OnNewGift += OnGiftReceived;
-        // todo: set up sending gifts (get receiving working first)
-        // send gifts using a new command: apgift [inventorySlot] [playerAlias]
-        // take the item in the slot specified and send it to that player. If the slot is empty, do nothing.
     }
     private static void OnGiftReceived(Gift gift)
     {

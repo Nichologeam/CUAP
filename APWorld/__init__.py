@@ -26,8 +26,9 @@ class CasualtiesUnknownWeb(WebWorld):
 
 class CasualtiesUnknownWorld(World):
     """
-    This is where you describe your game. Pretend you are marketing the game and that people have no clue what it is.
-    Or make it silly. Whatever you wish I have no control over you.
+    Casualtes: Unknown is a difficult and unforgiving cave-exploration survival game.
+    Your human captors have tasked you with retrieving a piece of lost cargo on the Target Planet.
+    You are just one of the thousands of test subjects sent to die. You are expendable. You are not expected to return.
     """
 
     game = "Casualties: Unknown"
@@ -49,7 +50,7 @@ class CasualtiesUnknownWorld(World):
             self.options.GoalDepth.value = rounded
 
         if self.options.GoalRequirement != 1: # all other goals
-            self.options.GoalDepth.value = 1500
+            self.options.GoalDepth.value = 2700
         raw_exclusions = set()
         option_minimal = ("Last stand", "Tachycardia", "Bradycardia", "Palpitations")
         option_deadly = ("Comatose", "Severe neurophysiological deterioration", "Neurological damage", "Respiratory arrest", "Lung failure", "Cardiac arrest", "Highly drugged", "Fatal opioid overdose", "Dying of withdrawal", "Catastrophic bleeding", "Life-threatening infection", "Septic shock", "Heatstroke", "Freezing to death", "Severe radiation sickness", "Chernobyl wannabe", "Last stand", "Severe hypoxemia", "Critical hypoxemia", "Ventricular fibrillation", "Palpitations", "Circulatory collapse", "Severe hypotension", "Hypertensive crisis", "Severe hypertension", "Toxic crisis", "Critical barotrauma")
@@ -156,7 +157,7 @@ class CasualtiesUnknownWorld(World):
             "Minigames":           self.options.RandomizeMinigames.value,
             "EnergyLink":          self.options.EnergyLink.value,
             "Gifting":             self.options.Gifting.value,
-            "APWorldVersion":      "v0.13.0-pre1",
+            "APWorldVersion":      "v0.13.0-pre2",
             
             "Seed": self.multiworld.seed_name,
             "Slot": self.multiworld.player_name[self.player],

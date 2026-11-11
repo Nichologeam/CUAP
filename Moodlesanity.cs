@@ -484,7 +484,7 @@ public class Moodlesanity : MonoBehaviour
                 InternalMoodNameToCheck.TryGetValue(mood.type, out string checkName);
                 if (checkName == null) // not found
                 {
-                    Startup.Logger.LogError($"Could not find assocaited check for moodle {mood.type}!");
+                    Startup.Logger.LogError($"Could not find assocaited location for moodle {mood.type}!");
                     APCanvas.EnqueueArchipelagoNotification($"{APLocale.Get("moodleCheckMissing", APLocale.APLanguageType.Errors)}{mood.type}!", 3);
                     MoodlesToSkip.Add(mood.type); // don't process this moodle again as to not spam notifications
                     continue;

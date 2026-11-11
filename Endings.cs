@@ -2,7 +2,6 @@
 using HarmonyLib;
 
 namespace CUAP;
-// This file is for any code unique to checking for the game's endings
 
 [HarmonyPatch(typeof(WorldGeneration), "SurfaceBreachCutscene")]
 // Checks for completion of the "Complete the Ascent" goal

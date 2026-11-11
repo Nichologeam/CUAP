@@ -21,9 +21,9 @@ class BuildingDropReplacer
         "thornbackyoung",
         "thornbackelder",
         "overgrowntick", // not the normal cave ticks, because that can spam AP items if a Cave Ticks Trap is received
-        "snowstrider", // futureproofing (doesn't spawn naturally in the latest demo)
+        "snowstrider",
         "wallbiter",
-        "crystalenemy", // futureproofing (doesn't spawn naturally in the latest demo)
+        "crystalenemy",
         // traps
         "spikestabber",
         "jumppad",
@@ -33,12 +33,18 @@ class BuildingDropReplacer
         "bananaplant",
         "turret",
         "grabberplant",
-        "sidestabber", // futureproofing (doesn't spawn naturally in the latest demo)
+        "sidestabber",
         "radbarrel", // good luck getting this one!
         "spentfuel", // and this one too!
         "beartrap",
         "stalactite",
         "skullcrusher",
+        "sawblade",
+        "piston",
+        "pistonleft",
+        "pistonright",
+        "ceilingturret",
+        "fan",
         // other
         "trader", // all traders share the same building ID
         "corpse", // same with all corpses

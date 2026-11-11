@@ -4,7 +4,7 @@ from enum import IntEnum
 from typing import NamedTuple, Optional
 from BaseClasses import Location, Item, ItemClassification
 from rule_builder.options import OptionFilter
-from rule_builder.rules import Has, HasAny, And
+from rule_builder.rules import Has, HasAny, And, Or
 
 rule_cache = {}
 
@@ -98,10 +98,31 @@ def build_recipe_rule(recipe_name: str, recipe: dict, data: dict, world, stack=N
 
     # --- Dependencies ---
     for dep in recipe.get("reliesOn", []):
+        if dep == "Bio-chem fluid":
+            alternatives = [
+                "Craftsanity - Bio-chem fluid (from Glowplant)",
+                "Craftsanity - Bio-chem fluid (from Lumalgae)"
+            ]
+
+            rules.append(
+                Or(*[
+                    build_recipe_rule(
+                        alternative,
+                        data["recipes"][alternative],
+                        data,
+                        world,
+                        stack.copy()
+                    )
+                    for alternative in alternatives
+                    if alternative in data["recipes"]
+                ])
+            )
+
+            continue
+
         dep_location = f"Craftsanity - {dep}"
 
         if dep_location in stack:
-            # skip
             continue
 
         if dep_location in data["recipes"]:
@@ -111,7 +132,7 @@ def build_recipe_rule(recipe_name: str, recipe: dict, data: dict, world, stack=N
                     data["recipes"][dep_location],
                     data,
                     world,
-                    stack
+                    stack.copy()
                 )
             )
         else:
@@ -124,7 +145,7 @@ def build_recipe_rule(recipe_name: str, recipe: dict, data: dict, world, stack=N
         if layers:
             min_layer = min(layers)
 
-            if world.options.GoalRequirement == 2:
+            if world.options.GoalRequirement.value in (2, 4, 5, 6):
                 # Progressive layers mode
                 required = max(0, min_layer - 1)
 
