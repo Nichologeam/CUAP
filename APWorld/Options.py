@@ -56,10 +56,10 @@ class AscentUnlockMode(Choice):
     """
     Only has an effect if your goal is Complete the Ascent, Escape Containment, or Merc.
     How should WHERE WE MUST REACH and CRIMSON ASCENT be unlocked?
+    Reaching the cargo without access to CRIMSON ASCENT will loop WHERE WE MUST REACH upon interacting with the drill.
+
     Dual Unlock: Another Progressive Layer is added that gives access to both WHERE WE MUST REACH and CRIMSON ASCENT.
     Individual: Two Progressive Layers are added, one for WHERE WE MUST REACH and one for CRIMSON ASCENT.
-    
-    Reaching the cargo without access to CRIMSON ASCENT will loop WHERE WE MUST REACH upon interacting with the drill.
     """
     display_name = "Ascent Unlock Mode"
     option_dual_unlock = 1

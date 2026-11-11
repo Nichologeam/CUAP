@@ -48,10 +48,18 @@ public class LayerLocker : MonoBehaviour
     }
     private void Update()
     {
-        if (APClientClass.selectedGoal is 2 or 4 or 5 or 6) // goals that use the progressive layers
+        if (APClientClass.selectedGoal is 2 or 4 or 5 or 6) // goals that use progressive layers
         {
             if (worldgen.loadingObject.activeSelf)
             {
+                if (worldgen.biomeDepth <= 10)
+                {
+                    return; // do nothing if in CRIMSON ASCENT (layer 10) or beyond
+                }
+                if (APClientClass.dualUnlock && worldgen.biomeDepth == 9)
+                {
+                    return; // CRIMSON ASCENT was unlocked alongside WHERE WE MUST REACH
+                }
                 LayerCount = APClientClass.DepthExtendersRecieved;
                 if (LayerCount == 0) // No progressive layers received
                 {
