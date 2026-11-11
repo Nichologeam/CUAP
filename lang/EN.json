@@ -36,6 +36,8 @@
 		"injection": "Injection is",
 		"defibManual": "Manual defibrilation is",
 		"AED": "Using an AED is",
+		"proRepair": "Repairing prosthesis is",
+		"handCrank": "Using a Hand-crank is",
 		"minigames": "Minigames are locked by ",
 		"locked": "locked by",
 		"trap": "Trap: ",

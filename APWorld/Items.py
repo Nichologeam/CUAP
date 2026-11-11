@@ -327,7 +327,9 @@ minigames = {
     "Shrapnel Minigame": ItemData(22318356, ItemClassification.useful),
     "Syringe Minigame": ItemData(22318357, ItemClassification.useful),
     "Manual Defibrilation Minigame": ItemData(22318358, ItemClassification.useful),
-    "AED Minigame": ItemData(22318359, ItemClassification.useful)
+    "AED Minigame": ItemData(22318359, ItemClassification.useful),
+    "Prosthesis Repair Minigame": ItemData(22318360, ItemClassification.useful),
+    "Hand Crank Minigame": ItemData(22318361, ItemClassification.useful)
 }
 
 limbs = {

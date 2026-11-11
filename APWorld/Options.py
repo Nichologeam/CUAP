@@ -103,7 +103,7 @@ class Moodlesanity(Choice):
     Each possible moodle (status effect) is a location. Does not include Anxious and Deceased, as they are impossible to get.
     Disabled: Moodles do not check locations.
     Questboard: Adds a new UI that shows 'quests'. You must get the shown moodle to check its location. More moodles and
-                questboard slots are unlocked via items. Each "Progressive Quests" item (12 in total) unlocks 15 moodles.
+                questboard slots are unlocked via items. Each "Progressive Quests" item (11 in total) unlocks 15 moodles.
     Open: All moodle locations are available in sphere 1 (minus a few). Creates VERY LARGE sphere 1. Use with caution.
     With every Moodle enabled, adds 171 locations.
     """
@@ -143,11 +143,11 @@ class QuestboardCooldownTime(Range):
 class RandomizeMinigames(Choice):
     """
     Start without the ability to play Minigames (ex: lockpicking, removing shrapnel) until they are received through Archipelago.
-    Suicide and self harm minigames are never randomized.
+    Suicide, Self harm, and the Cargo minigames are never randomized.
 
     Disabled: Minigames are always unlocked.
     As One: There is only one item that unlocks all minigames.
-    Individual: Each of the 9 minigames is an individual item.
+    Individual: Each of the 11 minigames is an individual item.
     """
     display_name = "Randomize Minigames"
     option_disabled = 1

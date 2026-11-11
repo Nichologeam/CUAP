@@ -22,7 +22,9 @@ class MinigameLocker
         { typeof(ShrapnelMinigame), ("Shrapnel Minigame", APLocale.Get("shrapnel", APLocale.APLanguageType.UI)) },
         { typeof(SyringeMinigame), ("Syringe Minigame", APLocale.Get("injection", APLocale.APLanguageType.UI)) },
         { typeof(ManualDefibMinigame), ("Manual Defibrilation Minigame", APLocale.Get("defibManual", APLocale.APLanguageType.UI)) },
-        { typeof(AEDMinigame), ("AED Minigame", APLocale.Get("AED", APLocale.APLanguageType.UI)) }
+        { typeof(AEDMinigame), ("AED Minigame", APLocale.Get("AED", APLocale.APLanguageType.UI)) },
+        { typeof(ProsthesisRepairMinigame), ("Prosthesis Repair Minigame", APLocale.Get("proRepair", APLocale.APLanguageType.UI)) },
+        { typeof(HandCrankMinigame), ("Hand Crank Minigame", APLocale.Get("handCrank", APLocale.APLanguageType.UI)) }
     };
     static bool Prefix(MinigameBase __instance, Minigame minigame, Item item)
     {
@@ -33,9 +35,9 @@ class MinigameLocker
             case 1: // disabled
                 return true; // allow basegame function
             case 2: // one item mode
-                if (minigame is SelfHarmMinigame)
+                if (minigame is SelfHarmMinigame or CargoMinigame)
                 {
-                    return true; // always allow Suicide and Self Harm
+                    return true; // always allow Suicide, Self Harm, and Cargo
                 }
                 else if (minigameItemObtained)
                 {
@@ -43,7 +45,6 @@ class MinigameLocker
                 }
                 plrcam.DoAlert($"{APLocale.Get("minigames", APLocale.APLanguageType.UI)}{APCanvas.coloredAPText}");
                 return false; // player doesn't have the item
-
             case 3:
                 if (MinigameMap.TryGetValue(minigame.GetType(), out var data))
                 {
@@ -51,11 +52,10 @@ class MinigameLocker
                     {
                         return true; // player has the respective item
                     }
-                    plrcam.DoAlert($"{data.message} { APLocale.Get("locked", APLocale.APLanguageType.UI)} {APCanvas.coloredAPText}");
+                    plrcam.DoAlert($"{data.message} {APLocale.Get("locked", APLocale.APLanguageType.UI)} {APCanvas.coloredAPText}");
                     return false; // player does not
                 }
-                return true; // unknown minigame (should only be Suicide and Self Harm)
-
+                return true; // unknown minigame (should only be Suicide, Self Harm, and Cargo)
             default: // unset?
                 APCanvas.EnqueueArchipelagoNotification($"{APLocale.Get("minigameUnhandled", APLocale.APLanguageType.Errors)}{APClientClass.minigameRandom}", 3);
                 Startup.Logger.LogError($"minigameRandom is an unhandled value! {APClientClass.minigameRandom}");
