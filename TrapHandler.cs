@@ -50,6 +50,7 @@ public class TrapHandler : MonoBehaviour
         if (!APClientClass.hasBrainchip)
         {
             worldgen.unchippedMode = true;
+            plrcam.SetUnchippedUI(true);
         }
         if (moodleUpdateTime(moodles) > prevUpdateTime && Vitals.alive) // timer reset, moodles were updated
         {
@@ -238,9 +239,11 @@ public class TrapHandler : MonoBehaviour
         unchippedActive = true;
         unchippedEndTime = Time.realtimeSinceStartup + 50;
         worldgen.unchippedMode = true;
+        plrcam.SetUnchippedUI(true);
         yield return new WaitForSecondsRealtime(50);
         worldgen.unchippedMode = false;
-        GameObject.Find("LineOfSight").SetActive(false);
+        plrcam.SetUnchippedUI(false);
+        PlayerCamera.main.LOSHole.GetComponent<VisionMask>().ClearMask();
         unchippedActive = false;
     }
     IEnumerator Disfigurement()

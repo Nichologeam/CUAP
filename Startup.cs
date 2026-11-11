@@ -221,7 +221,7 @@ public class Startup : BaseUnityPlugin
         bool[] goals = await Client.DataStorage[Scope.Slot, "SawianGoals"].GetAsync<bool[]>();
         if (report)
         {
-            UnityEngine.Debug.Log($"Expieriment: {goals[0]}, Milky: {goals[1]}, Dune: {goals[2]}");
+            CommandPatch.LogToConsole($"Expieriment: {goals[0]}, Milky: {goals[1]}, Dune: {goals[2]}");
             return;
         }
         int currentSawian = GetPlayerSpecies();

@@ -256,7 +256,12 @@ public class APClientClass
                 {
                     case "Brainchip":
                         hasBrainchip = true;
-                        if (APCanvas.InGame) GameObject.Find("World").GetComponent<WorldGeneration>().unchippedMode = false;
+                        if (APCanvas.InGame)
+                        {
+                            WorldGeneration.world.unchippedMode = false;
+                            PlayerCamera.main.SetUnchippedUI(false);
+                            PlayerCamera.main.LOSHole.GetComponent<VisionMask>().ClearMask();
+                        }
                         break;
                     case "Sawian - Experiment":
                         SawianUnlocks.UnlockSawian(0);

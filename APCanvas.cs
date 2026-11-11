@@ -286,14 +286,14 @@ public class APCanvas : MonoBehaviour
             var baseText = APLocale.Get("archipelago", APLocale.APLanguageType.Messages);
             for (int i = 0; i < baseText.Length; i++) // "Archipelago" is 11 characters long
             {
-                var color = APTextColors[(i + offset) % APTextColors.Length];
+                var color = APTextColors[(i - offset + APTextColors.Length) % APTextColors.Length];
                 string hex = ColorUtility.ToHtmlStringRGB(color);
                 sb.Append($"<color=#{hex}>{baseText[i]}");
             }
             sb.Append("<color=#FFFFFF>");
             coloredAPText = sb.ToString();
             offset = (offset + 1) % APTextColors.Length;
-            yield return new WaitForSecondsRealtime(0.3f);
+            yield return new WaitForSecondsRealtime(0.5f);
         }
     }
 
