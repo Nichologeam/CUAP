@@ -34,6 +34,7 @@ public class APClientClass
     public static int minigameRandom;
     public static bool goalNeedsAllSawians = false;
     public static bool dualUnlock = false;
+    public static bool hasBrainchip = true;
     private static float reconnectCountdown;
     public static bool outOfItems = false;
     public static ArchipelagoSession? session;
@@ -148,16 +149,17 @@ public class APClientClass
             }
             if (slotdata.TryGetValue("GoalAllSawians", out var allSawians))
             {
-                if (Convert.ToBoolean(allSawians))
-                {
-                    goalNeedsAllSawians = true;
-                }
+                goalNeedsAllSawians = Convert.ToBoolean(allSawians);
             }
             if (slotdata.TryGetValue("AscentUnlockMode", out var dualAscent))
             {
-                if (Convert.ToBoolean(dualAscent))
+                dualUnlock = Convert.ToBoolean(dualAscent);
+            }
+            if (slotdata.TryGetValue("UnlockBrainchip", out var chip))
+            {
+                if (Convert.ToInt32(chip) > 1)
                 {
-                    dualUnlock = true;
+                    hasBrainchip = false;
                 }
             }
         }
@@ -247,6 +249,10 @@ public class APClientClass
             {
                 switch (item.ItemName) // then put everything else in a switch statement to make it cleaner
                 {
+                    case "Brainchip":
+                        hasBrainchip = true;
+                        if (APCanvas.InGame) GameObject.Find("World").GetComponent<WorldGeneration>().unchippedMode = false;
+                        break;
                     case "Sawian - Experiment":
                         SawianUnlocks.UnlockSawian(0);
                         break;

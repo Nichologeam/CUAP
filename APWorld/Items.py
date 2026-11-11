@@ -27,7 +27,10 @@ def create_item(world: "CasualtiesUnknownWorld", name: str) -> CasualtiesUnknown
     
     classification = item_data.classification
     
-    if (name.endswith(" Recipe") or name == "Progressive INT") and world.options.Craftsanity:
+    if (name.endswith(" Recipe") or name == "Progressive INT") and world.options.Craftsanity.value:
+        classification = ItemClassification.progression
+
+    if name == "Brainchip" and world.options.Moodlesanity.value != 1:
         classification = ItemClassification.progression
     
     return CasualtiesUnknownItem(
@@ -120,6 +123,12 @@ def create_itempool(world: "CasualtiesUnknownWorld") -> list["CasualtiesUnknownI
             item = create_item(world, sawian_name)
             pool.append(item)
 
+    # --- Chip ---
+    if world.options.UnlockBrainchip == 2:
+        for brainchip in chip.keys():
+            item = create_item(world, brainchip)
+            pool.append(item)
+
     if total_locations < len(pool):
         raise OptionError(f"""
         ----- Casualties: Unknown -----
@@ -139,6 +148,8 @@ def create_itempool(world: "CasualtiesUnknownWorld") -> list["CasualtiesUnknownI
 
         trap_names = [name for name, data in item_table.items() if data.classification == ItemClassification.trap]
         trap_weights = [world.options.TrapWeights.get(name, 1) for name in trap_names]
+        if world.options.UnlockBrainchip.value != 1:
+            trap_weights["Unchipped Trap"] = 0
         for _ in range(trap_count):
             chosen = world.random.choices(trap_names, weights=trap_weights, k=1)[0]
             pool.append(create_item(world, chosen))
@@ -317,6 +328,10 @@ skills = {
     "Progressive INT": ItemData(22318302, ItemClassification.useful, 18)
 }
 
+chip = {
+    "Brainchip": ItemData(22318325, ItemClassification.useful)
+}
+
 minigames = {
     "Minigames": ItemData(22318350, ItemClassification.progression),
     "Amputation Minigame": ItemData(22318351, ItemClassification.useful),
@@ -394,6 +409,7 @@ item_table = {
     **sawians,
     **recipes,
     **skills,
+    **chip,
     **minigames,
     **filler_items,
     **trap_items,

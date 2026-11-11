@@ -206,13 +206,12 @@ class Skillsanity(Toggle):
 
 class UnlockBrainchip(Choice):
     """
-    UNIMPLIMENTED!!
     If enabled, the Brainchip will become an item in the multiworld.
-    Removes Unchipped Trap from the possible trap items if enabled.
+    Removes Unchipped Trap from the possible trap items if set to anything other than Start With.
 
     Start With: Vanilla behaviour. You start with the Brainchip.
     As Item: The Brainchip becomes an item in the multiworld.
-    Remove Chip: The Brainchip is perminently removed from the game. You will never recieve it.
+    Remove Chip: The Brainchip is permanently removed from the game. You will never receive it.
     """
     display_name = "Unlock Brainchip"
     option_start_with = 1
@@ -295,6 +294,8 @@ class TrapPercentage(Range):
 class TrapWeights(ItemWeights):
     """
     Weights of each trap item. To disable all trap items, see the previous option.
+
+    If Unlock Brainchip is set to anything other than Start With, Unchipped Trap is forced off.
     """
     display_name = "Trap Item Weights"
     valid_keys = ["Depression Trap", "Hearing Loss Trap", "Earthquake Trap", "Reverse Controls Trap", "Sleep Trap", "Unchipped Trap", "Elder Thornback Trap", "Cave Ticks Trap", "Bad Rep Trap", "Disfigured Trap", "Fellow Experiment", "Fragile Items Trap", "Mindwipe Trap", "Pushup Trap", "Temptation Trap", "Trip Trap"]

@@ -148,6 +148,7 @@ class CasualtiesUnknownWorld(World):
             "FreeSamples":         self.options.FreeSamples.value,
             "QuestboardOrder":     self.questboard_order,
             "QuestboardCooldown":  self.options.QuestboardCooldown.value,
+            "UnlockBrainchip":     self.options.UnlockBrainchip.value,
             "UnlockSawians":       self.options.UnlockSawians.value,
             "StartingSawian":      self.options.StartingSawian.value,
             "APItemAmount":        self.options.ArchipelagoItems.value,
@@ -185,6 +186,7 @@ class CasualtiesUnknownWorld(World):
         self.options.FreeSamples.value = slot_data["FreeSamples"]
         self.questboard_order = slot_data["QuestboardOrder"]
         self.options.QuestboardCooldown.value = slot_data["QuestboardCooldown"]
+        self.options.UnlockBrainchip.value = slot_data["UnlockBrainchip"]
         self.options.UnlockSawians.value = slot_data["UnlockSawians"]
         self.options.StartingSawian.value = slot_data["StartingSawian"]
         self.options.ArchipelagoItems.value = slot_data["APItemAmount"]

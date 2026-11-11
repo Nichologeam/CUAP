@@ -137,6 +137,68 @@ def create_region(world: "CasualtiesUnknownWorld", name: str) -> Region:
         "Moodlesanity - Severe hearing loss"
     }
 
+    brainchip_needed_moodles = { # list of all moodles that require having the brainchip
+        "Moodlesanity - High pressure",
+        "Moodlesanity - Very high pressure",
+        "Moodlesanity - Cognitive impairment",
+        "Moodlesanity - Neurological damage",
+        "Moodlesanity - Severe neurophysiological deterioration",
+        "Moodlesanity - Comatose",
+        "Moodlesanity - Stroke",
+        "Moodlesanity - Arrhythmia",
+        "Moodlesanity - Ventricular tachycardia",
+        "Moodlesanity - Ventricular fibrillation",
+        "Moodlesanity - Mild hypotension",
+        "Moodlesanity - Hypotension",
+        "Moodlesanity - Severe hypotension",
+        "Moodlesanity - Circulatory collapse",
+        "Moodlesanity - Mild hypertension",
+        "Moodlesanity - Hypertension",
+        "Moodlesanity - Severe hypertension",
+        "Moodlesanity - Hypertensive crisis",
+        "Moodlesanity - Hemothorax",
+        "Moodlesanity - Pulmonary embolism",
+        "Moodlesanity - Mild hypoxemia",
+        "Moodlesanity - Hypoxemia",
+        "Moodlesanity - Severe hypoxemia",
+        "Moodlesanity - Critical hypoxemia",
+        "Moodlesanity - Uncomfortable",
+        "Moodlesanity - Radiation sickness",
+        "Moodlesanity - Severe radiation sickness",
+        "Moodlesanity - Chernobyl wannabe",
+        "Moodlesanity - Opiated",
+        "Moodlesanity - Drugged",
+        "Moodlesanity - Highly drugged",
+        "Moodlesanity - Fatal opioid overdose",
+        "Moodlesanity - Opioid craving",
+        "Moodlesanity - Withdrawal",
+        "Moodlesanity - Severe withdrawal",
+        "Moodlesanity - Dying of withdrawal",
+        "Moodlesanity - Stimulated",
+        "Moodlesanity - Concussed",
+        "Moodlesanity - Drug overdose",
+        "Moodlesanity - Internal bleeding",
+        "Moodlesanity - Fractured neck",
+        "Moodlesanity - Fractured ribs",
+        "Moodlesanity - Dislocated spine",
+        "Moodlesanity - Infection",
+        "Moodlesanity - Sepsis",
+        "Moodlesanity - Severe sepsis",
+        "Moodlesanity - Septic shock",
+        "Moodlesanity - Loose screws",
+        "Moodlesanity - Immunocompromised",
+        "Moodlesanity - Immunocompetent",
+        "Moodlesanity - Boosted regrowth",
+        "Moodlesanity - Underweight",
+        "Moodlesanity - Skinny",
+        "Moodlesanity - Chubby",
+        "Moodlesanity - Overweight",
+        "Moodlesanity - Energized",
+        "Moodlesanity - Rapid neuron regeneration sickness",
+        "Moodlesanity - Bad sleep",
+        "Moodlesanity - Adrenaline"
+    }
+
     for (key, data) in location_table.items():
         if data.region != name:
             continue
@@ -196,6 +258,13 @@ def create_region(world: "CasualtiesUnknownWorld", name: str) -> Region:
                 if required_quests > 0:
                     rule = Has("Progressive Quests", count = required_quests)
 
+        if key in brainchip_needed_moodles:
+            if world.options.UnlockBrainchip.value == 2: # as item
+                brainchip_rule = Has("Brainchip")
+                rule = rule & brainchip_rule
+            if world.options.UnlockBrainchip.value == 3: # removed
+                continue # This location is impossible to check
+
         if key in hearing_loss_location_names:
             if not world.options.RandomizeRecipes.value: # If recipes aren't randomized
                 hearing_loss_rule = Has("Wasteland Unlock") | Has("Progressive Layer", count = 3)
@@ -203,11 +272,9 @@ def create_region(world: "CasualtiesUnknownWorld", name: str) -> Region:
                 hearing_loss_rule = (
                     # Either the player can make the Drill Repair Kit
                     (HasAll("Drill repair kit Recipe", "Nails Recipe", "Bundle of wires Recipe", "Scrap panel Recipe"))
-
                     # Or they have direct access to the Wasteland layer
                     | (Has("Wasteland Unlock") | Has("Progressive Layer", count = 3))
                 )
-
             rule = rule & hearing_loss_rule
 
         world.set_rule(location, rule)

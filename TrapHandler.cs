@@ -47,6 +47,10 @@ public class TrapHandler : MonoBehaviour
     }
     private void LateUpdate() // lateupdate so it's after normal moodle updates (no race condition, yippee!)
     {
+        if (!APClientClass.hasBrainchip)
+        {
+            worldgen.unchippedMode = true;
+        }
         if (moodleUpdateTime(moodles) > prevUpdateTime && Vitals.alive) // timer reset, moodles were updated
         {
             if (revControlActive)
