@@ -42,13 +42,6 @@ class CasualtiesUnknownWorld(World):
         self.recipe_data = load_recipe_data()
 
     def generate_early(self):
-        if self.options.GoalRequirement.value in (4, 5, 6):
-            raise OptionError(f"""
-                ----- Casualties: Unknown -----
-                {self.multiworld.player_name[self.player]}'s YAML has an error.
-                The chosen goal is currently not implimented.
-                Please choose a different goal.
-                """)
         goal_depth = self.options.GoalDepth.value
         if goal_depth % 100 != 0:
             rounded = round(goal_depth / 100) * 100
@@ -144,6 +137,8 @@ class CasualtiesUnknownWorld(World):
     def fill_slot_data(self) -> Dict[str, object]:
         slot_data: Dict[str, object] = {
             "Goal":                self.options.GoalRequirement.value,
+            "GoalAllSawians":      self.options.GoalRequiresAllSawians.value,
+            "AscentUnlockMode":    self.options.AscentUnlockMode.value,
             "StartingLayer":       self.options.StartingLayer.value,
             "GoalDepth":           self.options.GoalDepth.value,
             "Moodlesanity":        self.options.Moodlesanity.value,
@@ -179,6 +174,8 @@ class CasualtiesUnknownWorld(World):
             return None
         
         self.options.GoalRequirement.value = slot_data["Goal"]
+        self.options.GoalRequiresAllSawians.value = slot_data["GoalAllSawians"]
+        self.options.AscentUnlockMode.value = slot_data["AscentUnlockMode"]
         self.options.StartingLayer.value = slot_data["StartingLayer"]
         self.options.GoalDepth.value = slot_data["GoalDepth"]
         self.options.Moodlesanity.value = slot_data["Moodlesanity"]

@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using Archipelago.MultiClient.Net;
+using HarmonyLib;
 using UnityEngine;
 
 namespace CUAP;
@@ -18,7 +19,15 @@ public class ElderThornback : MonoBehaviour
     {
         if (build.health < 0.5 && APClientClass.selectedGoal == 3) // the game checks at 0.5, so I will too
         {
-            APClientClass.session.SetGoalAchieved();
+            ArchipelagoSession Client = APClientClass.session;
+            if (APClientClass.goalNeedsAllSawians)
+            {
+                Startup.CheckHasAllSawians();
+            }
+            else
+            {
+                Client.SetGoalAchieved();
+            }
         }
     }
 }

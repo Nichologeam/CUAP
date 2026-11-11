@@ -438,6 +438,19 @@ public class CommandPatch : MonoBehaviour
             new ValueTuple<string, string>(APLocale.Get("giftSlot", APLocale.APLanguageType.Commands), APLocale.Get("giftSlotDesc", APLocale.APLanguageType.Commands)),
             new ValueTuple<string, string>(APLocale.Get("giftPlayer", APLocale.APLanguageType.Commands), APLocale.Get("giftPlayerDesc", APLocale.APLanguageType.Commands))
         }));
+        ConsoleScript.Commands.Add(new Command("apchecksawians", APLocale.Get("sawiansGoaledDesc", APLocale.APLanguageType.Commands), delegate (string[] args)
+        {
+            if (!APClientClass.IsConnected())
+            {
+                throw new Exception(APLocale.Get("cmdNotConnected", APLocale.APLanguageType.Errors));
+            }
+            if (!APClientClass.goalNeedsAllSawians)
+            {
+                throw new Exception(APLocale.Get("sawiansGoaledNotEnabled", APLocale.APLanguageType.Commands));
+            }
+            LogToConsole(APLocale.Get("sawiansNetworkingNotice", APLocale.APLanguageType.Commands));
+            Startup.CheckHasAllSawians(true);
+        }, null, Array.Empty<ValueTuple<string, string>>()));
         if (raceMode) return; // commands after this can be used to cheat. disable them in race mode
         ConsoleScript.Commands.Add(new Command("apcheat", APLocale.Get("cheatDesc", APLocale.APLanguageType.Commands), delegate (string[] args)
         {

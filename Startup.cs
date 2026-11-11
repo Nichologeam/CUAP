@@ -1,4 +1,5 @@
 ﻿using Archipelago.MultiClient.Net;
+using Archipelago.MultiClient.Net.Enums;
 using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Logging;
@@ -7,6 +8,7 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -205,5 +207,30 @@ public class Startup : BaseUnityPlugin
         }
         Body body = camera.GetComponent<PlayerCamera>().body;
         return body.charType; // Expie = 0, Milky = 1, Dune = 2
+    }
+
+    public static async void CheckHasAllSawians(bool report = false)
+    {
+        ArchipelagoSession Client = APClientClass.session;
+        if (!APClientClass.goalNeedsAllSawians && !report)
+        {
+            Client.SetGoalAchieved(); // there's no need to check this, simply goal
+            DepthChecks.instance.DisplayText.text = APLocale.Get("goal", APLocale.APLanguageType.UI);
+        }
+        Client.DataStorage[Scope.Slot, "SawianGoals"].Initialize(new[] { false, false, false }); // creates the key and sets all values to false if the key doesn't already exist
+        bool[] goals = await Client.DataStorage[Scope.Slot, "SawianGoals"].GetAsync<bool[]>();
+        if (report)
+        {
+            UnityEngine.Debug.Log($"Expieriment: {goals[0]}, Milky: {goals[1]}, Dune: {goals[2]}");
+            return;
+        }
+        int currentSawian = GetPlayerSpecies();
+        goals[currentSawian] = true;
+        if (goals.All(x => x)) // all sawians have goaled
+        {
+            Client.SetGoalAchieved();
+            DepthChecks.instance.DisplayText.text = APLocale.Get("goal", APLocale.APLanguageType.UI);
+        }
+        Client.DataStorage[Scope.Slot, "SawianGoals"] = goals;
     }
 }

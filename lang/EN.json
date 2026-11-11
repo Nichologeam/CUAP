@@ -9,6 +9,9 @@
 		"escapeOvergrown3": "Deepest Layer: <dl>",
 		"defeatElder1": "Goal: Defeat Elder",
 		"defeatElder2": "Overgrown: <ou>",
+		"completeAscent": "Goal: CRIMSON ASCENT",
+		"escapeContainment": "Goal: Escape Containment",
+		"M.E.R.C.": "Goal: M.E.R.C.",
 		"versionTag": "Client Mod ",
 		"serverVersion": "Server APWorld ",
 		"strAllSent": "STR: All checks sent!",
@@ -140,7 +143,10 @@
 		"giftNoHeldItem": "The selected inventory slot has no item in it.",
 		"giftFavorite": "Cannot gift a favourited item.",
 		"giftItemUnsupported": "The selected item is not supported by the Gifting API.",
-		"giftServiceFailure": "Gifting service failure."
+		"giftServiceFailure": "Gifting service failure.",
+		"sawiansGoaledDesc": "Returns which Sawians this slot has reached the goal with.",
+		"sawiansGoaledNotEnabled": "Goal Requires All Sawians YAML option not enabled.",
+		"sawiansNetworkingNotice": "Checking goal progress with the Archipelago server. This may take a moment..."
 	},
 	"Messages": {
 		"archipelago": "Archipelago",

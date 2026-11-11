@@ -32,6 +32,7 @@ public class APClientClass
     public static int rightArmUnlocks;
     public static int selectedGoal;
     public static int minigameRandom;
+    public static bool goalNeedsAllSawians = false;
     private static float reconnectCountdown;
     public static bool outOfItems = false;
     public static ArchipelagoSession? session;
@@ -77,6 +78,7 @@ public class APClientClass
         session?.Socket.DisconnectAsync();
         session = null;
         outOfItems = false;
+        goalNeedsAllSawians = false;
         APCanvas.versionTag.text = APLocale.Get("versionTag", APLocale.APLanguageType.UI) + Startup.CUAPVersion;
         Time.timeScale = 1;
         Startup.SetWindowTitle($"Casualties: Archipelago {Startup.CUAPVersion} | Disconnected");
@@ -140,6 +142,13 @@ public class APClientClass
                 if (Convert.ToBoolean(sawians))
                 {
                     SawianUnlocks.SetupSawianUnlocks();
+                }
+            }
+            if (slotdata.TryGetValue("GoalAllSawians", out var allSawians))
+            {
+                if (Convert.ToBoolean(allSawians))
+                {
+                    goalNeedsAllSawians = true;
                 }
             }
         }

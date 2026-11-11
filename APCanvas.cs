@@ -300,38 +300,71 @@ public class APCanvas : MonoBehaviour
     public static void UpdateGUIDescriptions()
     {
         if (!InGame) return; // you can't see this on the main menu anyway
-        if (APClientClass.selectedGoal == 1)
+        switch (APClientClass.selectedGoal)
         {
-            var maxDepth = (300 * APClientClass.DepthExtendersRecieved) + 300;
-            Status.text =
-                $"""
+            case 1:
+                var maxDepth = (300 * APClientClass.DepthExtendersRecieved) + 300;
+                Status.text =
+                    $"""
                 {APLocale.Get("reachDepth1", APLocale.APLanguageType.UI)}
                 {APLocale.Get("reachDepth2", APLocale.APLanguageType.UI)}
                 {APLocale.Get("reachDepth3", APLocale.APLanguageType.UI)}
                 """;
-            Status.text = Status.text.Replace("<gd>", $"{DepthChecks.instance.GoalDepth}m"); // gd for Goal Depth
-            Status.text = Status.text.Replace("<de>", APClientClass.DepthExtendersRecieved.ToString()); // de for Depth Extenders
-            Status.text = Status.text.Replace("<md>", $"{maxDepth}m"); // md for Max Depth
-        }
-        else if (APClientClass.selectedGoal == 2)
-        {
-            Status.text =
+                Status.text = Status.text.Replace("<gd>", $"{DepthChecks.instance.GoalDepth}m"); // gd for Goal Depth
+                Status.text = Status.text.Replace("<de>", APClientClass.DepthExtendersRecieved.ToString()); // de for Depth Extenders
+                Status.text = Status.text.Replace("<md>", $"{maxDepth}m"); // md for Max Depth
+                break;
+            case 2:
+                Status.text =
                 $"""
                 {APLocale.Get("escapeOvergrown1", APLocale.APLanguageType.UI)}
                 {APLocale.Get("escapeOvergrown2", APLocale.APLanguageType.UI)}
                 {APLocale.Get("escapeOvergrown3", APLocale.APLanguageType.UI)}
                 """;
-            Status.text = Status.text.Replace("<lu>", APClientClass.DepthExtendersRecieved.ToString()); // lu for Layer Unlocks
-            Status.text = Status.text.Replace("<dl>", LayerLocker.LayerIDToName[APClientClass.DepthExtendersRecieved]).Replace(" Unlock", ""); // dl for Deepest Layer
-        }
-        else if (APClientClass.selectedGoal == 3)
-        {
-            Status.text =
+                Status.text = Status.text.Replace("<lu>", APClientClass.DepthExtendersRecieved.ToString()); // lu for Layer Unlocks
+                Status.text = Status.text.Replace("<dl>", LayerLocker.LayerIDToName[APClientClass.DepthExtendersRecieved]).Replace(" Unlock", ""); // dl for Deepest Layer
+                break;
+            case 3:
+                Status.text =
                 $"""
                 {APLocale.Get("defeatElder1", APLocale.APLanguageType.UI)}
                 {APLocale.Get("defeatElder2", APLocale.APLanguageType.UI)}
                 """;
-            Status.text = Status.text.Replace("<ou>", APClientClass.LayerUnlockDictionary.Contains("Overgrown Depths Unlock") ? "Unlocked" : "Locked"); // ou for Overgrown Unlocked
+                Status.text = Status.text.Replace("<ou>", APClientClass.LayerUnlockDictionary.Contains("Overgrown Depths Unlock") ? "Unlocked" : "Locked"); // ou for Overgrown Unlocked
+                break;
+            case 4:
+                Status.text =
+                $"""
+                {APLocale.Get("completeAscent", APLocale.APLanguageType.UI)}
+                {APLocale.Get("escapeOvergrown2", APLocale.APLanguageType.UI)}
+                {APLocale.Get("escapeOvergrown3", APLocale.APLanguageType.UI)}
+                """;
+                Status.text = Status.text.Replace("<lu>", APClientClass.DepthExtendersRecieved.ToString()); // lu for Layer Unlocks
+                Status.text = Status.text.Replace("<dl>", LayerLocker.LayerIDToName[APClientClass.DepthExtendersRecieved]).Replace(" Unlock", ""); // dl for Deepest Layer
+                break;
+            case 5:
+                Status.text =
+                $"""
+                {APLocale.Get("escapeContainment", APLocale.APLanguageType.UI)}
+                {APLocale.Get("escapeOvergrown2", APLocale.APLanguageType.UI)}
+                {APLocale.Get("escapeOvergrown3", APLocale.APLanguageType.UI)}
+                """;
+                Status.text = Status.text.Replace("<lu>", APClientClass.DepthExtendersRecieved.ToString()); // lu for Layer Unlocks
+                Status.text = Status.text.Replace("<dl>", LayerLocker.LayerIDToName[APClientClass.DepthExtendersRecieved]).Replace(" Unlock", ""); // dl for Deepest Layer
+                break;
+            case 6:
+                Status.text =
+                $"""
+                {APLocale.Get("M.E.R.C.", APLocale.APLanguageType.UI)}
+                {APLocale.Get("escapeOvergrown2", APLocale.APLanguageType.UI)}
+                {APLocale.Get("escapeOvergrown3", APLocale.APLanguageType.UI)}
+                """;
+                Status.text = Status.text.Replace("<lu>", APClientClass.DepthExtendersRecieved.ToString()); // lu for Layer Unlocks
+                Status.text = Status.text.Replace("<dl>", LayerLocker.LayerIDToName[APClientClass.DepthExtendersRecieved]).Replace(" Unlock", ""); // dl for Deepest Layer
+                break;
+            default:
+                Startup.Logger.LogError($"Incorrect goal number ({APClientClass.selectedGoal})");
+                break;
         }
     }
     public static void UpdateSkillsanityValues(int skill, float newExp)

@@ -29,22 +29,37 @@ public class DepthChecks : MonoBehaviour
         var options = APClientClass.slotdata;
         if (options.TryGetValue("GoalDepth", out object goaldepthoption)) // fetch and store the goal depth. will always be sent even if goal isn't Reach Depth
         {
-            if (APClientClass.selectedGoal == 1)
+            switch (APClientClass.selectedGoal)
             {
-                GoalDepth = (long)goaldepthoption;
-                GoalCheckID = 22318000 + (GoalDepth / 100);
-                Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: Reach " + GoalDepth + "m");
-            }
-            else if (APClientClass.selectedGoal == 2)
-            {
-                GoalCheckID = 22318000 + (1500 / 100);
-                Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: Escape Overgrown Depths");
-                GoalDepth = 1534;
-            }
-            else if (APClientClass.selectedGoal == 3)
-            {
-                Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: Defeat Elder Thornback");
-                GoalDepth = long.MaxValue; // not needed for this goal
+                case 1:
+                    GoalDepth = (long)goaldepthoption;
+                    GoalCheckID = 22318000 + (GoalDepth / 100);
+                    Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: Reach " + GoalDepth + "m");
+                    break;
+                case 2:
+                    GoalDepth = 1534;
+                    GoalCheckID = 22318000 + (1500 / 100);
+                    Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: Escape Overgrown Depths");
+                    break;
+                case 3:
+                    GoalDepth = long.MaxValue; // not needed for this goal
+                    Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: Defeat Elder Thornback");
+                    break;
+                case 4:
+                    GoalDepth = long.MaxValue; // not needed for this goal
+                    Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: Complete the Ascent");
+                    break;
+                case 5:
+                    GoalDepth = long.MaxValue; // not needed for this goal
+                    Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: Escape Containment");
+                    break;
+                case 6:
+                    GoalDepth = long.MaxValue; // not needed for this goal
+                    Startup.Logger.LogMessage("Depth is being read by Archipelago! Goal is: M.E.R.C.");
+                    break;
+                default:
+                    Startup.Logger.LogError($"Incorrect goal number ({APClientClass.selectedGoal})");
+                    break;
             }
         }
         AlreadySentChecks = Client.Locations.AllLocationsChecked.ToList(); // Update the already checked locations list with the server
@@ -97,7 +112,7 @@ public class DepthChecks : MonoBehaviour
                 depthToSubtract = 307; // reversing WorldGeneration.IncreaseDepthByLayer (this is worldgen.height * 0.3)
             }
         }
-        else if (APClientClass.selectedGoal == 2) // logic for Progressive Layers (goal 2)
+        else // logic for Progressive Layers
         {
             if (worldgen.doPod && (APClientClass.DepthExtendersRecieved < worldgen.biomeDepth)) // true if we are using a drillpod and can't afford 2 layers
             {

@@ -31,10 +31,8 @@ class GoalRequirement(Choice):
     Escape Overgrown Depths: Start in Gravel Lands and goal upon escaping Overgrown Depths. Progressive Layers allow you to go deeper.
                              Note: This excludes all content past Overgrown Depths besides recipes.
     Defeat Elder Thornback: Start in a random layer that isn't Overgrown Depths and goal upon killing an Elder Thornback.
-
-    BELOW GOALS ARE UNIMPLIMENTED!!
     Complete the Ascent: Retrieve the cargo and ascend to the surface. Any ending counts.
-    Ascent Chipless: Retrieve the cargo, ascend to the surface, and return to Earth. Do it all without the Brainchip.
+    Escape Containment: Retrieve the cargo, ascend to the surface, return to Earth, and complete the escape sequence.
     Merc: Retrieve the cargo and ascend to the surface with the M.E.R.C. scarf.
     """
     display_name = "Goal Requirement"
@@ -42,14 +40,13 @@ class GoalRequirement(Choice):
     option_escape_overgrown_depths = 2
     option_defeat_elder_thornback = 3
     option_complete_the_ascent = 4
-    option_ascent_chipless = 5
+    option_escape_containment = 5
     option_merc = 6
     default = 1
 
 class GoalRequiresAllSawians(Toggle):
     """
-    UNIMPLIMENTED!!
-    Only has an effect if your goal is not Reach Depth.
+    Only has an effect if your goal is not Reach Depth or Escape Overgrown Depths.
     Requries you to reach your set goal with all three playable Sawians.
     Pairs well with the Unlock Sawians option.
     """
@@ -57,8 +54,7 @@ class GoalRequiresAllSawians(Toggle):
 
 class AscentUnlockMode(Choice):
     """
-    UNIMPLIMENTED!!
-    Only has an effect if your goal is Complete the Ascent, Ascent Chipless, or Merc.
+    Only has an effect if your goal is Complete the Ascent, Escape Containment, or Merc.
     How should WHERE WE MUST REACH and CRIMSON ASCENT be unlocked?
     Dual Unlock: Another Progressive Layer is added that gives access to both WHERE WE MUST REACH and CRIMSON ASCENT.
     Individual: Two Progressive Layers are added, one for WHERE WE MUST REACH and one for CRIMSON ASCENT.
@@ -240,9 +236,9 @@ class StartingSawian(Choice):
     Which Sawian to start the multiworld with.
     """
     display_name = "Starting Sawian"
-    choice_experiment = 1
-    choice_milky = 2
-    choice_dune = 3
+    option_experiment = 1
+    option_milky = 2
+    option_dune = 3
     default = "random"
 
 class ArchipelagoItems(Range):
