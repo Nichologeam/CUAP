@@ -14,28 +14,16 @@ public class SawianUnlocks : MonoBehaviour
     {
         PlayerPrefs.SetInt("wonchar0", 1); // unlocks Milky
         PlayerPrefs.SetInt("wonchar1", 1); // unlocks Dune
-        prScript = PreRunScript.instance;
         hasExperiment = false;
         hasMilky = false;
         hasDune = false;
         SyncSawianButtons();
-        bool[] unlocked = {hasExperiment, hasMilky, hasDune};
-        if (!unlocked[PreRunScript.characterSelected]) // the selected sawian is locked. change it
-        {
-            for (int i = 0; i < unlocked.Length; i++)
-            {
-                if (unlocked[i])
-                {
-                    PreRunScript.characterSelected = i;
-                    break;
-                }
-            }
-        }
     }
 
     public static void SyncSawianButtons()
     {
         bool[] unlocked = { hasExperiment, hasMilky, hasDune };
+        prScript = PreRunScript.instance;
         for (int i = 0; i < unlocked.Length; i++)
         {
             GameObject character = prScript.charImages[i].gameObject;
@@ -56,6 +44,17 @@ public class SawianUnlocks : MonoBehaviour
                 tooltip.tipName = $"{APLocale.Get("charLocked", APLocale.APLanguageType.UI)}{APCanvas.coloredAPText}!";
                 tooltip.tipDesc = APLocale.Get("charLockedDesc", APLocale.APLanguageType.UI);
                 button.interactable = false;
+            }
+        }
+        if (!unlocked[PreRunScript.characterSelected]) // the selected sawian is locked. change it
+        {
+            for (int i = 0; i < unlocked.Length; i++)
+            {
+                if (unlocked[i])
+                {
+                    PreRunScript.characterSelected = i;
+                    break;
+                }
             }
         }
     }
