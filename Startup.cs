@@ -73,6 +73,7 @@ public class Startup : BaseUnityPlugin
         Console.AddComponent<CommandPatch>();
         SetWindowTitle($"Casualties: Archipelago {CUAPVersion} | Disconnected");
         SteamManager.disableAchievements = true;
+        ReplaceLogos();
     }
 
     // due to a change in Cas: Unk version 5.0.2, the mod stopped loading properly due to it initalizing before Unity had actually made the scene
@@ -137,7 +138,7 @@ public class Startup : BaseUnityPlugin
             }
             if (WorldGeneration.world.biomeOverride != WorldGeneration.OverrideSceneType.Tutorial)
             {
-                Client.SetClientState(Archipelago.MultiClient.Net.Enums.ArchipelagoClientState.ClientPlaying);
+                Client.SetClientState(ArchipelagoClientState.ClientPlaying);
             }
         }
         else if (scene.name == "PreGen") // Scene loaded was PreGen, let's clear these objects to avoid errors.
@@ -150,9 +151,18 @@ public class Startup : BaseUnityPlugin
             Body = null;
             WorldGen = null;
             Moodles = null;
-            GameObject.Find("Canvas/Logo").GetComponent<Image>().sprite = apassets.LoadAsset<Sprite>("logotext");
-            Client.SetClientState(Archipelago.MultiClient.Net.Enums.ArchipelagoClientState.ClientConnected);
+            ReplaceLogos();
+            Client.SetClientState(ArchipelagoClientState.ClientConnected);
         }
+    }
+
+    private static void ReplaceLogos()
+    {
+        Sprite replacement = apassets.LoadAsset<Sprite>("logotext");
+        GameObject.Find("Canvas/Logo").GetComponent<Image>().sprite = replacement;
+        Image warning = GameObject.Find("Canvas/Warning/Cas").GetComponent<Image>();
+        warning.sprite = replacement;
+        warning.preserveAspect = true;
     }
 
     public static void SetWindowTitle(string title)
