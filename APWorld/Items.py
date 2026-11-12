@@ -12,7 +12,7 @@ def recipe_items_enabled(world: "CasualtiesUnknownWorld") -> bool:
 def skill_items_enabled(world: "CasualtiesUnknownWorld") -> bool:
     return bool(world.options.Skillsanity.value)
 def limb_items_enabled(world: "CasualtiesUnknownWorld") -> bool:
-    return bool(world.options.LimbUnlocks.value)
+    return bool(world.options.LimbUnlocks.value != 1)
 def questboard_items_enabled(world: "CasualtiesUnknownWorld") -> bool:
     return bool(world.options.Moodlesanity.value == 2)
 def sawian_items_enabled(world: "CasualtiesUnknownWorld") -> bool:
@@ -350,8 +350,21 @@ minigames = {
 }
 
 limbs = {
-    "Progressive Left Arm": ItemData(22318400, ItemClassification.progression, 3),
-    "Progressive Right Arm": ItemData(22318401, ItemClassification.progression, 3)
+    "Progressive Head": ItemData(22318400, ItemClassification.progression, 3),
+    "Progressive Thorax": ItemData(22318401, ItemClassification.progression, 3),
+    "Progressive Abdomen": ItemData(22318402, ItemClassification.progression, 3),
+    "Progressive Upper Right Arm": ItemData(22318403, ItemClassification.progression, 3),
+    "Progressive Right Forearm": ItemData(22318404, ItemClassification.progression, 3),
+    "Progressive Right Hand": ItemData(22318405, ItemClassification.progression, 3),
+    "Progressive Upper Left Arm": ItemData(22318406, ItemClassification.progression, 3),
+    "Progressive Left Forearm": ItemData(22318407, ItemClassification.progression, 3),
+    "Progressive Left Hand": ItemData(22318408, ItemClassification.progression, 3),
+    "Progressive Right Thigh": ItemData(22318409, ItemClassification.progression, 3),
+    "Progressive Right Crus": ItemData(22318410, ItemClassification.progression, 3),
+    "Progressive Right Foot": ItemData(22318411, ItemClassification.progression, 3),
+    "Progressive Left Thigh": ItemData(22318412, ItemClassification.progression, 3),
+    "Progressive Left Crus": ItemData(22318413, ItemClassification.progression, 3),
+    "Progressive Left Foot": ItemData(22318414, ItemClassification.progression, 3)
 }
 
 questboard_items = {

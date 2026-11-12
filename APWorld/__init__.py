@@ -98,7 +98,7 @@ class CasualtiesUnknownWorld(World):
             starting_layer_name = layer_type_to_name[LayerType(self.options.StartingLayer)]
         self.multiworld.push_precollected(create_item(self, starting_layer_name))
 
-        starting_sawian_name = sawian_to_name[self.options.UnlockSawians.value]
+        starting_sawian_name = sawian_to_name[self.options.StartingSawian.value]
         self.multiworld.push_precollected(create_item(self, starting_sawian_name))
 
     def generate_questboard(self) -> list[str]:

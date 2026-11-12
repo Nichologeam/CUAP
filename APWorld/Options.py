@@ -156,14 +156,20 @@ class RandomizeMinigames(Choice):
     option_individual = 3
     default = 1
 
-class LimbUnlocks(Toggle):
+class LimbUnlocks(Choice):
     """
-    Start with the Sawians's arms being amputated, with them being unlocked progressively through the multiworld.
-    Each arm has three progressive items, one for each limb.
-    There is NO LOGIC applied to this. Use at your own risk, as you will not be able to break tiles without arms.
-    Adds 6 items.
+    Start with Wooden Peg limbs, with each limb being upgradable through items in the multiworld.
+    Each limb has three progressive items, for a total of 45 items.
+
+    Disabled: Vanilla behaviour.
+    By Stats: Limbs are given by raw stats. Wood > Living > Steel > P.E.O.
+    Living Last: Same order as By Stats, but Living is last. Wood > Steel > P.E.O. > Living
     """
-    display_name = "Limb Unlocks"
+    display_name = "Progressive Limbs"
+    option_disabled = 1
+    option_by_stats = 2
+    option_living_last = 3
+    default = 1
 
 class RandomizeCrafting(Toggle):
     """

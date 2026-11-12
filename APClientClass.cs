@@ -284,13 +284,65 @@ public class APClientClass
                     case "Questboard Slot":
                         APCanvas.UpdateQuestboard(true);
                         break;
-                    case "Progressive Left Arm":
-                        leftArmUnlocks++;
-                        if (APCanvas.InGame) LimbUnlocks.instance.RestoreLimbs();
+                    case "Progressive Head":
+                        LimbUnlocks.limbUpgrades[0]++;
+                        if (APCanvas.InGame) LimbUnlocks.GiveNextProsthesisToLimb(item.ItemName.Replace("Progressive ", ""));
                         break;
-                    case "Progressive Right Arm":
-                        rightArmUnlocks++;
-                        if (APCanvas.InGame) LimbUnlocks.instance.RestoreLimbs();
+                    case "Progressive Thorax":
+                        LimbUnlocks.limbUpgrades[1]++;
+                        if (APCanvas.InGame) LimbUnlocks.GiveNextProsthesisToLimb(item.ItemName.Replace("Progressive ", ""));
+                        break;
+                    case "Progressive Abdomen":
+                        LimbUnlocks.limbUpgrades[2]++;
+                        if (APCanvas.InGame) LimbUnlocks.GiveNextProsthesisToLimb(item.ItemName.Replace("Progressive ", ""));
+                        break;
+                    case "Progressive Upper Right Arm":
+                        LimbUnlocks.limbUpgrades[3]++;
+                        if (APCanvas.InGame) LimbUnlocks.GiveNextProsthesisToLimb(item.ItemName.Replace("Progressive ", ""));
+                        break;
+                    case "Progressive Right Forearm":
+                        LimbUnlocks.limbUpgrades[4]++;
+                        if (APCanvas.InGame) LimbUnlocks.GiveNextProsthesisToLimb(item.ItemName.Replace("Progressive ", ""));
+                        break;
+                    case "Progressive Right Hand":
+                        LimbUnlocks.limbUpgrades[5]++;
+                        if (APCanvas.InGame) LimbUnlocks.GiveNextProsthesisToLimb(item.ItemName.Replace("Progressive ", ""));
+                        break;
+                    case "Progressive Upper Left Arm":
+                        LimbUnlocks.limbUpgrades[6]++;
+                        if (APCanvas.InGame) LimbUnlocks.GiveNextProsthesisToLimb(item.ItemName.Replace("Progressive ", ""));
+                        break;
+                    case "Progressive Left Forearm":
+                        LimbUnlocks.limbUpgrades[7]++;
+                        if (APCanvas.InGame) LimbUnlocks.GiveNextProsthesisToLimb(item.ItemName.Replace("Progressive ", ""));
+                        break;
+                    case "Progressive Left Hand":
+                        LimbUnlocks.limbUpgrades[8]++;
+                        if (APCanvas.InGame) LimbUnlocks.GiveNextProsthesisToLimb(item.ItemName.Replace("Progressive ", ""));
+                        break;
+                    case "Progressive Right Thigh":
+                        LimbUnlocks.limbUpgrades[9]++;
+                        if (APCanvas.InGame) LimbUnlocks.GiveNextProsthesisToLimb(item.ItemName.Replace("Progressive ", ""));
+                        break;
+                    case "Progressive Right Crus":
+                        LimbUnlocks.limbUpgrades[10]++;
+                        if (APCanvas.InGame) LimbUnlocks.GiveNextProsthesisToLimb(item.ItemName.Replace("Progressive ", ""));
+                        break;
+                    case "Progressive Right Foot":
+                        LimbUnlocks.limbUpgrades[11]++;
+                        if (APCanvas.InGame) LimbUnlocks.GiveNextProsthesisToLimb(item.ItemName.Replace("Progressive ", ""));
+                        break;
+                    case "Progressive Left Thigh":
+                        LimbUnlocks.limbUpgrades[12]++;
+                        if (APCanvas.InGame) LimbUnlocks.GiveNextProsthesisToLimb(item.ItemName.Replace("Progressive ", ""));
+                        break;
+                    case "Progressive Left Crus":
+                        LimbUnlocks.limbUpgrades[13]++;
+                        if (APCanvas.InGame) LimbUnlocks.GiveNextProsthesisToLimb(item.ItemName.Replace("Progressive ", ""));
+                        break;
+                    case "Progressive Left Foot":
+                        LimbUnlocks.limbUpgrades[14]++;
+                        if (APCanvas.InGame) LimbUnlocks.GiveNextProsthesisToLimb(item.ItemName.Replace("Progressive ", ""));
                         break;
                     case "Progressive STR":
                         MaxSTR++;

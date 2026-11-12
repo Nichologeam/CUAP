@@ -5,7 +5,7 @@ from .Types import CasualtiesUnknownLocation
 from .Locations import location_table, is_valid_location
 from .Types import build_recipe_rule
 from typing import TYPE_CHECKING
-from rule_builder.rules import Has, HasAny, HasAll, True_
+from rule_builder.rules import Has, HasAny, HasAnyCount, HasAll, Or, True_
 
 if TYPE_CHECKING:
     from . import CasualtiesUnknownWorld
@@ -201,6 +201,39 @@ def create_region(world: "CasualtiesUnknownWorld", name: str) -> Region:
         "Moodlesanity - Adrenaline"
     }
 
+    living_limb_needed_moodles = {
+        "Moodlesanity - Mild hypotension",
+        "Moodlesanity - Hypotension",
+        "Moodlesanity - Severe hypotension",
+        "Moodlesanity - Circulatory collapse",
+        "Moodlesanity - Mild hypertension",
+        "Moodlesanity - Hypertension",
+        "Moodlesanity - Severe hypertension",
+        "Moodlesanity - Hypertensive crisis",
+        "Moodlesanity - Mild toxicosis",
+        "Moodlesanity - Toxicosis",
+        "Moodlesanity - Severe toxicosis",
+        "Moodlesanity - Toxic crisis",
+        "Moodlesanity - Discomfort",
+        "Moodlesanity - Pain",
+        "Moodlesanity - Severe pain",
+        "Moodlesanity - Agony",
+        "Moodlesanity - Shock",
+        "Moodlesanity - Minor bleeding",
+        "Moodlesanity - Bleeding",
+        "Moodlesanity - Heavy bleeding",
+        "Moodlesanity - Catastrophic bleeding",
+        "Moodlesanity - Internal bleeding",
+        "Moodlesanity - Infection",
+        "Moodlesanity - Painful infection",
+        "Moodlesanity - Severe infection",
+        "Moodlesanity - Life-threatening infection",
+        "Moodlesanity - Sepsis",
+        "Moodlesanity - Severe sepsis",
+        "Moodlesanity - Septic shock",
+        "Moodlesanity - Hemothorax"
+    }
+
     for (key, data) in location_table.items():
         if data.region != name:
             continue
@@ -264,8 +297,38 @@ def create_region(world: "CasualtiesUnknownWorld", name: str) -> Region:
             if world.options.UnlockBrainchip.value == 2: # as item
                 brainchip_rule = Has("Brainchip")
                 rule = rule & brainchip_rule
-            if world.options.UnlockBrainchip.value == 3: # removed
+            elif world.options.UnlockBrainchip.value == 3: # removed
                 continue # This location is impossible to check
+
+        if key in living_limb_needed_moodles:
+            if world.options.LimbUnlocks.value == 2: # by stats
+                continue # A player could get too many progressive limbs, making these locations impossible to check. remove them
+            elif world.options.LimbUnlocks.value == 3: # living last
+                living_limb_rule = HasAnyCount({
+                    "Progressive Head": 3,
+                    "Progressive Thorax": 3,
+                    "Progressive Abdomen": 3,
+                    "Progressive Upper Right Arm": 3,
+                    "Progressive Right Forearm": 3,
+                    "Progressive Right Hand": 3,
+                    "Progressive Upper Left Arm": 3,
+                    "Progressive Left Forearm": 3,
+                    "Progressive Left Hand": 3,
+                    "Progressive Right Thigh": 3,
+                    "Progressive Right Crus": 3,
+                    "Progressive Right Foot": 3,
+                    "Progressive Left Thigh": 3,
+                    "Progressive Left Crus": 3,
+                    "Progressive Left Foot": 3
+                    })
+                if key in ("Moodlesanity - Sepsis", "Moodlesanity - Severe sepsis", "Moodlesanity - Septic shock"):
+                    if world.options.GoalRequirement.value in (2, 4, 5, 6):
+                        extra_sepsis_rule = Or(living_limb_rule, Has("Progressive Layer", count = 5)) # access to layer 6
+                    else:
+                        extra_sepsis_rule = Or(living_limb_rule, HasAny("Frozen Chasm Unlock", "Fungal Pools Unlock")) # layers 6 or 7 (not funny, don't laugh)
+                    rule = rule & extra_sepsis_rule
+                else:
+                    rule = rule & living_limb_rule
 
         if key in hearing_loss_location_names:
             if not world.options.RandomizeRecipes.value: # If recipes aren't randomized
