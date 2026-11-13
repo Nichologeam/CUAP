@@ -35,17 +35,29 @@ public class LimbUnlocks : MonoBehaviour
         {"Thorax",1},
         {"Abdomen",2},
         {"Upper Right Arm",3},
+        {"Upper right arm",3},
         {"Right Forearm",4},
+        {"Right forearm",4},
         {"Right Hand",5},
+        {"Right hand",5},
         {"Upper Left Arm",6},
+        {"Upper left arm",6},
         {"Left Forearm",7},
+        {"Left forearm",7},
         {"Left Hand",8},
+        {"Left hand",8},
         {"Right Thigh",9},
+        {"Right thigh",9},
         {"Right Crus",10},
+        {"Right crus",10},
         {"Right Foot",11},
+        {"Right foot",11},
         {"Left Thigh",12},
+        {"Left thigh",12},
         {"Left Crus",13},
-        {"Left Foot",14}
+        {"Left crus",13},
+        {"Left Foot",14},
+        {"Left foot",14}
     };
 
     private void Start()
@@ -83,7 +95,7 @@ public class LimbUnlocks : MonoBehaviour
                 int unlocksLeft = unlocks.Value;
                 while (unlocksLeft > 0)
                 {
-                    GiveNextProsthesisToLimb(limbObject);
+                    GiveNextProsthesisToLimb(limbObject.fullName);
                     unlocksLeft--;
                 }
             }
@@ -101,6 +113,7 @@ public class LimbUnlocks : MonoBehaviour
     // sets the given limb to a specific prosthesis
     private void SetLimbToProsthesis(Limb limbObject, int prosthesis) // 0 = Wood, 1 = Steel, 2 = P.E.O., 3 = Living
     {
+        limbObject.Reattach();
         switch (prosthesis)
         {
             case 0:
@@ -178,11 +191,11 @@ public class LimbUnlocks : MonoBehaviour
     }
 
     // reads the given limb's prosthesis, and upgrades it to the next one, accounting for livingLast
-    private void GiveNextProsthesisToLimb(Limb limbObject)
+    private void GiveNextProsthesisToLimb(Limb limbObject, int upgrade)
     {
-        switch (limbObject.prostheticInfo.itemId)
+        switch (upgrade)
         {
-            case "peglimb":
+            case 0: // peglimb
                 if (livingLast)
                 {
                     SetLimbToProsthesis(limbObject, 1); // set to steel
@@ -192,10 +205,10 @@ public class LimbUnlocks : MonoBehaviour
                     SetLimbToProsthesis(limbObject, 3); // set to living
                 }
                 break;
-            case "steelprosthesis":
+            case 1: // steel
                 SetLimbToProsthesis(limbObject, 2); // set to P.E.O. regardless of option
                 break;
-            case "peo":
+            case 2: // peo
                 if (livingLast)
                 {
                     SetLimbToProsthesis(limbObject, 3); // set to living
@@ -205,7 +218,7 @@ public class LimbUnlocks : MonoBehaviour
                     Startup.Logger.LogError($"Received too many unlocks for {limbObject.fullName}!");
                 }
                 break;
-            case "": // living
+            case 3: // living
                 if (livingLast)
                 {
                     Startup.Logger.LogError($"Received too many unlocks for {limbObject.fullName}!");
@@ -219,14 +232,30 @@ public class LimbUnlocks : MonoBehaviour
     }
     public static void GiveNextProsthesisToLimb(string limbName) // string variant (readable names)
     {
-        if (ReadableLimbToID.TryGetValue(limbName, out int limbID))
+        if (ReadableLimbToID.TryGetValue(limbName, out int limbID) && limbUpgrades.TryGetValue(limbID, out int upgrade))
         {
             Limb wantedLimb = vitals.limbs[limbID];
-            instance.GiveNextProsthesisToLimb(wantedLimb);
+            instance.GiveNextProsthesisToLimb(wantedLimb, upgrade - 1);
         }
         else
         {
             Startup.Logger.LogError($"Ran the string version of GiveNextProsthesisToLimb on an invalid limb! ({limbName})");
         }
+    }
+}
+
+[HarmonyPatch(typeof(Limb), "Dismember")]
+// Attaches the above script to all Elder Thornbacks after worldgen
+class VitalDismembermentPatch
+{
+    static bool Prefix(Limb __instance)
+    {
+        if (__instance.isAbdomen || __instance.isHead || __instance.isVital)
+        {
+            // if this is a limb that cannot be dismembered, set health to a low value and skip amputation
+            __instance.muscleHealth = 1;
+            return false;
+        }
+        return true;
     }
 }
