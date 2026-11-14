@@ -94,7 +94,7 @@ class CasualtiesUnknownWorld(World):
         starting_layer_name = layer_type_to_name[LayerType(self.options.StartingLayer)]
         if self.options.GoalRequirement.value == 3 and starting_layer_name == "Overgrown Depths Unlock":
             print("Casualties Unknown: Cannot have a starting layer of Overgrown Depths with the Defeat Elder Thornback goal. Rerandomizing...")
-            self.options.StartingLayer.value = self.random.choice(range(1, 5)) # inclusive, exclusive
+            self.options.StartingLayer.value = self.random.choice([i for i in range(1, 10) if i != 5]) # inclusive, exclusive, excludes overgrown
             starting_layer_name = layer_type_to_name[LayerType(self.options.StartingLayer)]
         self.multiworld.push_precollected(create_item(self, starting_layer_name))
 
