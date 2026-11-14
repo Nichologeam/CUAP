@@ -223,7 +223,6 @@ def create_region(world: "CasualtiesUnknownWorld", name: str) -> Region:
         "Moodlesanity - Bleeding",
         "Moodlesanity - Heavy bleeding",
         "Moodlesanity - Catastrophic bleeding",
-        "Moodlesanity - Internal bleeding",
         "Moodlesanity - Infection",
         "Moodlesanity - Painful infection",
         "Moodlesanity - Severe infection",
@@ -231,7 +230,7 @@ def create_region(world: "CasualtiesUnknownWorld", name: str) -> Region:
         "Moodlesanity - Sepsis",
         "Moodlesanity - Severe sepsis",
         "Moodlesanity - Septic shock",
-        "Moodlesanity - Hemothorax"
+        "Moodlesanity - Dislocated joint"
     }
 
     for (key, data) in location_table.items():
