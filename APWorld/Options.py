@@ -305,7 +305,7 @@ class TrapWeights(ItemWeights):
     If Unlock Brainchip is set to anything other than Start With, Unchipped Trap is forced off.
     """
     display_name = "Trap Item Weights"
-    valid_keys = ["Depression Trap", "Hearing Loss Trap", "Earthquake Trap", "Reverse Controls Trap", "Sleep Trap", "Unchipped Trap", "Elder Thornback Trap", "Cave Ticks Trap", "Bad Rep Trap", "Disfigured Trap", "Fellow Sawian", "Fragile Items Trap", "Mindwipe Trap", "Pushup Trap", "Temptation Trap", "Trip Trap"]
+    valid_keys = ["Depression Trap", "Hearing Loss Trap", "Earthquake Trap", "Reverse Controls Trap", "Sleep Trap", "Unchipped Trap", "Elder Thornback Trap", "Cave Ticks Trap", "Bad Rep Trap", "Disfigured Trap", "Fellow Sawian", "Fragile Items Trap", "Mindwipe Trap", "Pushup Trap", "Temptation Trap", "Trip Trap", "Cheeseburger Trap"]
     default = {item: 50 for item in valid_keys}
 
 @dataclass

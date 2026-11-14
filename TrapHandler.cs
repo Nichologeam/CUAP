@@ -215,6 +215,11 @@ public class TrapHandler : MonoBehaviour
                 Vitals.shock = 50;
                 plrcam.DoAlert($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{ItemSender}{APLocale.Get("trip", APLocale.APLanguageType.UI)}", false);
                 break;
+            case "Cheeseburger Trap":
+                SettingDropdown unitsSetting = Settings.Get<SettingDropdown>("units");
+                unitsSetting.SetValue(2); // cheeseburger units of measurement
+                plrcam.DoAlert($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{ItemSender}{APLocale.Get("burger", APLocale.APLanguageType.UI)}", false);
+                break;
             default:
                 Startup.Logger.LogError($"Trap item {TrapName} is unhandled!");
                 APCanvas.EnqueueArchipelagoNotification($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{TrapName}{APLocale.Get("trapUnhandled", APLocale.APLanguageType.Errors)}",3);
