@@ -24,6 +24,8 @@ class BuildingDropReplacer
         "snowstrider",
         "wallbiter",
         "crystalenemy",
+        "guard",
+        "laserdrone",
         // traps
         "spikestabber",
         "jumppad",
@@ -44,12 +46,15 @@ class BuildingDropReplacer
         "pistonleft",
         "pistonright",
         "ceilingturret",
+        "ceilingturretslim",
         "fan",
         // other
         "trader", // all traders share the same building ID
         "corpse", // same with all corpses
         "glassshards",
-        "ceilingrye"
+        "ceilingrye",
+        "lavalamp",
+        "pussack"
     };
     static void Postfix(BuildingEntity __instance)
     {
