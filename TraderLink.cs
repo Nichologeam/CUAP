@@ -3,6 +3,7 @@ using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Packets;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
@@ -25,7 +26,6 @@ public class TraderLink : MonoBehaviour
     private bool transfering;
     private float failDisplayTimer;
     private int energyLinkBalance = 0;
-    private long ringLinkID;
 
     private async void Start()
     {
@@ -37,7 +37,6 @@ public class TraderLink : MonoBehaviour
         depositButton = APCanvas.TraderLinkDeposit;
         depositText = depositButton.GetComponentInChildren<TMP_Text>();
         depositButton.onClick.AddListener(() => _ = Transfer());
-        ringLinkID = UnityEngine.Random.Range(0, 999999999);
     }
     public void OnConnect()
     {
@@ -57,13 +56,13 @@ public class TraderLink : MonoBehaviour
             Keys = [$"EnergyLink{APClientClass.session.Players.ActivePlayer.Team}"]
         };
         APClientClass.session.Socket.SendPacket(packet1); // send and forget
+        packetHandler = (packet) => OnReceivedPacket(packet);
+        APClientClass.session.Socket.PacketReceived += packetHandler;
         var packet2 = new GetPacket
         {
             Keys = [$"EnergyLink{APClientClass.session.Players.ActivePlayer.Team}"]
         };
         APClientClass.session.Socket.SendPacket(packet2); // handle the reply below in OnReceivedPacket
-        packetHandler = (packet) => OnReceivedPacket(packet);
-        APClientClass.session.Socket.PacketReceived += packetHandler;
         postConnect = true;
     }
 
@@ -71,7 +70,7 @@ public class TraderLink : MonoBehaviour
     {
         if (!postConnect) return; // only run this after connecting
         failDisplayTimer = failDisplayTimer - Time.deltaTime;
-        if (SceneManager.GetActiveScene().name != "SampleScene")
+        if (!APCanvas.InGame)
         {
             containerObject.SetActive(false);
             return; // only apply in-game
@@ -122,7 +121,7 @@ public class TraderLink : MonoBehaviour
                         },
                         new()
                         {
-                            OperationType = OperationType.Max,
+                            OperationType = OperationType.Min,
                             Value = 0
                         }
                     ]
@@ -158,7 +157,9 @@ public class TraderLink : MonoBehaviour
             case ArchipelagoPacketType.Retrieved when packet is RetrievedPacket Retpacket:
                 if (Retpacket.Data.TryGetValue($"EnergyLink{APClientClass.session.Players.ActivePlayer.Team}", out JToken energyBalance))
                 {
-                    energyLinkBalance = energyBalance.ToObject<int>();
+                    int newBal = Convert.ToInt32(energyBalance);
+                    energyLinkBalance = newBal;
+                    Startup.Logger.LogInfo($"New EnergyLink balance for team {APClientClass.session.Players.ActivePlayer.Team} is {newBal}.");
                 }
                 else
                 {
@@ -170,7 +171,7 @@ public class TraderLink : MonoBehaviour
                 }
                 break;
             case ArchipelagoPacketType.SetReply when packet is SetReplyPacket reply:
-                energyLinkBalance = reply.Value.ToObject<int>();
+                energyLinkBalance = Convert.ToInt32(reply.Value);
                 break;
         }
     }
