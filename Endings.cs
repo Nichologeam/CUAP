@@ -52,7 +52,7 @@ class MercEndingPatch
     static void Prefix(WorldGeneration __instance)
     {
         ArchipelagoSession Client = APClientClass.session;
-        if (APClientClass.selectedGoal == 6) // M.E.R.C
+        if (APClientClass.selectedGoal is 4 or 6) // Complete the Ascent or M.E.R.C
         {
             if (APClientClass.goalNeedsAllSawians)
             {
