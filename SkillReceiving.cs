@@ -26,17 +26,21 @@ public class SkillReceiving : MonoBehaviour
         }
         APCanvas.skillsanityEnabled = true;
         worldgen = GameObject.Find("World").GetComponent<WorldGeneration>();
-        playerSkills = gameObject.GetComponent<Body>().skills;
         Startup.Logger.LogMessage("Skillsanity is monitoring exp...");
+        StartCoroutine(ResetSkills());
     }
 
     private void Update()
     {
-        if (worldgen.loadingObject.activeSelf && GameObject.Find("ShuttleStarter(Clone)")) // We're in the starting layer of this run
+        if (worldgen.loadingObject.activeSelf)
         {
-            StartCoroutine(ResetSkills());
             return;
         }
+        if (playerSkills == null)
+        {
+            playerSkills = gameObject.GetComponent<Body>().skills;
+        }
+        playerSkills.UpdateExpBoundaries();
         playerSkills.STR = APClientClass.MaxSTR;
         playerSkills.expSTR = Skills.GetExperienceForLevel(APClientClass.MaxSTR - 1);
         playerSkills.RES = APClientClass.MaxRES;
@@ -51,12 +55,12 @@ public class SkillReceiving : MonoBehaviour
         {
             yield return null;
         }
+        playerSkills = gameObject.GetComponent<Body>().skills;
         playerSkills.expSTR = 0;
         playerSkills.expRES = 0;
         playerSkills.expINT = 0;
         playerSkills.STR = APClientClass.MaxSTR;
         playerSkills.RES = APClientClass.MaxRES;
         playerSkills.INT = APClientClass.MaxINT;
-        playerSkills.UpdateExpBoundaries();
     }
 }
