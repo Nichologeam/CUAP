@@ -22,6 +22,7 @@ public class SawianUnlocks : MonoBehaviour
 
     public static void SyncSawianButtons()
     {
+        Startup.Logger.LogInfo("Syncing unlocked sawians");
         bool[] unlocked = { hasExperiment, hasMilky, hasDune };
         prScript = PreRunScript.instance;
         for (int i = 0; i < unlocked.Length; i++)

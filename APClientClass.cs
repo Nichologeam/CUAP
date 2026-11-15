@@ -35,6 +35,7 @@ public class APClientClass
     public static bool goalNeedsAllSawians = false;
     public static bool dualUnlock = false;
     public static bool hasBrainchip = true;
+    public static bool sawUnlocks = false;
     private static float reconnectCountdown;
     public static bool outOfItems = false;
     public static ArchipelagoSession? session;
@@ -87,6 +88,7 @@ public class APClientClass
         MaxSTR = 0;
         goalNeedsAllSawians = false;
         dualUnlock = false;
+        sawUnlocks = false;
         APCanvas.versionTag.text = APLocale.Get("versionTag", APLocale.APLanguageType.UI) + Startup.CUAPVersion;
         Time.timeScale = 1;
         Startup.SetWindowTitle($"Casualties: Archipelago {Startup.CUAPVersion} | Disconnected");
@@ -149,6 +151,7 @@ public class APClientClass
             {
                 if (Convert.ToBoolean(sawians))
                 {
+                    sawUnlocks = true;
                     SawianUnlocks.SetupSawianUnlocks();
                 }
             }
@@ -264,13 +267,13 @@ public class APClientClass
                         }
                         break;
                     case "Sawian - Experiment":
-                        SawianUnlocks.UnlockSawian(0);
+                        if (sawUnlocks) SawianUnlocks.UnlockSawian(0);
                         break;
                     case "Sawian - Milky":
-                        SawianUnlocks.UnlockSawian(1);
+                        if (sawUnlocks) SawianUnlocks.UnlockSawian(1);
                         break;
                     case "Sawian - Dune":
-                        SawianUnlocks.UnlockSawian(2);
+                        if (sawUnlocks) SawianUnlocks.UnlockSawian(2);
                         break;
                     case "Progressive Layer":
                         DepthExtendersRecieved++; // reusing this since it would be unused in Overgrown Depths goal

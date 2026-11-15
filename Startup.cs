@@ -148,6 +148,10 @@ public class Startup : BaseUnityPlugin
                 Gifting.giftService.CloseGiftBox(); // close the gift box if it's open
                 Logger.LogMessage("Giftbox closed");
             }
+            if (APClientClass.sawUnlocks)
+            {
+                SawianUnlocks.SyncSawianButtons();
+            }
             Body = null;
             WorldGen = null;
             Moodles = null;
