@@ -40,13 +40,18 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
         Startup.Logger.LogMessage("DeathlinkManager is monitoring Vitals...");
         dlService.OnDeathLinkReceived += ProcessDeathLink;
     }
+    private void OnDisable()
+    {
+        if (dlService != null)
+            dlService.OnDeathLinkReceived -= ProcessDeathLink;
+    }
     private void Update()
     {
         if (worldgen.loadingObject.activeSelf)
         {
             return; // don't send deathlinks inside of loading screens
         }
-        if (!Vitals.alive && Vitals.brainHealth == 0) // Experiment is dead! Send Deathlink!
+        if (!Vitals.alive) // The Sawian is dead! Send Deathlink!
         {
             SelectDeathLinkCause();
             DestroyImmediate(this); // This is in the update loop, so we should kill the script to not spam deathlinks. No damage will be done, because the player is forced back to main menu.
@@ -96,7 +101,7 @@ public class DeathlinkManager : MonoBehaviour // To be placed on the player's Bo
         {
             DeathLinkText.text = $"{DeathLinkText.text}{APLocale.Get("runEnd", APLocale.APLanguageType.Messages)}";
             PlayerCamera.main.StartSelfDestruct(); // Start the brainchip's self destruct sequence
-            Destroy(this); // Destroy script so we don't send a deathlink next frame. No damage will be done, because the player is forced back to main menu.
+            Destroy(this); // Destroy script so we don't send a deathlink. No damage will be done, because the player is forced back to main menu.
         }
         else // Nearly exact replica of the V4 version of SelfHarmer.SelfHarm because we can't actually call it
         {
