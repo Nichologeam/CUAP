@@ -35,11 +35,13 @@ class BuildingDropReplacer
         "bananaplant",
         "turret",
         "grabberplant",
+        "grabbershroom",
         "sidestabber",
         "radbarrel", // good luck getting this one!
         "spentfuel", // and this one too!
         "beartrap",
         "stalactite",
+        "icestalagmite",
         "skullcrusher",
         "sawblade",
         "piston",
