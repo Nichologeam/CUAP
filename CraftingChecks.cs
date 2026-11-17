@@ -493,7 +493,7 @@ public class CraftingChecks : MonoBehaviour
         }
         if (options.TryGetValue("Craftsanity", out var craft))
         {
-            if (Convert.ToInt32(craft) == 1)
+            if (Convert.ToInt32(craft) is 1 or 2)
             {
                 craftsanity = true;
                 var checkedLocations = Client.Locations.AllLocationsChecked;
@@ -510,6 +510,7 @@ public class CraftingChecks : MonoBehaviour
             }
             if (Convert.ToInt32(craft) == 3)
             {
+                Startup.Logger.LogWarning("Craftsanity is disabled");
                 craftsanity = false;
             }
         }
@@ -550,7 +551,7 @@ public class CraftingChecks : MonoBehaviour
                             blueprint.recipeIndex = currentAPItemNum;
                             if (currentAPItemNum >= apItemAmount)
                             {
-                                Debug.LogWarning("All Archipelago Items have been collected! Disabling apItems flag.");
+                                CommandPatch.LogToConsole("All Archipelago Items have been collected! Disabling apItems flag.");
                                 apItems = false;
                                 APClientClass.outOfItems = true;
                                 SetupAPBlueprint(false);
