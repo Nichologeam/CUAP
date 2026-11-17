@@ -537,7 +537,7 @@
 		},
 		"Craftsanity - Climbing rope":{
 			"intRequired": 7,
-			"reliesOn": ["Foliage rope"]
+			"reliesOn": ["Foliage rope", "Nails"]
 		}
 	}
 }

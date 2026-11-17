@@ -329,6 +329,16 @@ def create_region(world: "CasualtiesUnknownWorld", name: str) -> Region:
                 else:
                     rule = rule & living_limb_rule
 
+        if key in ("Moodlesanity - Dulled claws", "Moodlesanity - Broken claws"):
+            if world.options.LimbUnlocks.value == 2: # by stats
+                continue # A player could get too many progressive limbs, making these locations impossible to check. remove them
+            elif world.options.LimbUnlocks.value == 3: # living last
+                claws_rule = HasAnyCount({
+                    "Progressive Right Hand": 3,
+                    "Progressive Left Hand": 3
+                    })
+                rule = rule & claws_rule
+
         if key in hearing_loss_location_names:
             if not world.options.RandomizeRecipes.value: # If recipes aren't randomized
                 hearing_loss_rule = Has("Wasteland Unlock") | Has("Progressive Layer", count = 3)
