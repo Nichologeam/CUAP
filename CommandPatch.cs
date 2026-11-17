@@ -3,12 +3,16 @@ using Archipelago.Gifting.Net.Versioning.Gifts;
 using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
+using BepInEx;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -103,6 +107,10 @@ public class CommandPatch : MonoBehaviour
                         APCanvas.EnqueueArchipelagoNotification($"{goal.Player.Alias}{APLocale.Get("goal", APLocale.APLanguageType.Messages)}",0);
                         break;
 
+                    case ChatLogMessage chat:
+                        ThreadingHelper.Instance.StartSyncInvoke(() => PrintChatMessage(chat)); // must be on the main thread to prevent race conditons and hard crashes
+                        break;
+
                     default:
                         PrintPlainJSON(message);
                         break;
@@ -117,6 +125,44 @@ public class CommandPatch : MonoBehaviour
         LogToConsole(message.ToString());
         APCanvas.EnqueueArchipelagoNotification(message.ToString(),0);
         LastGotMessage = message;
+    }
+    private async void PrintChatMessage(ChatLogMessage message)
+    {
+        LogToConsole(message.ToString());
+        if (message.Message.StartsWith("!"))
+        {
+            return; // command. don't bother processing this message at all
+        }
+        if (!APCanvas.InGame)
+        {
+            APCanvas.EnqueueArchipelagoNotification(message.ToString(), 0); // on main menu. just display message popup
+            return;
+        }
+        if (!message.IsActivePlayer) // only when in-game, and when it's someone else's message
+        {
+            GameObject talkerObj = new GameObject($"Archipelago Talker for {message.Player.Alias}");
+            Talker talker = talkerObj.AddComponent<Talker>();
+            body = Startup.GetPlayerBodyObject();
+            talkerObj.transform.position = new Vector3(
+                body.transform.position.x + UnityEngine.Random.Range(-7f, 7f),
+                body.transform.position.y + UnityEngine.Random.Range(-7f, 7f),
+                0
+            );
+            talker.textPrefab = Resources.Load<GameObject>("special/MilTalkText");
+            while (talker.text == null)
+            {
+                await Task.Yield(); // wait until the text exists (Talker.Start has ran)
+            }
+            talker.text.color = GetColor(message.Player.Name); // name, not alias. color should stay consistent between alias changes
+            talker.Talk(message.Message);
+            while (!talker.FinishedTalking())
+            {
+                await Task.Yield(); // wait until the message is done typing out
+            }
+            await Task.Delay(2000); // wait additional two seconds
+            Destroy(talker.text.gameObject);
+            Destroy(talkerObj);
+        }
     }
     private void PrintItemJSON(ItemSendLogMessage message)
     {
@@ -564,5 +610,31 @@ public class CommandPatch : MonoBehaviour
             var spawnEntities = typeof(ConsoleScript).GetField("registeredSpawnEntities", BindingFlags.NonPublic | BindingFlags.Instance);
             spawnEntities.SetValue(ConsoleScript.instance, true); // Same thing, but for autofilling the `spawn` command.
         }
+    }
+
+    private Color GetColor(string playerName) // turns a given player's name into an RGB color through a FNV-1a hash (please help this took so much time for me to learn)
+    {
+        if (string.IsNullOrEmpty(playerName))
+        {
+            return Color.white; // realistically should never happen, but better safe than sorry
+        }
+        uint hash = 2166136261; // FNV offset basis
+        unchecked // allow integer overflow (will happen, and is intentional)
+        {
+            foreach (byte b in Encoding.UTF8.GetBytes(playerName.Normalize(NormalizationForm.FormKC).ToUpperInvariant())) // force uppercase so capitalization changes nothing
+            {
+                hash ^= b; // XOR each byte with the hash
+                hash *= 16777619; // multiply by FNV preset prime
+            }
+        }
+        // avalanche finalizer (not normally part of FNV-1a, but I want to guarentee unique results)
+        hash ^= hash >> 16; // shifts bits 16 positions right, then XOR result with current hash
+        hash *= 2146121005; // multiply by constant (usually written in hex but I'm a human and humans write in Base-10)
+        hash ^= hash >> 15; // shifts bits 15 positions right, then XOR
+        hash *= 2221713035; // another multiplication
+        hash ^= hash >> 16; // final shifting of bits 16 positions right, then XOR one final time
+        float hue = (hash & 65535) / 65535f; // AND the hash to get it within max HSV values, then divide it into a number between 0 and 1
+                                             // (this does limit the options, but good luck running an AP server with more than 65,535 players)
+        return Color.HSVToRGB(hue, 0.8f, 1f); // hardcode S and V to make colors actually readable
     }
 }
