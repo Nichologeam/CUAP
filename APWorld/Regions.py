@@ -341,7 +341,7 @@ def create_region(world: "CasualtiesUnknownWorld", name: str) -> Region:
 
         if key in hearing_loss_location_names:
             if not world.options.RandomizeRecipes.value: # If recipes aren't randomized
-                hearing_loss_rule = Has("Wasteland Unlock") | Has("Progressive Layer", count = 3)
+                hearing_loss_rule = HasAny("Wasteland Unlock", "WHERE WE MUST REACH Unlock") | Has("Progressive Layer", count = 3)
             else: # If recipes are randomized
                 hearing_loss_rule = (
                     # Either the player can make the Drill Repair Kit
