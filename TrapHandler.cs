@@ -20,6 +20,8 @@ public class TrapHandler : MonoBehaviour
     private float revControlEndTime;
     private bool unchippedActive;
     private float unchippedEndTime;
+    private bool faultyActive;
+    private float faultyEndTime;
     private bool disfigActive;
     private float disfigEndTime;
     private int thornbackTrapLevel;
@@ -52,6 +54,78 @@ public class TrapHandler : MonoBehaviour
             worldgen.unchippedMode = true;
             plrcam.SetUnchippedUI(true);
         }
+        if (Vitals.alive && APClientClass.hasBrainchip && faultyActive) // randomize a bunch of things on the display
+        {
+            WoundView hp = WoundView.view;
+            if (hp == null)
+            {
+                return;
+            }
+            
+            // raw numbers
+            hp.brainHealthText.text = string.Format("{0}", UnityEngine.Random.RandomRangeInt(0, 101)); // inclusive, exclusive
+            hp.conscText.text = string.Format("{0}%", UnityEngine.Random.RandomRangeInt(0, 101));
+            hp.painText.text = string.Format("{0}%", UnityEngine.Random.RandomRangeInt(0, 101));
+            hp.bloodText.text = string.Format("{0:0.00}l", UnityEngine.Random.Range(0f, 5f)); // inclusive, inclusive
+            hp.bleedText.text = string.Format("{0:0.00}l/m", UnityEngine.Random.Range(0f, 5f));
+            hp.oxyText.text = string.Format("{0}%", UnityEngine.Random.RandomRangeInt(0, 101));
+            hp.immunityText.text = string.Format("{0}%", UnityEngine.Random.RandomRangeInt(0, 101));
+            hp.hungerText.text = string.Format("{0}", UnityEngine.Random.RandomRangeInt(0, 126));
+            hp.thirstText.text = string.Format("{0}", UnityEngine.Random.RandomRangeInt(0, 201));
+            hp.sickText.text = string.Format("{0}%", UnityEngine.Random.RandomRangeInt(0, 101));
+            hp.energyText.text = string.Format("{0}%", UnityEngine.Random.RandomRangeInt(0, 101));
+            hp.happyText.text = string.Format("{0:0.0}", UnityEngine.Random.Range(-100f, 100f));
+            hp.radText.text = string.Format("{0:0.0}gy", UnityEngine.Random.Range(0f, 30f));
+            hp.weightText.text = string.Format("{0:0.#}{1}", UnityEngine.Random.Range(10f, 80f), Units.WeightUnit(false));
+            hp.tempText.text = UnityEngine.Random.Range(25f, 60f).ToString("0.#") + Units.TemperatureUnit(true); // doesn't work with string.Format (the vanilla game does this too)
+            hp.skinText.text = string.Format("{0}", UnityEngine.Random.RandomRangeInt(0, 101));
+            hp.muscleText.text = string.Format("{0}", UnityEngine.Random.RandomRangeInt(0, 101));
+            hp.limbBleedText.text = string.Format("{0:0.00}\nl/m", UnityEngine.Random.Range(0f, 5f));
+            hp.limbPainText.text = string.Format("{0}", UnityEngine.Random.RandomRangeInt(0, 101));
+            hp.infecText.text = string.Format("{0}", UnityEngine.Random.RandomRangeInt(0, 101));
+            hp.limbForceText.text = string.Format("{0}", UnityEngine.Random.RandomRangeInt(0, 101));
+            hp.limbHealTimeText.text = string.Format("{0}m\n{1}s", UnityEngine.Random.RandomRangeInt(0, 20), UnityEngine.Random.RandomRangeInt(0, 60)); // max 19:59
+            hp.bpmText.text = UnityEngine.Random.RandomRangeInt(0, 301) + " | " + UnityEngine.Random.RandomRangeInt(0, 301);
+            hp.respiratoryText.text = string.Format("{0}/m", UnityEngine.Random.Range(0f, 25f));
+            hp.opiumText.text = UnityEngine.Random.RandomRangeInt(-80, 80) + "op";
+            hp.toxinText.text = string.Format("{0:0.0}ppm", UnityEngine.Random.Range(0f, 100f) * 0.1f);
+
+            // displays and graphics
+            hp.limbForceFill.fillAmount = UnityEngine.Random.Range(0f, 1f);
+            hp.limbBleedOuterImage.enabled = true;
+            hp.limbBleedFill.fillAmount = UnityEngine.Random.Range(0f, 1f);
+            hp.limbFractureImage.enabled = true;
+            hp.limbFractureImage.sprite = UnityEngine.Random.RandomRangeInt(0 ,2) == 1 ? hp.limbFracturedSprite : hp.limbDislocatedSprite; // random if fractured or dislocated
+            hp.happinessIcon.sprite = hp.moodIcons[UnityEngine.Random.RandomRangeInt(0, 6)];
+            hp.brainFill.GetComponent<FilledImagePP>().fillAmount = UnityEngine.Random.Range(0f, 1f); // the real game also does GetComponent on every frame
+            hp.bloodFill.GetComponent<FilledImagePP>().fillAmount = UnityEngine.Random.Range(0f, 1f);
+            hp.tempFill.GetComponent<FilledImagePP>().fillAmount = UnityEngine.Random.Range(0f, 1f);
+            hp.foodFill.GetComponent<FilledImagePP>().fillAmount = UnityEngine.Random.Range(0f, 1f);
+            hp.overfeedFill.GetComponent<FilledImagePP>().fillAmount = UnityEngine.Random.Range(0f, 1f);
+            hp.overhydrateFill.GetComponent<FilledImagePP>().fillAmount = UnityEngine.Random.Range(0f, 1f);
+            hp.thirstFill.GetComponent<FilledImagePP>().fillAmount = UnityEngine.Random.Range(0f, 1f);
+            hp.muscleFill.GetComponent<FilledImagePP>().fillAmount = UnityEngine.Random.Range(0f, 1f);
+            hp.skinFill.GetComponent<FilledImagePP>().fillAmount = UnityEngine.Random.Range(0f, 1f);
+            hp.skinFill.fillAmount = UnityEngine.Random.Range(0f, 1f);
+            hp.brainFill.fillAmount = UnityEngine.Random.Range(0f, 1f);
+            hp.radFill.fillAmount = UnityEngine.Random.Range(0f, 1f);
+            hp.lungFill1.fillAmount = UnityEngine.Random.Range(0f, 1f);
+            hp.lungFill2.fillAmount = UnityEngine.Random.Range(0f, 1f);
+            hp.hemothoraxFill.fillAmount = UnityEngine.Random.Range(0f, 1f);
+            hp.opiumBack.enabled = true;
+            hp.opiumFill.fillAmount = UnityEngine.Random.Range(0f, 1f);
+            hp.toxinBack.enabled = true;
+            hp.toxinFill.fillAmount = UnityEngine.Random.Range(0f, 1f);
+            foreach (UnityEngine.UI.Image limb in hp.limbImages)
+            {
+                limb.color = new Color(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f));
+                // i was going to add different limb icons as well, but those are actually VERY complicated
+            }
+            hp.eyeGoneImage.enabled = UnityEngine.Random.RandomRangeInt(0, 2) == 1;
+            hp.bothEyesGoneImage.enabled = UnityEngine.Random.RandomRangeInt(0, 2) == 1;
+            hp.disfiguredImage.enabled = UnityEngine.Random.RandomRangeInt(0, 2) == 1;
+            hp.cargoImage.enabled = UnityEngine.Random.RandomRangeInt(0, 2) == 1;
+        }
         if (moodleUpdateTime(moodles) > prevUpdateTime && Vitals.alive) // timer reset, moodles were updated
         {
             if (revControlActive)
@@ -71,6 +145,15 @@ public class TrapHandler : MonoBehaviour
                 string desc = APLocale.Get("unchipTrapDesc", APLocale.APLanguageType.UI);
                 desc = desc.Replace("<time>", formatted);
                 moodles.AddMoodle(5, "death", $"{APCanvas.coloredAPText}{APLocale.Get("unchipTrap", APLocale.APLanguageType.UI)}", desc, false, false);
+            }
+            if (faultyActive)
+            {
+                float remaining = Mathf.Max(0, faultyEndTime - Time.realtimeSinceStartup);
+                TimeSpan ts = TimeSpan.FromSeconds(remaining);
+                string formatted = $"{ts.Minutes:D2}:{ts.Seconds:D2}";
+                string desc = APLocale.Get("faultyTrapDesc", APLocale.APLanguageType.UI);
+                desc = desc.Replace("<time>", formatted);
+                moodles.AddMoodle(5, "death", $"{APCanvas.coloredAPText}{APLocale.Get("faultyTrap", APLocale.APLanguageType.UI)}", desc, false, false);
             }
             if (disfigActive)
             {
@@ -220,6 +303,10 @@ public class TrapHandler : MonoBehaviour
                 unitsSetting.SetValue(2); // cheeseburger units of measurement
                 plrcam.DoAlert($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{ItemSender}{APLocale.Get("burger", APLocale.APLanguageType.UI)}", false);
                 break;
+            case "Faulty Chip Trap":
+                plrcam.DoAlert($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{ItemSender}{APLocale.Get("chip", APLocale.APLanguageType.UI)}", false);
+                StartCoroutine(FaultyChip());
+                break;
             default:
                 Startup.Logger.LogError($"Trap item {TrapName} is unhandled!");
                 APCanvas.EnqueueArchipelagoNotification($"{APLocale.Get("trap", APLocale.APLanguageType.UI)}{TrapName}{APLocale.Get("trapUnhandled", APLocale.APLanguageType.Errors)}",3);
@@ -250,6 +337,17 @@ public class TrapHandler : MonoBehaviour
         plrcam.SetUnchippedUI(false);
         PlayerCamera.main.LOSHole.GetComponent<VisionMask>().ClearMask();
         unchippedActive = false;
+    }
+    IEnumerator FaultyChip()
+    {
+        if (worldgen.unchippedMode)
+        {
+            yield break; // the layer is solarstruck or the run is unchipped. the trap will have no effect
+        }
+        faultyActive = true;
+        faultyEndTime = Time.realtimeSinceStartup + 50;
+        yield return new WaitForSecondsRealtime(50);
+        faultyActive = false;
     }
     IEnumerator Disfigurement()
     {

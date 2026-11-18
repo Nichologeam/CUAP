@@ -399,7 +399,8 @@ trap_items = {
     "Pushup Trap": ItemData(22318563, ItemClassification.trap),
     "Temptation Trap": ItemData(22318564, ItemClassification.trap),
     "Trip Trap": ItemData(22318565, ItemClassification.trap),
-    "Cheeseburger Trap": ItemData(22318566, ItemClassification.trap)
+    "Cheeseburger Trap": ItemData(22318566, ItemClassification.trap),
+    "Faulty Chip Trap": ItemData(22318567, ItemClassification.trap)
 }
 
 depth_extenders = {
