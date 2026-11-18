@@ -164,6 +164,17 @@ class CasualtiesUnknownWorld(World):
             "TotalLocations": get_total_locations(self)
         }
         return slot_data
+
+    def extend_hint_information(self, hint_data: Dict[int, Dict[int, str]]):
+        # Most APWorlds have this set to be dynamic based on entrance
+        # C:U doesn't have Entrance Randomization, nor would it really ever work for the game
+        # I'm fine with just making a list here, especially since there isn't that many anyway
+        hint_data[self.player] = {
+            22318050: "Overgrown Depths",
+            22318363: "Overgrown Depths",
+            22318364: "Overgrown Depths",
+            22318366: "WHERE WE MUST REACH"
+        }
     
     def interpret_slot_data(self, slot_data: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]]: # Universal Tracker integration
         if not slot_data \

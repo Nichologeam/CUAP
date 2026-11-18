@@ -2,7 +2,9 @@
 using Archipelago.Gifting.Net.Versioning.Gifts;
 using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Enums;
+using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
+using Archipelago.MultiClient.Net.MessageLog.Parts;
 using BepInEx;
 using System;
 using System.Collections;
@@ -204,16 +206,23 @@ public class CommandPatch : MonoBehaviour
         {
             if (hint.IsSenderTheActivePlayer) // casualties item in casualties world (not barbie)
             {
-                constructedMessage = $"<color=#EE00EE>{APLocale.Get("your", APLocale.APLanguageType.Messages)}</color> <color={itemColor}>{hint.Item.ItemName}</color> {APLocale.Get("at", APLocale.APLanguageType.Messages)} <color=#00FF7F>{hint.Item.LocationName}</color>.";
+                constructedMessage = $"<color=#EE00EE>{APLocale.Get("your", APLocale.APLanguageType.Messages)}</color> <color={itemColor}>{hint.Item.ItemName}</color> {APLocale.Get("is at", APLocale.APLanguageType.Messages)} <color=#00FF7F>{hint.Item.LocationName}</color>";
             }
             else // casualties item in other world
             {
-                constructedMessage = $"<color=#EE00EE>{APLocale.Get("your", APLocale.APLanguageType.Messages)}</color> <color={itemColor}>{hint.Item.ItemName}</color> {APLocale.Get("at", APLocale.APLanguageType.Messages)} <color=#FAFAD2>{hint.Sender}</color>'s <color=#00FF7F>{hint.Item.LocationName}</color>.";
+                constructedMessage = $"<color=#EE00EE>{APLocale.Get("your", APLocale.APLanguageType.Messages)}</color> <color={itemColor}>{hint.Item.ItemName}</color> {APLocale.Get("is at", APLocale.APLanguageType.Messages)} <color=#FAFAD2>{hint.Sender}</color>'s <color=#00FF7F>{hint.Item.LocationName}</color>";
             }
         }
         else if (hint.IsSenderTheActivePlayer) // other item in casualties world
         {
-            constructedMessage = $"<color=#FAFAD2>{hint.Receiver}</color>'s <color={itemColor}>{hint.Item.ItemName}</color> {APLocale.Get("at", APLocale.APLanguageType.Messages)} <color=#00FF7F>{hint.Item.LocationName}</color>.";
+            constructedMessage = $"<color=#FAFAD2>{hint.Receiver}</color>'s <color={itemColor}>{hint.Item.ItemName}</color> {APLocale.Get("at", APLocale.APLanguageType.Messages)} <color=#00FF7F>{hint.Item.LocationName}</color>";
+        }
+        foreach (MessagePart part in hint.Parts)
+        {
+            if (part is EntranceMessagePart && !part.Text.IsNullOrWhiteSpace())
+            {
+                constructedMessage = $"{constructedMessage} {APLocale.Get("at", APLocale.APLanguageType.Messages)} <color=#6D8BE8>{part.Text}</color>";
+            }
         }
         LogToConsole(constructedMessage);
         APCanvas.EnqueueArchipelagoNotification(constructedMessage,2);
