@@ -26,6 +26,53 @@ def create_item(world: "CasualtiesUnknownWorld", name: str) -> CasualtiesUnknown
         raise Exception(f"create_item: unknown item '{name}'")
     
     classification = item_data.classification
+
+    tutorial_required_items = {
+        "Foliage rope Recipe",
+        "Canvas Recipe",
+        "Foliage bag Recipe",
+        "Ripped dressing Recipe",
+        "Dressing Recipe",
+        "Flimsy knife Recipe",
+        "Wood cube Recipe",
+        "Bio-chem fluid (from Glowplant) Recipe",
+        "Bio-chem fluid (from Lumalgae) Recipe",
+        "Sterilized dressing Recipe",
+        "Antiseptic Recipe",
+        "Machete Recipe",
+        "Scrap panel Recipe",
+        "Scrap cube Recipe",
+        "Crude cleaver Recipe",
+        "Stick Recipe",
+        "Nails Recipe",
+        "Canteen Recipe",
+        "Campfire Recipe",
+        "Firestarter Recipe",
+        "Water Recipe",
+        "Pemmican Recipe",
+        "Fat Recipe",
+        "Mini laser drill Recipe",
+        "Titanium sheet Recipe",
+        "Flexiglass Recipe",
+        "Bundle of wires Recipe",
+        "Circuit board Recipe",
+        "Flashlight Recipe",
+        "Titanium slab Recipe",
+        "Processed copper Recipe",
+        "Scrap tube Recipe",
+        "Lightbulb Recipe",
+        "Small battery Recipe",
+        "Progressive INT",
+        "Progressive STR",
+        "Progressive RES",
+        "AED Minigame",
+        "Manual Defibrilation Minigame",
+        "Dislocation Minigame",
+        "Bandage Minigame"
+    }
+
+    if name in tutorial_required_items and world.options.TrainingLocations.value:
+        classification = ItemClassification.progression
     
     if (name.endswith(" Recipe") or name == "Progressive INT") and world.options.Craftsanity.value:
         classification = ItemClassification.progression

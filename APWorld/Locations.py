@@ -11,6 +11,8 @@ def skill_locations_enabled(world :"CasualtiesUnknownWorld") -> bool:
     return bool(world.options.Skillsanity.value)
 def crafting_locations_enabled(world :"CasualtiesUnknownWorld") -> bool:
     return bool(world.options.Craftsanity.value != 3)
+def training_locations_enabled(world: "CasualtiesUnknownWorld") -> bool:
+    return bool(world.options.TrainingLocations.value)
 
 def get_total_locations(world: "CasualtiesUnknownWorld") -> int:
     total = 0
@@ -35,6 +37,8 @@ def is_valid_location(world: "CasualtiesUnknownWorld", name) -> bool:
     if not skill_locations_enabled(world) and name in skill_locations:
         return False
     if not crafting_locations_enabled(world) and name in crafting_locations:
+        return False
+    if not training_locations_enabled(world) and name in trainings:
         return False
     return True
 
@@ -654,10 +658,18 @@ crafting_locations = {
 	"Craftsanity - Climbing rope": LocData(22319036, "Menu")
 }
 
+trainings = {
+    "Complete Basic Training": LocData(22319050, "Menu"),
+    "Complete First Aid Course": LocData(22319051, "Menu"),
+    "Complete Crafting Course": LocData(22319052, "Menu"),
+    "Complete Movement Course": LocData(22319053, "Menu")
+}
+
 location_table = {
     **depth_locations,
     **moodlesanity_locations,
     **archipelago_items,
     **skill_locations,
-    **crafting_locations
+    **crafting_locations,
+    **trainings
 }

@@ -292,6 +292,126 @@ def create_region(world: "CasualtiesUnknownWorld", name: str) -> Region:
                 if required_quests > 0:
                     rule = Has("Progressive Quests", count = required_quests)
 
+        if key.endswith(" Course") or key == "Complete Basic Training":
+            if world.options.UnlockSawians.value:
+                rule = Has("Sawian - Experiment")
+            match key:
+                case "Complete Basic Training":
+                    if world.options.Skillsanity.value: # the throw might just barely be possible with 6 STR, but not logically
+                        rule = rule & Has("Progressive STR", count = 7) & Has("Progressive INT", count = 5)
+                    if world.options.RandomizeMinigames.value == 2:
+                        rule = rule & Has("Minigames")
+                    elif world.options.RandomizeMinigames.value == 3:
+                        rule = rule & Has("Bandage Minigame")
+                    if world.options.RandomizeRecipes.value:
+                        rule = rule & HasAll("Foliage rope Recipe", "Canvas Recipe", "Foliage bag Recipe")
+                case "Complete First Aid Course":
+                    if world.options.LimbUnlocks.value == 2: # by stats
+                        continue # A player could get too many progressive limbs, making this location impossible to check. remove it
+                    elif world.options.LimbUnlocks.value == 3: # living last
+                        rule = rule & HasAnyCount({ # living thorax and left hand
+                            "Progressive Thorax": 3,
+                            "Progressive Left Hand": 3
+                        }) 
+                    if world.options.GoalRequirement.value in (2, 4, 5, 6):
+                        rule = rule & Has("Progressive Layer")
+                    else:
+                        rule = rule & HasAny(
+                            "Deeper Gravel Lands Unlock",
+                            "Dried Desert Unlock",
+                            "Wasteland Unlock",
+                            "Overgrown Depths Unlock",
+                            "Frozen Chasm Unlock",
+                            "Fungal Pools Unlock",
+                            "Crystaline Hollow Unlock",
+                            "Geothermal Vents Unlock",
+                            "WHERE WE MUST REACH Unlock",
+                            "CRIMSON ASCENT Unlock"
+                        )
+                    if world.options.RandomizeMinigames.value == 2:
+                        rule = rule & Has("Minigames")
+                    elif world.options.RandomizeMinigames.value == 3:
+                        rule = rule & HasAll("Bandage Minigame", "AED Minigame", "Manual Defibrilation Minigame", "Dislocation Minigame")
+                    # could also make INT a requirement, but it's not too hard to guess the right level with the manual defib
+                case "Complete Crafting Course":
+                    if world.options.GoalRequirement.value in (2, 4, 5, 6):
+                        rule = rule & Has("Progressive Layer", count = 2)
+                    else:
+                        rule = rule & HasAny(
+                            "Dried Desert Unlock",
+                            "Wasteland Unlock",
+                            "Overgrown Depths Unlock",
+                            "Frozen Chasm Unlock",
+                            "Fungal Pools Unlock",
+                            "Crystaline Hollow Unlock",
+                            "Geothermal Vents Unlock",
+                            "WHERE WE MUST REACH Unlock",
+                            "CRIMSON ASCENT Unlock"
+                        )
+                    if world.options.Skillsanity.value:
+                        rule = rule & Has("Progressive INT", count = 16)
+                    if world.options.RandomizeRecipes.value:
+                        rule = rule & HasAll(
+                            "Foliage rope Recipe",
+                            "Canvas Recipe",
+                            "Foliage bag Recipe",
+                            "Ripped dressing Recipe",
+                            "Dressing Recipe",
+                            "Flimsy knife Recipe",
+                            "Wood cube Recipe",
+                            "Sterilized dressing Recipe",
+                            "Antiseptic Recipe",
+                            "Machete Recipe",
+                            "Scrap panel Recipe",
+                            "Scrap cube Recipe",
+                            "Crude cleaver Recipe",
+                            "Stick Recipe",
+                            "Nails Recipe",
+                            "Canteen Recipe",
+                            "Campfire Recipe",
+                            "Firestarter Recipe",
+                            "Water Recipe",
+                            "Pemmican Recipe",
+                            "Fat Recipe",
+                            "Mini laser drill Recipe",
+                            "Titanium sheet Recipe",
+                            "Flexiglass Recipe",
+                            "Bundle of wires Recipe",
+                            "Circuit board Recipe",
+                            "Flashlight Recipe",
+                            "Titanium slab Recipe",
+                            "Processed copper Recipe",
+                            "Scrap tube Recipe",
+                            "Lightbulb Recipe",
+                            "Small battery Recipe"
+                        ) & HasAny("Bio-chem fluid (from Glowplant) Recipe", "Bio-chem fluid (from Lumalgae) Recipe")
+                case "Complete Movement Course":
+                    if world.options.GoalRequirement.value in (2, 4, 5, 6):
+                        rule = rule & Has("Progressive Layer", count = 2)
+                    else:
+                        rule = rule & HasAny(
+                            "Dried Desert Unlock",
+                            "Wasteland Unlock",
+                            "Overgrown Depths Unlock",
+                            "Frozen Chasm Unlock",
+                            "Fungal Pools Unlock",
+                            "Crystaline Hollow Unlock",
+                            "Geothermal Vents Unlock",
+                            "WHERE WE MUST REACH Unlock",
+                            "CRIMSON ASCENT Unlock"
+                        )
+                    if world.options.LimbUnlocks.value != 1:
+                        rule = rule & HasAll( # technically the course is beatable with only two upgraded limbs on each leg, but it's pretty hard
+                            "Progressive Left Foot",
+                            "Progressive Right Foot",
+                            "Progressive Left Crus",
+                            "Progressive Right Crus",
+                            "Progressive Left Thigh",
+                            "Progressive Right Thigh"
+                        )
+                    if world.options.Skillsanity.value:
+                        rule = rule & Has("Progressive RES", count = 6) & Has("Progressive STR", count = 6)
+
         if key in brainchip_needed_moodles:
             if world.options.UnlockBrainchip.value == 2: # as item
                 brainchip_rule = Has("Brainchip")

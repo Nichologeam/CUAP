@@ -211,6 +211,16 @@ class Skillsanity(Toggle):
     """
     display_name = "Skillsanity"
 
+class TrainingLocations(Toggle):
+    """
+    If enabled, places a location at the completion of each training course.
+    Each course logically requires the items used inside said course, like crafting recipes.
+    If Limb Unlocks is enabled, the Movement Course logically requires upgraded Feet, Crus, and Thighs
+
+    Adds 3 locations.
+    """
+    display_name = "Trainingsanity"
+
 class UnlockBrainchip(Choice):
     """
     If enabled, the Brainchip will become an item in the multiworld.
@@ -324,6 +334,7 @@ class CasualtiesUnknownOptions(PerGameCommonOptions):
     FreeSamples:           FreeSamples
     Craftsanity:           Craftsanity
     Skillsanity:           Skillsanity
+    TrainingLocations:     TrainingLocations
     UnlockBrainchip:       UnlockBrainchip
     UnlockSawians:         UnlockSawians
     StartingSawian:        StartingSawian
@@ -338,8 +349,9 @@ class CasualtiesUnknownOptions(PerGameCommonOptions):
 casualties_unknown_option_groups = [
     OptionGroup("Goal", [GoalRequirement, GoalRequiresAllSawians, AscentUnlockMode, StartingLayer, GoalDepth]),
     OptionGroup("Moodlesanity", [Moodlesanity, MoodlesanityExclusions, QuestboardCooldownTime]),
-    OptionGroup("Recipes", [RandomizeCrafting, FreeSamples, Craftsanity, Skillsanity, ArchipelagoItems]),
+    OptionGroup("Recipes", [RandomizeCrafting, FreeSamples, Craftsanity]),
     OptionGroup("Other Items", [RandomizeMinigames, LimbUnlocks, UnlockBrainchip, UnlockSawians, StartingSawian]),
+    OptionGroup("Other Locations", [ArchipelagoItems, Skillsanity, TrainingLocations]),
     OptionGroup("Traps", [TrapPercentage, TrapWeights]),
     OptionGroup("Cross-Game Interactions", [EnergyLink, SleepLink, Gifting])
 ]
