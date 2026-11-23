@@ -205,28 +205,28 @@ public class LimbUnlocks : MonoBehaviour
                     SetLimbToProsthesis(limbObject, 3); // set to living
                 }
                 break;
-            case 1: // steel
-                SetLimbToProsthesis(limbObject, 2); // set to P.E.O. regardless of option
+            case 1: // steel (living last) OR living (by stats)
+                if (livingLast)
+                {
+                    SetLimbToProsthesis(limbObject, 2); // set to P.E.O.
+                }
+                else
+                {
+                    SetLimbToProsthesis(limbObject, 1); // set to steel
+                }
                 break;
-            case 2: // peo
+            case 2: // peo (living last) OR steel (by stats)
                 if (livingLast)
                 {
                     SetLimbToProsthesis(limbObject, 3); // set to living
                 }
                 else
                 {
-                    Startup.Logger.LogError($"Received too many unlocks for {limbObject.fullName}!");
+                    SetLimbToProsthesis(limbObject, 2); // set to P.E.O.
                 }
                 break;
-            case 3: // living
-                if (livingLast)
-                {
-                    Startup.Logger.LogError($"Received too many unlocks for {limbObject.fullName}!");
-                }
-                else
-                {
-                    SetLimbToProsthesis(limbObject, 1); // set to steel
-                }
+            default:
+                Startup.Logger.LogError($"Received too many unlocks for {limbObject.fullName}!");
                 break;
         }
     }
