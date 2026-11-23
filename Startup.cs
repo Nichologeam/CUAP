@@ -16,7 +16,7 @@ using UnityEngine.UI;
 
 namespace CUAP;
 
-[BepInPlugin("nichologeam.cuap", "Casualties: Archipelago", "0.13.1")]
+[BepInPlugin("nichologeam.cuap", "Casualties: Archipelago", "0.13.2")]
 [BepInDependency("CasualtiesMP", BepInDependency.DependencyFlags.SoftDependency)] // ensure the MP mod is loaded first if it exists. do nothing if it doesn't
 public class Startup : BaseUnityPlugin
 {
@@ -24,7 +24,7 @@ public class Startup : BaseUnityPlugin
     private static extern bool SetWindowText(IntPtr hWnd, string lpString);
     public static new ManualLogSource Logger;
     public static ArchipelagoSession Client;
-    public static string CUAPVersion = "v0.13.1";
+    public static string CUAPVersion = "v0.13.2";
     public static AssetBundle apassets;
     private static Harmony apHarmony;
     public static Startup instance;
