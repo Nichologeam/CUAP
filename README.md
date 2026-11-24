@@ -7,7 +7,7 @@ To use this mod on the Itch.io version, use mod version v0.8.0 on the Itch.io br
 To use this mod on the Steam Demo version, use mod version v0.12.3 on the Steam Demo branch. Keep in mind that the Steam Demo version of Casualties: Unknown is no longer receiving mod updates.
 
 # **Installing The Mod**
-1. Download BepInEx v5.4.23.5 from its [Github Page](https://github.com/BepInEx/BepInEx/releases/tag/v5.4.23.5)
+1. Download BepInEx v5.4.23.6 from its [Github Page](https://github.com/BepInEx/BepInEx/releases/tag/v5.4.23.6)
 2. Extract the zip folder into the game's directory
     - If done correctly, a BepInEx folder should appear
 3. Launch Casualties Unknown once to configure BepInEx
