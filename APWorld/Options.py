@@ -217,7 +217,7 @@ class TrainingLocations(Toggle):
     Each course logically requires the items used inside said course, like crafting recipes.
     If Limb Unlocks is enabled, the Movement Course logically requires upgraded Feet, Crus, and Thighs
 
-    Adds 3 locations.
+    Adds 4 locations.
     """
     display_name = "Trainingsanity"
 
