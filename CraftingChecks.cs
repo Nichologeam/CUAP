@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace CUAP;
@@ -20,8 +19,22 @@ public class CraftingChecks : MonoBehaviour
     private static List<string> RecievedRecipes;
     public static List<int> AlreadySentChecks = new List<int>();
     public static bool apItems = false;
-    private static int apItemAmount;
-    private static int currentAPItemNum;
+    public static int apItemAmount = -1; // amount of AP items *per layer*
+    private static Dictionary<int, int> currentAPItemNum = new Dictionary<int, int>() // curret item number for each layer
+    {
+        // start with each layer being on its first item
+        {0,0},
+        {1,0},
+        {2,0},
+        {3,0},
+        {4,0},
+        {5,0},
+        {6,0},
+        {7,0},
+        {8,0},
+        {9,0},
+        {10,0}
+    };
     private bool randomRecipes = false;
     private bool initialSync = false;
     private static bool updateAllBPs = false;
@@ -31,7 +44,6 @@ public class CraftingChecks : MonoBehaviour
     public static bool craftsanity = false;
     public static int CraftedRecipes = 0;
     private SemaphoreSlim spriteSemaphore = new(1, 1);
-    private static readonly long startingRecipeID = 22318500;
     private static HashSet<string> AppliedRecipes = new();
     public static Dictionary<string, string> CheckNameToItem = new Dictionary<string, string>()
     {
@@ -477,14 +489,13 @@ public class CraftingChecks : MonoBehaviour
                 initialSync = true;
             }
         }
-        if ((options.TryGetValue("APItemAmount", out var items) && Convert.ToInt16(items) > 0) && !APClientClass.outOfItems)
+        if (options.TryGetValue("APItemAmount", out var items) && Convert.ToInt32(items) > 0)
         {
             apItems = true;
-            apItemAmount = Convert.ToInt16(items);
-            currentAPItemNum = SkillSending.GetIntFromCheckedLocations(startingRecipeID, Convert.ToInt16(items)); // consider previous sessions
+            apItemAmount = Convert.ToInt32(items);
             aplogo = Startup.apassets.LoadAsset<Sprite>("aplogo200"); // load custom blueprint asset replacement
             bgBlueprint = Resources.Load<GameObject>("blueprint").GetComponent<SpriteRenderer>().sprite; // reference basegame asset from prefab
-            APCanvas.apItemsCounter.text = $"{currentAPItemNum}/{apItemAmount}{APLocale.Get("apItems", APLocale.APLanguageType.UI)}";
+            APCanvas.apItemsCounter.text = $"{GetCurrentItemNumber()}/{apItemAmount}{APLocale.Get("apItems", APLocale.APLanguageType.UI)}";
         }
         SetupAPBlueprint(apItems);
         if (options.TryGetValue("FreeSamples", out var samples))
@@ -548,18 +559,16 @@ public class CraftingChecks : MonoBehaviour
                         {
                             renderer.sprite = aplogo;
                             var blueprint = bp.GetComponent<BlueprintScript>();
-                            blueprint.recipeIndex = currentAPItemNum;
-                            if (currentAPItemNum >= apItemAmount)
+                            if (GetCurrentItemNumber() >= apItemAmount)
                             {
-                                CommandPatch.LogToConsole("All Archipelago Items have been collected! Disabling apItems flag.");
+                                Startup.Logger.LogMessage("All Archipelago Items on this layer have been collected! Disabling apItems flag.");
                                 apItems = false;
-                                APClientClass.outOfItems = true;
                                 SetupAPBlueprint(false);
                                 Destroy(bp);
                                 return;
                             }
                             var helper = ThreadingHelper.Instance;
-                            _ = AssignCustomSprite(renderer, bp.GetComponent<Item>(), currentAPItemNum, helper);
+                            AssignCustomSprite(renderer, bp.GetComponent<Item>(), GetCurrentItemNumber(), helper);
                         }
                         else
                         {
@@ -581,7 +590,7 @@ public class CraftingChecks : MonoBehaviour
             }
         }
     }
-    void SetupAPBlueprint(bool apItemsEnabled) // rebuild the basegame blueprint functions, but with AP code integrated.
+    public static void SetupAPBlueprint(bool apItemsEnabled) // rebuild the basegame blueprint functions, but with AP code integrated.
     {
         Item.GlobalItems.Remove("blueprint");
         string itemname = "blueprint";
@@ -599,13 +608,13 @@ public class CraftingChecks : MonoBehaviour
                 {
                     item.condition = 0f;
                     body.skills.AddExp(2, 10f);
-                    CraftingChecks.SendBlueprintLocation(item.gameObject.GetComponent<BlueprintScript>().recipeIndex);
+                    CheckBlueprintLocation();
                     item.Stats.fullName = $"{APCanvas.coloredAPText} Item";
                     item.Stats.description = APLocale.Get("apItemTrader", APLocale.APLanguageType.UI);
                     PlayerCamera.main.DoAlert($"Item sent to {APCanvas.coloredAPText}!", false);
                     Sound.Play("combine", item.transform.position, false, true, null, 1f, 1f, false, false);
                 },
-                value = 0, // i think setting this to 0 makes it unsellable? makes it useless to regardless
+                value = 0,
                 fullName = $"{APCanvas.coloredAPText} Item",
                 description = APLocale.Get("apItemTrader", APLocale.APLanguageType.UI), 
                 rec = new Recognition(0)
@@ -641,16 +650,100 @@ public class CraftingChecks : MonoBehaviour
         ItemLootPool.InitializePool();
     }
 
-    public static void SendBlueprintLocation(int recipeIndex)
+    public static void CheckBlueprintLocation()
     {
-        var CheckID = recipeIndex + startingRecipeID;
+        var CheckID = GetCurrentItemNumber() + GetStartingAPItemLocationID();
         APClientClass.ChecksToSend.Add(CheckID);
-        currentAPItemNum++;
+        AddToCurrentItemNumber();
         updateAllBPs = true; // update other blueprint's sprites and names
-        APCanvas.apItemsCounter.text = $"{currentAPItemNum}/{apItemAmount}{APLocale.Get("apItems", APLocale.APLanguageType.UI)}";
+        APCanvas.apItemsCounter.text = $"{GetCurrentItemNumber()}/{apItemAmount}{APLocale.Get("apItems", APLocale.APLanguageType.UI)}";
     }
 
-    private async Task AssignCustomSprite(SpriteRenderer renderer, Item item, int recipeID, ThreadingHelper helper)
+    public static long GetStartingAPItemLocationID()
+    {
+        WorldGeneration worldgen = WorldGeneration.world;
+        if (worldgen == null)
+        {
+            return -1; // not in-game
+        }
+        switch (worldgen.biomeDepth)
+        {
+            case 0:
+                return 22318500;
+            case 1:
+                return 22318520;
+            case 2:
+                return 22318540;
+            case 3:
+                return 22318560;
+            case 4:
+                return 22318580;
+            case 5:
+                return 22318600;
+            case 6:
+                return 22318620;
+            case 7:
+                return 22318640;
+            case 8:
+                return 22318660;
+            case 9:
+                return 22318680;
+            case 10:
+                return 22318700;
+            case 11:
+                return 22318700; // Earth returns the same as CRIMSON ASCENT
+            default:
+                Startup.Logger.LogError($"GetStartingAPItemLocationID received an unexpected layer ID ({worldgen.biomeDepth})!");
+                return -1;
+        }
+    }
+
+    public static int GetCurrentItemNumber()
+    {
+        WorldGeneration worldgen = WorldGeneration.world;
+        if (worldgen == null)
+        {
+            return -1; // not in-game
+        }
+        int depth = worldgen.biomeDepth;
+        if (depth == 11)
+        {
+            depth = 10; // treat Earth as CRIMSON DEPTHS
+        }
+        return currentAPItemNum[depth];
+    }
+
+    private static void AddToCurrentItemNumber()
+    {
+        WorldGeneration worldgen = WorldGeneration.world;
+        if (worldgen == null)
+        {
+            return; // not in-game
+        }
+        int depth = worldgen.biomeDepth;
+        if (depth == 11)
+        {
+            depth = 10; // treat Earth as CRIMSON DEPTHS
+        }
+        currentAPItemNum[depth]++;
+    }
+
+    public static void SetCurrentItemNumber(int number)
+    {
+        WorldGeneration worldgen = WorldGeneration.world;
+        if (worldgen == null)
+        {
+            return; // not in-game
+        }
+        int depth = worldgen.biomeDepth;
+        if (depth == 11)
+        {
+            depth = 10; // treat Earth as CRIMSON DEPTHS
+        }
+        currentAPItemNum[depth] = number;
+    }
+
+    private async void AssignCustomSprite(SpriteRenderer renderer, Item item, int recipeID, ThreadingHelper helper)
     {
         await spriteSemaphore.WaitAsync();
         if (renderer == null)
@@ -659,10 +752,10 @@ public class CraftingChecks : MonoBehaviour
         }
         try
         {
-            long locationID = recipeID + startingRecipeID;
+            long locationID = recipeID + GetStartingAPItemLocationID();
             if (Client.Locations.AllLocationsChecked.Contains(locationID)) // this location has already been checked (by a !collect, most likely)
             {
-                currentAPItemNum++; // increase the sent locations counter
+                AddToCurrentItemNumber(); // increase the sent locations counter
                 updateAllBPs = true; // force an update of all blueprints
                 return; // don't process this blueprint right now
             }
@@ -739,11 +832,37 @@ class CraftsanitySender
         {
             return; // craftsanity is disabled. don't send anything.
         }
-        if ((!__state && __instance.hasMadeBefore) && !alreadySentChecks.Contains(__instance.index)) // if the recipe wasn't made before, but now has been after the function has ran, check the location
+        if (!__state && __instance.hasMadeBefore && !alreadySentChecks.Contains(__instance.index)) // if the recipe wasn't made before, but now has been after the function has ran, check the location
         {
             long CheckID = craftsanityLocID + __instance.index;
             APClientClass.ChecksToSend.Add(CheckID);
             alreadySentChecks.Add(__instance.index); // add to list so we don't check the same location twice
+        }
+    }
+}
+
+[HarmonyPatch(typeof(WorldGeneration), "FinishWorldGeneration")]
+// Handles enabling or disabling AP Items during layer switches
+class APItemsSwitcher
+{
+    static void Postfix(WorldGeneration __instance)
+    {
+        if (CraftingChecks.apItemAmount > -1)
+        {
+            CraftingChecks.SetCurrentItemNumber(SkillSending.GetIntFromCheckedLocations(CraftingChecks.GetStartingAPItemLocationID(), CraftingChecks.apItemAmount));
+            APCanvas.apItemsCounter.text = $"{CraftingChecks.GetCurrentItemNumber()}/{CraftingChecks.apItemAmount}{APLocale.Get("apItems", APLocale.APLanguageType.UI)}";
+            if (CraftingChecks.GetCurrentItemNumber() < CraftingChecks.apItemAmount)
+            {
+                CraftingChecks.apItems = true;
+                CraftingChecks.SetupAPBlueprint(true);
+                Startup.Logger.LogWarning("apitems reenabled");
+            }
+            else
+            {
+                CraftingChecks.apItems = false;
+                CraftingChecks.SetupAPBlueprint(false);
+                Startup.Logger.LogWarning("apitems disabled");
+            }
         }
     }
 }

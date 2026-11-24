@@ -37,7 +37,6 @@ public class APClientClass
     public static bool hasBrainchip = true;
     public static bool sawUnlocks = false;
     private static float reconnectCountdown;
-    public static bool outOfItems = false;
     public static ArchipelagoSession? session;
     public static DeathLinkService? dlService;
 
@@ -80,7 +79,6 @@ public class APClientClass
     {
         session?.Socket.DisconnectAsync();
         session = null;
-        outOfItems = false;
         leftArmUnlocks = 0;
         rightArmUnlocks = 0;
         MaxINT = 0;

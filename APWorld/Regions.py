@@ -256,25 +256,11 @@ def create_region(world: "CasualtiesUnknownWorld", name: str) -> Region:
                 required_extenders = max(0, (milestone_depth + 299) // 300 - 1)
                 rule = Has("Depth Extender", count = required_extenders)
         
-        if key.startswith("Archipelago Item "):
+        if key.startswith(("Gravel Lands Item ", "Deeper Gravel Lands Item ", "Dried Desert Item ", "Wasteland Item ", "Overgrown Depths Item ", "Frozen Chasm Item ", "Fungal Pools Item ", "Crystaline Hollow Item ", "Geothermal Vents Item ", "WHERE WE MUST REACH Item ", "CRIMSON ASCENT Item ")):
             item_number = int(key.split(" ")[-1])
 
             if item_number > max_ap_items:
                 continue
-
-            if world.options.RandomizeMinigames.value == 2:
-                free_count = max(15 ,math.floor(max_ap_items * 0.20)) # if 100 items, this is 20 (minimum of 15)
-                if item_number > free_count:
-                    rule = Has("Minigames")
-                    
-            elif world.options.RandomizeMinigames.value == 3:
-                free_count = max(15 ,math.floor(max_ap_items * 0.20)) # if 100 items, this is 20 (minimum of 15)
-                either_count = math.floor((max_ap_items - free_count) * 0.50) # if 100 items, this is 40
-                either_cutoff = free_count + either_count # if 100 items, this is 60
-                if free_count < item_number <= either_cutoff:
-                    rule = HasAny("Lockpicking Minigame", "Keypad Minigame")
-                elif item_number > either_cutoff:
-                    rule = HasAll("Lockpicking Minigame", "Keypad Minigame")
         
         if key.startswith("Craftsanity - "):
             if key not in world.recipe_data["recipes"]:

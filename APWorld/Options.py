@@ -259,15 +259,19 @@ class StartingSawian(Choice):
 
 class ArchipelagoItems(Range):
     """
-    How many Archipelago Items can be found throughout the cave system?
+    How many Archipelago Items can be found on each layer?
     When used, they check a location and give 10 INT Experience.
     They are guarenteed to drop from destroying traps, opening containers, and killing enemies.
     Each Survivor is also guarenteed to have at least one free Archipelago Item in their trades.
+
+    This number is *per layer*, meaning setting this to 5 generates 5 locations for each layer, totaling 55.
+    Any Archipelago Items collected in training counts towards Gravel Lands.
+    Any Archipelago Items collected on earth counts towards CRIMSON ASCENT.
     """
     display_name = "Archipelago Items"
     range_start = 0
-    range_end = 200
-    default = 40
+    range_end = 20
+    default = 5
 
 class EnergyLink(Toggle):
     """

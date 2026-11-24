@@ -173,7 +173,11 @@ class CasualtiesUnknownWorld(World):
             22318050: "Overgrown Depths",
             22318363: "Overgrown Depths",
             22318364: "Overgrown Depths",
-            22318366: "WHERE WE MUST REACH"
+            22318366: "WHERE WE MUST REACH",
+            22319050: "the Training Lab",
+            22319051: "the Training Lab",
+            22319052: "the Training Lab",
+            22319053: "the Training Lab",
         }
     
     def interpret_slot_data(self, slot_data: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]]: # Universal Tracker integration
