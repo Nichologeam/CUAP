@@ -427,8 +427,6 @@ public class Moodlesanity : MonoBehaviour
                     .Select(jv => jv.ToString())
                     .ToList();
                 }
-                options.TryGetValue("QuestboardCooldown", out object timer);
-                APCanvas.rerollCooldownMax = (int)(long)timer;
                 RefreshMaxQuests(false);
             }
         }
@@ -446,7 +444,7 @@ public class Moodlesanity : MonoBehaviour
             }
             if (mood.type == "lowimmunity1" && worldgen.loadingObject.activeSelf)
             {
-                continue; // There's a bug where Experiment is Immunocompromised for the first few frames during worldgen.
+                continue; // There's a bug where the Sawian is Immunocompromised for the first few frames during worldgen.
                           // This if statement makes the location not send in that case.
             }
             if (mood.type == "death5")
@@ -491,14 +489,14 @@ public class Moodlesanity : MonoBehaviour
                     MoodlesToSkip.Add(mood.type); // don't process this moodle again as to not spam notifications
                     continue;
                 }
-                if (APCanvas.ShuffledQuests.Take(APCanvas.UnlockedSlots).Contains(checkName)) // check only the slots we are displaying
+                if (questsAvailable.Contains(checkName))
                 {
                     var CheckID = Client.Locations.GetLocationIdFromName(Client.Players.ActivePlayer.Game, checkName);
                     APClientClass.ChecksToSend.Add(CheckID);
                     questsAvailable.Remove(checkName); // this acts as our duplicate protection. no need to use AlreadySentChecks
                     plrcam.DoAlert($"{APLocale.Get("sent", APLocale.APLanguageType.UI)}{checkName}!");
                     Sound.Play("close", Vector2.zero, true, false, null, 1f, 1f, true, true);
-                    APCanvas.UpdateQuestboard(false);
+                    APCanvas.UpdateQuestboard();
                 }
             }
         }
@@ -517,6 +515,6 @@ public class Moodlesanity : MonoBehaviour
                 questsAvailable.Add(moodle);
             }
         }
-        APCanvas.RerollQuests(true);
+        APCanvas.UpdateQuestboard();
     }
 }

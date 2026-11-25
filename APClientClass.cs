@@ -282,9 +282,6 @@ public class APClientClass
                     case "Progressive Quests":
                         Moodlesanity.RefreshMaxQuests(true);
                         break;
-                    case "Questboard Slot":
-                        APCanvas.UpdateQuestboard(true);
-                        break;
                     case "Progressive Head":
                         LimbUnlocks.limbUpgrades[0]++;
                         if (APCanvas.InGame) LimbUnlocks.GiveNextProsthesisToLimb(item.ItemName.Replace("Progressive ", ""));
