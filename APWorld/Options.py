@@ -103,8 +103,8 @@ class Moodlesanity(Choice):
     """
     Each possible moodle (status effect) is a location. Does not include Anxious and Deceased, as they are impossible to get.
     Disabled: Moodles do not check locations.
-    Questboard: Adds a new UI that shows 'quests'. You must get the shown moodle to check its location. More moodles and
-                questboard slots are unlocked via items. Each "Progressive Quests" item (11 in total) unlocks 15 moodles.
+    Questboard: Adds a new UI that shows 'quests'. You must get the shown moodle to check its location.
+                Each "Progressive Quests" item (11 in total) adds 15 moodles to the Questboard.
     Open: All moodle locations are available in sphere 1 (minus a few). Creates VERY LARGE sphere 1. Use with caution.
     With every Moodle enabled, adds 171 locations.
     """
@@ -130,16 +130,6 @@ class MoodlesanityExclusions(OptionList):
         for key in moodlesanity_locations.keys()
     } | {"Minimal", "Deadly", "Difficult", "Deadly and Difficult"}
     default = ["Minimal"]
-
-class QuestboardCooldownTime(Range):
-    """
-    How long should the cooldown between refreshes on the Questboard be? Only has an effect if Moodlesanity is set to Questboard.
-    Time is in seconds. Set to 0 to disable the cooldown.
-    """
-    display_name = "Moodlesanity Questboard Cooldown Time"
-    range_start = 0
-    range_end = 120
-    default = 15
 
 class RandomizeMinigames(Choice):
     """
@@ -266,7 +256,7 @@ class ArchipelagoItems(Range):
 
     This number is *per layer*, meaning setting this to 5 generates 5 locations for each layer, totaling 55.
     Any Archipelago Items collected in training counts towards Gravel Lands.
-    Any Archipelago Items collected on earth counts towards CRIMSON ASCENT.
+    Any Archipelago Items collected on Earth counts towards CRIMSON ASCENT.
     """
     display_name = "Archipelago Items"
     range_start = 0
@@ -331,7 +321,6 @@ class CasualtiesUnknownOptions(PerGameCommonOptions):
     GoalDepth:             GoalDepth
     Moodlesanity:          Moodlesanity
     MoodlesanityExclusions:MoodlesanityExclusions
-    QuestboardCooldown:    QuestboardCooldownTime
     RandomizeMinigames:    RandomizeMinigames
     LimbUnlocks:           LimbUnlocks
     RandomizeRecipes:      RandomizeCrafting
@@ -352,7 +341,7 @@ class CasualtiesUnknownOptions(PerGameCommonOptions):
 
 casualties_unknown_option_groups = [
     OptionGroup("Goal", [GoalRequirement, GoalRequiresAllSawians, AscentUnlockMode, StartingLayer, GoalDepth]),
-    OptionGroup("Moodlesanity", [Moodlesanity, MoodlesanityExclusions, QuestboardCooldownTime]),
+    OptionGroup("Moodlesanity", [Moodlesanity, MoodlesanityExclusions]),
     OptionGroup("Recipes", [RandomizeCrafting, FreeSamples, Craftsanity]),
     OptionGroup("Other Items", [RandomizeMinigames, LimbUnlocks, UnlockBrainchip, UnlockSawians, StartingSawian]),
     OptionGroup("Other Locations", [ArchipelagoItems, Skillsanity, TrainingLocations]),

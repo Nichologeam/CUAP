@@ -148,7 +148,6 @@ class CasualtiesUnknownWorld(World):
             "Skillsanity":         self.options.Skillsanity.value,
             "FreeSamples":         self.options.FreeSamples.value,
             "QuestboardOrder":     self.questboard_order,
-            "QuestboardCooldown":  self.options.QuestboardCooldown.value,
             "UnlockBrainchip":     self.options.UnlockBrainchip.value,
             "UnlockSawians":       self.options.UnlockSawians.value,
             "StartingSawian":      self.options.StartingSawian.value,

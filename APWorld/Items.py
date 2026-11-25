@@ -147,9 +147,6 @@ def create_itempool(world: "CasualtiesUnknownWorld") -> list["CasualtiesUnknownI
         for _ in range(11):
             item = create_item(world, "Progressive Quests")
             pool.append(item)
-        for _ in range(6):
-            item = create_item(world, "Questboard Slot")
-            pool.append(item)
 
     # --- Minigames ---
     if minigame_items(world) == 2:
@@ -415,8 +412,7 @@ limbs = {
 }
 
 questboard_items = {
-    "Progressive Quests": ItemData(22318450, ItemClassification.progression, 10),
-    "Questboard Slot": ItemData(22318451, ItemClassification.useful, 3)
+    "Progressive Quests": ItemData(22318450, ItemClassification.progression, 11)
 }
 
 filler_items = {
