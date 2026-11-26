@@ -5,12 +5,14 @@ using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
 using Archipelago.MultiClient.Net.MessageLog.Parts;
+using Archipelago.MultiClient.Net.Packets;
 using BepInEx;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -115,6 +117,15 @@ public class CommandPatch : MonoBehaviour
 
                     default:
                         PrintPlainJSON(message);
+                        break;
+                }
+            };
+            Client.Socket.PacketReceived += packet =>
+            {
+                switch (packet)
+                {
+                    case RoomUpdatePacket update:
+                        PrintRoomUpdate(update);
                         break;
                 }
             };
@@ -226,6 +237,45 @@ public class CommandPatch : MonoBehaviour
         }
         LogToConsole(constructedMessage);
         APCanvas.EnqueueArchipelagoNotification(constructedMessage,2);
+    }
+    private void PrintRoomUpdate(RoomUpdatePacket update) // RoomUpdate packets only contain the information that was actually changed. The rest is null.
+    {
+        if (update.Password is bool password) // Right now, Archipelago doesn't send a RoomUpdate packet if a password is added, so this code will never trigger
+        {
+            if (password)
+            {
+                LogToConsole($"<color=#FFFF00>{APLocale.Get("updatePasswordAdded1", APLocale.APLanguageType.Messages)}</color>");
+                LogToConsole($"<color=#FFFF00>{APLocale.Get("updatePasswordAdded2", APLocale.APLanguageType.Messages)}</color>");
+            }
+            else
+            {
+                LogToConsole($"<color=#FF0000>{APLocale.Get("updatePasswordRemoved", APLocale.APLanguageType.Messages)}</color>");
+            }
+        }
+        if (update.HintCostPercentage is int newCost)
+        {
+            int currentPoints = Client.RoomState.HintPoints;
+            int totalLocationPoints = Client.Locations.AllLocations.Count * Client.RoomState.LocationCheckPoints;
+            int hintCost = totalLocationPoints * newCost / 100;
+            string affordableHints = hintCost > 0 ? $"{currentPoints / hintCost}" : APLocale.Get("updateInfinite", APLocale.APLanguageType.Messages);
+            LogToConsole($"<color=#FFFF00>{APLocale.Get("updateHintPercent", APLocale.APLanguageType.Messages)}{newCost}%.</color>");
+            string msg = APLocale.Get("updateAffordableHints", APLocale.APLanguageType.Messages);
+            msg = msg.Replace("<1>", $"{currentPoints}");
+            msg = msg.Replace("<2>", affordableHints);
+            LogToConsole($"<color=#FFFF00>{msg}</color>");
+        }
+        if (update.LocationCheckPoints is int newPoints)
+        {
+            int currentPoints = Client.RoomState.HintPoints;
+            int totalLocationPoints = Client.Locations.AllLocations.Count * newPoints;
+            int hintCost = totalLocationPoints * Client.RoomState.HintCostPercentage / 100;
+            string affordableHints = hintCost > 0 ? $"{currentPoints / hintCost}" : APLocale.Get("updateInfinite", APLocale.APLanguageType.Messages);
+            LogToConsole($"<color=#FFFF00>{APLocale.Get("updateLocationPoints", APLocale.APLanguageType.Messages)}{newPoints}.</color>");
+            string msg = APLocale.Get("updateAffordableHints", APLocale.APLanguageType.Messages);
+            msg = msg.Replace("<1>", $"{currentPoints}");
+            msg = msg.Replace("<2>", affordableHints);
+            LogToConsole($"<color=#FFFF00>{msg}</color>");
+        }
     }
     private void CreateAPCommands()
     {

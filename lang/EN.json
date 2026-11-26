@@ -175,7 +175,7 @@
 		"sent": "sent",
 		"to": "to",
 		"is at": "is at",
-		"at":  "at",
+		"at": "at",
 		"died": " died.",
 		"runEnd": " Your run has ended.",
 		"damage": "Damage done to",
@@ -189,7 +189,14 @@
 		"genericDeath1": " became a statistic.",
 		"genericDeath2": " met the same fate.",
 		"giftReceived": "You've been gifted a '<item>' by <plr>!",
-		"giftRefunded": "Your gift was refunded!"
+		"giftRefunded": "Your gift was refunded!",
+		"updatePasswordAdded1": "The Archipelago room you are connected to is now password protected.",
+		"updatePasswordAdded2": "For security, the client does not know the password. Ask the host if you don't know what it is.",
+		"updatePasswordRemoved": "The Archipelago room you are connected to is no longer password protected.",
+		"updateHintPercent": "The Archipelago room you are connected to has updated its hint percentage to ",
+		"updateLocationPoints": "The Archipelago room you are connected to has updated its hint points per location to ",
+		"updateAffordableHints": "With your current <1> hint points, you can afford <2> hints.",
+		"updateInfinite": "infinite"
 	},
 	"Errors": {
 		"noPort": "Connection error: No server port was given.",
